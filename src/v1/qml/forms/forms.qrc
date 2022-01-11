@@ -1,0 +1,29 @@
+<RCC>
+    <qresource prefix="/QMetaUI/Forms">
+        <file>MCApplicationLogin.qml</file>
+        <file>MCFormBaseLogin.qml</file>
+        <file>MCFormBaseProfile.qml</file>
+        <file>MCFormBody.qml</file>
+        <file>MCFormLogin.qml</file>
+        <file>MCFormBaseHome.qml</file>
+        <file>MCFormBaseAppStart.qml</file>
+        <file>MCFormEnum.qml</file>
+        <file>MCFormBase.qml</file>
+        <file>MCFormBaseLoginCheck.qml</file>
+        <file>MCFormBaseAdsSale.qml</file>
+        <file>MCFormBaseChat.qml</file>
+        <file>MCFormBaseContent.qml</file>
+        <file>MCFormBaseNotify.qml</file>
+        <file>MCFormBaseShoppingCart.qml</file>
+        <file>MCFormBasePayment.qml</file>
+        <file>MCFormBaseProductDetail.qml</file>
+        <file>MCFormBaseClub.qml</file>
+        <file>MCFormBaseCategory.qml</file>
+        <file>MCFormBaseRegister.qml</file>
+        <file>MCFormBaseProfileEdit.qml</file>
+        <file>MCFormBaseEstablishment.qml</file>
+        <file>MCLoginEngine.qml</file>
+        <file>MCApplicationLoginStack.qml</file>
+        <file>MCApplication.qml</file>
+    </qresource>
+</RCC>

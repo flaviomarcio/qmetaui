@@ -1,0 +1,27 @@
+{
+    "MCButton":{
+        "enabled":{
+            "geometric":{
+                "x":0, "y":0, "h":30, "w":50
+            },
+            "color":{
+                "background": "transparent",
+                "foreground": "transparent"
+            },
+            "border":{
+                "size":1,
+                "color": "transparent",
+                "round":{
+                    "ratio":0
+                },
+                "images":{
+                    "top.left":"",
+                    "top.right":"",
+                    "left.left":"",
+                    "left.right":"",
+                    "body":""
+                }
+            }
+        }
+    }
+}

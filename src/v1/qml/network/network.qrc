@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/QMetaUI/Network">
+        <file>MCRequest.qml</file>
+        <file>MCRequestGET.qml</file>
+        <file>MCRequestPUT.qml</file>
+        <file>MCRequestPOST.qml</file>
+        <file>MCRequestDELETE.qml</file>
+        <file>MCRequestDownload.qml</file>
+        <file>MCRequestUpload.qml</file>
+    </qresource>
+</RCC>

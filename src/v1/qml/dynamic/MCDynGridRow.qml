@@ -1,0 +1,6 @@
+import QtQuick 2.14
+import "qrc:/QMetaUI/Controls"
+
+MCRectangle {
+    property MCDynEngine engine: null
+}

@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/">
+        <file>MCDynamicRunner.qml</file>
+        <file>MCDynamicList.qml</file>
+        <file>MCDynGrid.qml</file>
+        <file>MCDynamicInput.qml</file>
+        <file>MCDynamicReport.qml</file>
+        <file>MCDynFormBase.qml</file>
+        <file>MCDynamicInputList.qml</file>
+        <file>MCDynamicInputEdit.qml</file>
+        <file>MCDynEngine.qml</file>
+        <file>MCDynGridHeader.qml</file>
+        <file>MCDynGridRow.qml</file>
+        <file>MCDynTabBar.qml</file>
+        <file>MCDynListModel.qml</file>
+        <file>MCDynFormListView.qml</file>
+        <file>MCDynHeader.qml</file>
+        <file>MCDynFormTableView.qml</file>
+    </qresource>
+</RCC>
