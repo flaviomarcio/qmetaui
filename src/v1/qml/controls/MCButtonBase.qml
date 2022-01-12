@@ -90,18 +90,18 @@ MCRectangleBase{
         text: ""
     }
 
-   MouseArea {
-       id:mouse
-       anchors.fill: parent
-       onClicked: {
-           if(control.state===control.stateLoading){
-               if(control.clickOnLoading){
-                   control.clicked()
-               }
-           }
-           else{
-               control.clicked()
-           }
-       }
-   }
+    MouseArea {
+        id:mouse
+        anchors.fill: parent
+        onClicked: {
+            if(control.state===control.stateLoading){
+                if(control.clickOnLoading){
+                    control.clicked()
+                }
+            }
+            else{
+                control.clicked()
+            }
+        }
+    }
 }

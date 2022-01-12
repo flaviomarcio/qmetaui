@@ -9,6 +9,7 @@ MCRectangleBase {
         right: parent.right
     }
 
+    property alias text : label.text
     property alias label : label
 
     MCLabel{

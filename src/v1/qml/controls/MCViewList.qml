@@ -37,7 +37,7 @@ ListView {
     readonly property alias statePressed  : settings.statePressed
     readonly property alias stateError    : settings.stateError
     readonly property MCSettingState settingState: settings.settingState
-    spacing: settingState===null?spacing:settingState.spacing
+    spacing: (settingState == null || settingState == undefined)?spacing:settingState.spacing
 
     MCSettingRec {
         id:settings

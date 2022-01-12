@@ -10,7 +10,7 @@ Item {
 
     property bool isLoaded: {
         var item=loader.item
-        return (item!==undefined && item!==null)
+        return (item != undefined && item != null)
     }
 
     signal show()
@@ -45,7 +45,7 @@ Item {
 
         function free(){
             // EXISTIA AQUI O TRATAMENTO DO  loader.source  AS STRING
-            if((loader.sourceComponent !== null) || (loader.sourceComponent!==undefined) )
+            if((loader.sourceComponent != null) || (loader.sourceComponent!=undefined) )
                 loader.sourceComponent = undefined
         }
 
@@ -54,6 +54,7 @@ Item {
                 control.visible = false
                 form = loader.item
                 form.parent = control.parent
+                connection.target = form
                 control.loaded(form)
             }
             else if(loader.status===Loader.Null){
