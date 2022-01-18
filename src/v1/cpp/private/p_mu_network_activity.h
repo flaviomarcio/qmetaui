@@ -1,7 +1,7 @@
 #ifndef MUNetworkActivity_H
 #define MUNetworkActivity_H
 
-#include "./mu_global.h"
+#include "../mu_global.h"
 #include <QtWebSockets/QWebSocket>
 #include <QTcpSocket>
 #include <QObject>

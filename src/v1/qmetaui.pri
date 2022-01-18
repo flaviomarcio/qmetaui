@@ -1,5 +1,14 @@
-INCLUDEPATH += $$PWD
-INCLUDEPATH += $$PWD/cpp
+QT += core
+QT += quickcontrols2
+QT += gui
+QT += xml
+QT += qml
+QT += quick
+QT += svg
+QT += network
+QT += websockets
+QT += positioning
+QT += location
 
 RESOURCES += \
     $$PWD/qml/controls/controls.qrc \
@@ -19,6 +28,7 @@ HEADERS += \
     $$PWD/cpp/mu_generic_control.h \
     $$PWD/cpp/mu_geometry_util.h \
     $$PWD/cpp/mu_global.h \
+    $$PWD/cpp/mu_macros.h \
     $$PWD/cpp/mu_object.h \
     $$PWD/cpp/mu_request_model.h \
     $$PWD/cpp/mu_routes.h \
