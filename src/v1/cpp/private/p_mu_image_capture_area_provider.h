@@ -21,9 +21,9 @@ public:
 
     virtual QPixmap requestPixmap(const QString &id, QSize *size, const QSize& requestedSize);
 public slots:
-    void resourceAdd(QPixmap pixelmap);
+    void captureResourceAdd(QPixmap pixelmap);
 private:
     QPixmap pixelmap, pixmapNo;
 signals:
-    void changedResource(const QString&fileName);
+    void captureResource(const QString&fileName);
 };

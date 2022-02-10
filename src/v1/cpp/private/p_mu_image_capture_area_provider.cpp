@@ -4,10 +4,18 @@
 static void staticInit()
 {
     auto&engine=MUApplication::engine();
-    engine.addImageProvider("muimagecapturearea", MUImageCaptureAreaProvider::instance().imageProvider());
+    engine.addImageProvider(QStringLiteral("muimagecapturearea"), MUImageCaptureAreaProvider::instance().imageProvider());
 }
 
-Q_GLOBAL_STATIC(MUImageCaptureAreaProvider,muImageCaptureArea)
+static MUImageCaptureAreaProvider*muImageCaptureArea=nullptr;
+
+static void init()
+{
+    muImageCaptureArea=new MUImageCaptureAreaProvider();
+}
+
+Q_COREAPP_STARTUP_FUNCTION(init)
+
 
 MUImageCaptureAreaProvider::MUImageCaptureAreaProvider(QObject *parent):QObject(parent), QQuickImageProvider(Pixmap)
 {
@@ -54,9 +62,9 @@ QPixmap MUImageCaptureAreaProvider::requestPixmap(const QString &id, QSize *size
     return result;
 }
 
-void MUImageCaptureAreaProvider::resourceAdd(QPixmap pixelmap)
+void MUImageCaptureAreaProvider::captureResourceAdd(QPixmap pixelmap)
 {
     static int i=0;
     this->pixelmap=pixelmap;
-    emit changedResource(QString("image://muimagecapturearea/image%1").arg(++i));
+    emit captureResource(QString("image://muimagecapturearea/image%1").arg(++i));
 }

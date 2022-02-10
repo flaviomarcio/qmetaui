@@ -1,30 +1,48 @@
 #include "./mu_image_capture_area.h"
 #include "./mu_application.h"
 #include "./private/p_mu_image_capture_area_provider.h"
+#include "./private/p_mu_image_capture_area.h"
+
+
+#define dPvt()\
+auto&p = *reinterpret_cast<MUImageCaptureAreaPvt*>(this->p)
+
+
 
 MUImageCaptureArea::MUImageCaptureArea(QObject *parent):QObject(parent)
 {
-    QObject::connect(this, &MUImageCaptureArea::resourceAdd, &MUImageCaptureAreaProvider::instance(), &MUImageCaptureAreaProvider::resourceAdd);
-    QObject::connect(&MUImageCaptureAreaProvider::instance(), &MUImageCaptureAreaProvider::changedResource, this, &MUImageCaptureArea::resourceChanged);
+    this->p=new MUImageCaptureAreaPvt(this);
+    dPvt();
+    QObject::connect(&p, &MUImageCaptureAreaPvt::captureResourceAdd, &MUImageCaptureAreaProvider::instance(), &MUImageCaptureAreaProvider::captureResourceAdd);
+    QObject::connect(&MUImageCaptureAreaProvider::instance(), &MUImageCaptureAreaProvider::captureResource, this, &MUImageCaptureArea::captureResource);
 }
 
-void MUImageCaptureArea::printCapture()
+MUImageCaptureArea::~MUImageCaptureArea()
+{
+    dPvt();
+    delete&p;
+}
+
+void MUImageCaptureArea::captureScreen()
 {
     auto&engine=MUApplication::engine();
     auto rootObjects=engine.rootObjects();
     auto windows= dynamic_cast<QQuickWindow*>(rootObjects.first());
-    this->pixmap = QPixmap::fromImage(windows->grabWindow());
+    dPvt();
+    p.pixmap = QPixmap::fromImage(windows->grabWindow());
 }
 
-void MUImageCaptureArea::printRelease()
+void MUImageCaptureArea::captureRelease()
 {
-    this->pixmap={};
+    dPvt();
+    p.pixmap={};
 }
 
-void MUImageCaptureArea::screenShot(int x, int y, int w, int h)
+void MUImageCaptureArea::captureScreenShot(int x, int y, int w, int h)
 {
-    auto map=this->pixmap.copy(x,y,w,h);
-    emit resourceAdd(map);
+    dPvt();
+    auto pixmap=p.pixmap.copy(x,y,w,h);
+    emit p.captureResourceAdd(pixmap);
 }
 
 void MUImageCaptureArea::init()

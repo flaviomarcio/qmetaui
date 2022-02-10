@@ -55,6 +55,7 @@ HEADERS += \
     $$PWD/cpp/mu_validation_util_public.h \
     $$PWD/cpp/mu_validation_util_ptb.h \
     $$PWD/cpp/mu_variant_util.h \
+    $$PWD/cpp/private/p_mu_image_capture_area.h \
     $$PWD/cpp/private/p_mu_image_capture_area_provider.h \
     $$PWD/cpp/private/p_mu_network_activity.h \
     $$PWD/cpp/private/p_mu_model_navigator.h \
@@ -101,6 +102,7 @@ SOURCES += \
     $$PWD/cpp/mu_validation_util_public.cpp \
     $$PWD/cpp/mu_validation_util_ptb.cpp \
     $$PWD/cpp/mu_variant_util.cpp \
+    $$PWD/cpp/private/p_mu_image_capture_area.cpp \
     $$PWD/cpp/private/p_mu_image_capture_area_provider.cpp \
     $$PWD/cpp/private/p_mu_notification.cpp \
     $$PWD/cpp/private/p_mu_request.cpp \

@@ -6,20 +6,53 @@
 #include <QQuickWindow>
 #include <QQuickItem>
 #include <QQuickImageProvider>
+#include "./mu_global.h"
 
-class MUImageCaptureArea:public QObject
+//!
+//! \brief The MUImageCaptureArea class
+//!
+class Q_MU_EXPORT MUImageCaptureArea:public QObject
 {
     Q_OBJECT
 public:
+
+    //!
+    //! \brief MUImageCaptureArea
+    //! \param parent
+    //!
     explicit MUImageCaptureArea(QObject*parent=nullptr);
-    Q_INVOKABLE void printCapture();
-    Q_INVOKABLE void printRelease();
-    Q_INVOKABLE void screenShot(int x, int y, int w, int h);
 
+    ~MUImageCaptureArea();
+
+    //!
+    //! \brief captureScreen
+    //!
+    Q_INVOKABLE void captureScreen();
+
+    //!
+    //! \brief captureRelease
+    //!
+    Q_INVOKABLE void captureRelease();
+
+    //!
+    //! \brief captureScreenShot
+    //! \param x
+    //! \param y
+    //! \param w
+    //! \param h
+    //!
+    Q_INVOKABLE void captureScreenShot(int x, int y, int w, int h);
+
+    //!
+    //! \brief init
+    //!
     static void init();
-
-    QPixmap pixmap;
+private:
+    void*p=nullptr;
 signals:
-    void resourceChanged(const QString&fileName);
-    void resourceAdd(QPixmap pixelmap);
+    //!
+    //! \brief captureResource
+    //! \param fileName
+    //!
+    void captureResource(const QString&fileName);
 };
