@@ -112,8 +112,8 @@ public:
 
     Q_ENUM(Method)
 
-    static const QMap<int,QString> ___MethodName(){
-        QMap<int, QString> r;
+    static const QHash<int,QString> ___MethodName(){
+        QHash<int, QString> r;
         r.insert(rmHead,"Head");
         r.insert(rmHead,"head");
 
@@ -142,7 +142,7 @@ public:
     static void init(QQmlApplicationEngine &engine);
 };
 
-static const QMap<int, QString> MUEnumRequestMethodName=MUEnumRequest::___MethodName();
+static const auto MUEnumRequestMethodName=MUEnumRequest::___MethodName();
 
 class Q_MU_EXPORT MUEnumRequestType:public MUEnumRequest{
     Q_GADGET

@@ -95,13 +95,11 @@ MCRectangleBase{
         anchors.fill: parent
         onClicked: {
             if(control.state===control.stateLoading){
-                if(control.clickOnLoading){
+                if(control.clickOnLoading)
                     control.clicked()
-                }
+                return;
             }
-            else{
-                control.clicked()
-            }
+            control.clicked()
         }
     }
 }

@@ -13,26 +13,4 @@ MCButtonBase{
     }    
     radius :settingState.radius
     opacity:settingState.opacity
-
-//    Connections {
-//        id: cnnMouse
-//        target: control.mouseArea
-//        property var lastState
-//        property var actualState
-
-//        function onPressed(){
-//            //if(enabled){
-//            //    lastState=state
-//            //    if(lastState === "")
-//            //        lastState=enabled?control.settings.stateActived:control.settings.stateInactived
-//            //    actualState= control.statePressed
-//            //    control.state = actualState
-//            //}
-//        }
-
-//        function onReleased(){
-//            //if(control.state === actualState)
-//            //    control.state=lastState
-//        }
-//    }
 }
