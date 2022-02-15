@@ -22,7 +22,7 @@ Item {
     readonly property string stateError: "error"
 
     onBaseChanged: {
-        if(base!==null){
+        if(base!=null){
             control.load(base)
         }
     }
