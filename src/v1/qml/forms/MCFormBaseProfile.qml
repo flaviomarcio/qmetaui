@@ -76,7 +76,6 @@ MCFormBase {
             var body = loginProfile.toHash()
             reqSet.execute(body)
         }
-        control.state=control.stateActived
     }
 
     MULoginProfile{
