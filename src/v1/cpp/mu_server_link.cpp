@@ -61,16 +61,17 @@ QString MUServerLink::url() const
     if(sprot.isEmpty() || shost.isEmpty())
         return QString();
 
-    auto url = QStringLiteral("%1:||%2:%3/%4/%5").arg(sprot).arg(shost, sport, sroute, sendpoint);
-    while(url.contains(QStringLiteral("//")))
-        url=url.replace(QStringLiteral("//"), QStringLiteral("/"));
-    return url.replace(QStringLiteral(":||"), QStringLiteral("://"));
+    auto url = qsl("%1:||%2:%3/%4/%5").arg(sprot, shost, sport, sroute, sendpoint);
+    while(url.contains(qsl("//")))
+        url=url.replace(qsl("//"), qsl("/"));
+    return url.replace(qsl(":||"), qsl("://"));
 
 }
 
 bool MUServerLink::read(const QVariant &link)
 {
-    if(link.canConvert(QVariant::Map)){
+    //TODO implement switch (typeId) {}
+    if(link.canConvert(QMetaType_QVariantMap)){
         auto map=link.toMap();
         for(int i = 0; i < this->metaObject()->propertyCount(); ++i) {
             auto property=this->metaObject()->property(i);
@@ -150,7 +151,7 @@ QString MUServerLink::endpoint() const
 {
     dPvt();
     auto endpoint=p.endpoint.trimmed();
-    endpoint = endpoint.isEmpty()?"":QStringLiteral("/%1").arg(endpoint).replace("//","/");
+    endpoint = endpoint.isEmpty()?"":qsl("/%1").arg(endpoint).replace("//","/");
     return endpoint;
 }
 
@@ -195,10 +196,10 @@ MUServerLink &MUServerLink::operator=(const MUServerLink &link)
     return*this;
 }
 
-void MUServerLink::changeHeaders(const QVariantHash &value)
+void MUServerLink::onHeadersChanged(const QVariantHash &value)
 {
     this->setHeaders(value);
-    emit this->changedHeaders();
+    emit this->headersChanged();
 }
 
 QString MUServerLink::method() const

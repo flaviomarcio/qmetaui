@@ -1,5 +1,4 @@
-#ifndef MUValidationUtilPublic_H
-#define MUValidationUtilPublic_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -21,6 +20,7 @@
 class Q_MU_EXPORT MUValidationUtilPublic : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
 public:
     Q_INVOKABLE explicit MUValidationUtilPublic(QObject *parent = nullptr);
     ~MUValidationUtilPublic();
@@ -32,5 +32,3 @@ public:
 };
 
 //Q_DECLARE_METATYPE(MUValidationUtilPublic)
-
-#endif // MUValidationUtilPublic_H

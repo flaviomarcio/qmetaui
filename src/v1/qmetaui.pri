@@ -25,7 +25,7 @@ HEADERS += \
     $$PWD/cpp/mu_cache_util.h \
     $$PWD/cpp/mu_const.h \
     $$PWD/cpp/mu_date_util.h \
-    $$PWD/cpp/mu_generic_control.h \
+    #$$PWD/cpp/mu_generic_control.h \
     $$PWD/cpp/mu_geometry_util.h \
     $$PWD/cpp/mu_global.h \
     $$PWD/cpp/mu_macros.h \
@@ -50,6 +50,7 @@ HEADERS += \
     $$PWD/cpp/mu_request.h \
     $$PWD/cpp/mu_server_link.h \
     $$PWD/cpp/mu_string_util.h \
+    $$PWD/cpp/mu_types.h \
     $$PWD/cpp/mu_validation_util.h \
     $$PWD/cpp/mu_validation_util_public.h \
     $$PWD/cpp/mu_validation_util_ptb.h \
@@ -71,7 +72,7 @@ SOURCES += \
     $$PWD/cpp/mu_application.cpp \
     $$PWD/cpp/mu_cache_util.cpp \
     $$PWD/cpp/mu_date_util.cpp \
-    $$PWD/cpp/mu_generic_control.cpp \
+    #$$PWD/cpp/mu_generic_control.cpp \
     $$PWD/cpp/mu_geometry_util.cpp \
     $$PWD/cpp/mu_object.cpp \
     $$PWD/cpp/mu_request_model.cpp \
@@ -94,12 +95,18 @@ SOURCES += \
     $$PWD/cpp/mu_request.cpp \
     $$PWD/cpp/mu_server_link.cpp \
     $$PWD/cpp/mu_string_util.cpp \
+    $$PWD/cpp/mu_types.cpp \
     $$PWD/cpp/mu_validation_util.cpp \
     $$PWD/cpp/mu_validation_util_public.cpp \
     $$PWD/cpp/mu_validation_util_ptb.cpp \
     $$PWD/cpp/mu_variant_util.cpp \
+    $$PWD/cpp/private/p_mu_model_navigator.cpp \
+    $$PWD/cpp/private/p_mu_network_activity.cpp \
     $$PWD/cpp/private/p_mu_notification.cpp \
     $$PWD/cpp/private/p_mu_request.cpp \
-    $$PWD/cpp/private/p_mu_request_queue.cpp
+    $$PWD/cpp/private/p_mu_request_job.cpp \
+    $$PWD/cpp/private/p_mu_request_queue.cpp \
+    $$PWD/cpp/private/p_mu_request_queue_pvt.cpp \
+    $$PWD/cpp/private/p_mu_request_response.cpp
 
 QT += widgets

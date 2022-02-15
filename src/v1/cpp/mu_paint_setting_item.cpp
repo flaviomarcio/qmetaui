@@ -5,6 +5,11 @@ MUPaintSettingItem::MUPaintSettingItem(QObject *parent) : QObject(parent)
 
 }
 
+MUPaintSettingItem::MUPaintSettingItem(const MUPaintSettingItem &parent) : QObject(nullptr){
+    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+        setProperty( prop.constData(), parent.property( prop.constData() ) );
+}
+
 MUPaintSettingState&MUPaintSettingItem::active()
 {
     return this->_active;

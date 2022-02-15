@@ -10,6 +10,7 @@
 #include "../../src/v1/cpp/mu_generic_control.h"
 #include "../../src/v1/cpp/mu_geometry_util.h"
 #include "../../src/v1/cpp/mu_global.h"
+#include "../../src/v1/cpp/mu_macros.h"
 #include "../../src/v1/cpp/mu_object.h"
 #include "../../src/v1/cpp/mu_request_model.h"
 #include "../../src/v1/cpp/mu_routes.h"

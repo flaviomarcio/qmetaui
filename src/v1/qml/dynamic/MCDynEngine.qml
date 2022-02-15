@@ -62,7 +62,7 @@ Item {
                                       'display': 'Descrição'
                                     , 'role': 'desc'
                                     , 'width': '60%'
-                                    , 'type': 'QVariant::String'
+                                    , 'type': 'QMetaType_QString'
                                     , 'horizontalAlignment': 'Text.AlignHCenter | Text.AlignLeft'
                                     , 'verticalAlignment': 'Text.AlignVCenter'
                                 }
@@ -70,7 +70,7 @@ Item {
                                       'display': 'Quantidade'
                                     , 'role': 'qtd'
                                     , 'width': '20%'
-                                    , 'type': 'QVariant::Double'
+                                    , 'type': 'QMetaType_Double'
                                     , 'horizontalAlignment': 'Text.AlignHCenter | Text.AlignHRight'
                                     , 'verticalAlignment': 'Text.AlignVCenter'
                                 }
@@ -78,7 +78,7 @@ Item {
                                       'display': 'Ativo'
                                     , 'role': 'ativo'
                                     , 'width': '20%'
-                                    , 'type': 'QVariant::Bool'
+                                    , 'type': 'QMetaType_Bool'
                                     , 'horizontalAlignment': 'Text.AlignHCenter'
                                     , 'verticalAlignment': 'Text.AlignVCenter'
                                 }

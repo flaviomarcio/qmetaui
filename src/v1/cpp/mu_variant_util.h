@@ -1,5 +1,4 @@
-#ifndef MUVariantUtil_H
-#define MUVariantUtil_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -36,6 +35,7 @@ public:
     Q_INVOKABLE static bool isUndefined(const QVariant &v);
 
     Q_INVOKABLE static const QVariantMap toMap(const QVariant&v);
+    Q_INVOKABLE static const QVariantHash toHash(const QVariant&v);
     Q_INVOKABLE static const QByteArray toMd5(const QVariant &v);
     Q_INVOKABLE static const QString toStr(const QVariant &v, const QVariant &defaultValue=QString());
     Q_INVOKABLE static const QString toBytes(const QVariant &v, const QVariant &defaultValue=QString());
@@ -60,5 +60,3 @@ public:
 signals:
 
 };
-
-#endif // MUVariantUtil_H

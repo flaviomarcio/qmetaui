@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingItem_H
-#define MUPaintSettingItem_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_paint_setting_state.h"
@@ -10,10 +9,7 @@ class Q_MU_EXPORT MUPaintSettingItem : public QObject
 public:
     MU_DECLARE_MUStringUtil()
     Q_INVOKABLE explicit MUPaintSettingItem(QObject *parent = nullptr);
-    Q_INVOKABLE explicit MUPaintSettingItem(const MUPaintSettingItem &parent) : QObject(nullptr){
-        Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
-                    setProperty( prop.constData(), parent.property( prop.constData() ) );
-    }
+    Q_INVOKABLE explicit MUPaintSettingItem(const MUPaintSettingItem &parent);
 
     Q_INVOKABLE MUPaintSettingState&active();
     Q_INVOKABLE MUPaintSettingState&focused();
@@ -33,5 +29,3 @@ signals:
     void refresh();
     void changed();
 };
-
-#endif // MUPaintSettingItem_H

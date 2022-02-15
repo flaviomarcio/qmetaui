@@ -7,10 +7,12 @@
 
 #include <QGuiApplication>
 #include <QScreen>
-#include "statusbar.h"
 
-static int _desktopAvailableWidth=1024;
-static int _desktopAvailableHeight=640;
+
+static int staticDesktopAvailableWidth=1024;
+static int staticDesktopAvailableHeight=640;
+
+Q_GLOBAL_STATIC(MUGeometryUtil, muGeometryUtil)
 
 MUGeometryUtil::MUGeometryUtil(QObject *parent) : QObject(parent)
 {
@@ -24,15 +26,9 @@ MUGeometryUtil::~MUGeometryUtil()
 
 MUGeometryUtil &MUGeometryUtil::i()
 {
-    static MUGeometryUtil __i;
-    __i.init();
-    return __i;
+    return*muGeometryUtil;
 }
 
-void MUGeometryUtil::init()
-{
-    qmlRegisterType<StatusBar>("StatusBar", 0, 1, "StatusBar");
-}
 
 const QVariant MUGeometryUtil::ifThen(const QVariant &vThen, const QVariant &vElse)
 {
@@ -51,58 +47,68 @@ bool MUGeometryUtil::isUndefined(const QVariant &v)
 
 int MUGeometryUtil::desktopAvailableWidth()
 {
-    return _desktopAvailableWidth;
+    return staticDesktopAvailableWidth;
 }
 
 void MUGeometryUtil::setDesktopAvailableWidth(int value)
 {
-    _desktopAvailableWidth=value;
+    staticDesktopAvailableWidth=value;
 }
 
 int MUGeometryUtil::desktopAvailableHeight()
 {
-    return _desktopAvailableHeight;
+    return staticDesktopAvailableHeight;
 }
 
 void MUGeometryUtil::setDesktopAvailableHeight(int value)
 {
-    _desktopAvailableHeight=value;
+    staticDesktopAvailableHeight=value;
 }
 
-double MUGeometryUtil::toDoubleSize(const QVariant &v, QVariant defaultValue)
+double MUGeometryUtil::toDoubleSize(const QVariant &v, const QVariant&defaultValue)
 {
-    auto vv=QVariant(v.toString().replace("%",""));
-    if(vv.canConvert(QVariant::Double))
+    auto vv=QVariant(v.toString().replace(qsl("%"), qsl_null));
+    switch (qTypeId(vv)) {
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_LongLong:
+    case QMetaType_UInt:
+    case QMetaType_ULongLong:
         return vv.toDouble();
-    else
+    default:
         return defaultValue.toDouble();
+    }
 }
 
-qlonglong MUGeometryUtil::toIntSize(const QVariant &v, QVariant defaultValue)
+qlonglong MUGeometryUtil::toIntSize(const QVariant &v, const QVariant&defaultValue)
 {
-    auto vv=QVariant(v.toString().replace("%",""));
-    if(vv.canConvert(QVariant::LongLong))
+    auto vv=QVariant(v.toString().replace(qsl("%"), qsl_null));
+    switch (qTypeId(vv)) {
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_LongLong:
+    case QMetaType_UInt:
+    case QMetaType_ULongLong:
         return vv.toLongLong();
-    return defaultValue.toLongLong();
+    default:
+        return defaultValue.toLongLong();
+    }
 }
 
 const QString MUGeometryUtil::toProportion(const QVariant &v)
 {
     if(!v.isValid())
-        return QString();
-
-    if(!v.canConvert(QVariant::String))
-        return QString();
-
-    if(v.toString().contains("%"))
-        return "%";
-    return v.toString();
+        return {};
+    auto vv=v.toString().trimmed();
+    if(vv.contains(qsl("%")))
+        return qsl("%");
+    return vv;
 }
 
 double MUGeometryUtil::calcProportion(const QVariant &vSize, const QVariant &vSizeMax)
 {
     auto sizeMax=vSizeMax.toDouble();
-    bool proportion=vSize.toString().contains("%");
+    bool proportion=vSize.toString().contains(qsl("%"));
     double size=toDoubleSize(vSize);
     size=toDoubleSize(size);
     if(proportion)
@@ -114,11 +120,11 @@ double MUGeometryUtil::calcProportion(const QVariant &vSize, const QVariant &vSi
     return r;
 }
 
-double calculoProportion (bool fontRatio) {
-
-    double refDpi    = 216. ;
+double calcProportion (bool fontRatio)
+{
+    double refDpi = 216. ;
     double refHeight = 1776.; //1920
-    double refWidth  = 1080.;
+    double refWidth = 1080.;
 
 #if (defined(Q_OS_ANDROID) || defined(Q_OS_IOS))
     QRect  rect   = QGuiApplication::primaryScreen()->geometry();
@@ -127,8 +133,8 @@ double calculoProportion (bool fontRatio) {
     double dpi    = QGuiApplication::primaryScreen()->logicalDotsPerInch();
 #else
     double height = 1776;
-    double width  = 1080/3;
-    double dpi    = 64;
+    double width = 1080/3;
+    double dpi = 64;
 #endif
 
     if (fontRatio)
@@ -139,12 +145,12 @@ double calculoProportion (bool fontRatio) {
 
 double MUGeometryUtil::proportion()
 {
-    return calculoProportion ( false );
+    return calcProportion(false);
 }
 
 double MUGeometryUtil::proportionFont()
 {
-    return calculoProportion ( true );
+    return calcProportion(true);
 }
 
 double MUGeometryUtil::heightBase()

@@ -9,22 +9,22 @@ MCFormBase {
 
     property bool frameAutoAlign: false
 
-    property MCFormBaseAdsSale       frameAdsSale      : null
-    property MCFormBaseChat          frameChat         : null
-    property MCFormBaseContent       frameContent      : null
-    property MCFormBaseNotify        frameNotify       : null
-    property MCFormBaseProfile       frameProfile      : null
-    property MCFormBaseProductDetail frameProductDetail: null
-    property MCFormBaseShoppingCart  frameShoppingCart : null
-    property MCFormBasePayment       framePayment      : null    
-    property Item                    frameResumo       : null
-    property Item                    frameStore        : null
-    property Item                    frameAddress      : null
-    property Item                    frameMenu         : null
-    property Item                    frameSaleFinished : null
-    property Item                    frameSearch       : null
-    property Item                    frameBody         : null
-    property Item                    frameFooter       : null
+    property MCFormBaseAdsSale frameAdsSale : null
+    property MCFormBaseChat frameChat : null
+    property MCFormBaseContent frameContent : null
+    property MCFormBaseNotify frameNotify : null
+    property MCFormBaseProfile frameProfile : null
+    property MCFormBaseProductDetail frameProductDetail : null
+    property MCFormBaseShoppingCart frameShoppingCart : null
+    property MCFormBasePayment framePayment : null
+    property Item frameResumo : null
+    property Item frameStore : null
+    property Item frameAddress : null
+    property Item frameMenu : null
+    property Item frameSaleFinished : null
+    property Item frameSearch : null
+    property Item frameBody : null
+    property Item frameFooter : null
 
     onFrameAutoAlignChanged: {
 

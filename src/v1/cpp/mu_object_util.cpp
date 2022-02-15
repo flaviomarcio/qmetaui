@@ -54,70 +54,88 @@ bool MUObjectUtil::isDesktop()
 const QVariant MUObjectUtil::ifThen(const QVariant &vThen, const QVariant &vElse)
 {
     auto&v=vThen;
-
-    if(v.canConvert(QMetaType::QObjectStar)){
-        if(v.value<QQuickItem*>()!=nullptr)
+    switch (qTypeId(v)) {
+    case QMetaType_QObjectStar:
+    {
+        if(v.value<QObject*>()!=nullptr)
             return vThen;
+        break;
     }
-
-    if(
-            v.canConvert(QMetaType::QJsonObject) || v.canConvert(QMetaType::QJsonArray) || v.canConvert(QMetaType::QJsonValue)
-        ||
-            v.canConvert(QVariant::Map) || v.canConvert(QVariant::List) || v.canConvert(QVariant::Hash) || v.canConvert(QVariant::StringList)
-        ||
-            v.canConvert(QVariant::Uuid) || v.canConvert(QVariant::Url)
-        ||
-            v.canConvert(QVariant::LongLong) || v.canConvert(QVariant::Int) || v.canConvert(QVariant::Double)
-        ||
-            v.canConvert(QVariant::DateTime) || v.canConvert(QVariant::Date) || v.canConvert(QVariant::Time)
-        ||
-            v.canConvert(QVariant::ByteArray) || v.canConvert(QVariant::String) || v.canConvert(QVariant::Char) || v.canConvert(QVariant::BitArray)
-        ||
-            v.canConvert(QVariant::Bool)
-        )
+    case QMetaType_QJsonObject:
+    case QMetaType_QJsonArray:
+    case QMetaType_QJsonValue:
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantList:
+    case QMetaType_QVariantHash:
+    case QMetaType_QStringList:
+    case QMetaType_QUuid:
+    case QMetaType_QUrl:
+    case QMetaType_LongLong:
+    case QMetaType_Int:
+    case QMetaType_Double:
+    case QMetaType_QDateTime:
+    case QMetaType_QDate:
+    case QMetaType_QTime:
+    case QMetaType_QByteArray:
+    case QMetaType_QString:
+    case QMetaType_QChar:
+    case QMetaType_QBitArray:
+    case QMetaType_Bool:
         return vThen;
-    else if(v.canConvert(QMetaType::QObjectStar) && v.value<QObject*>()!=nullptr)
-        return vThen;
-    else
-        return vElse;
+    default:
+        break;
+    }
+    return vElse;
 }
 
 bool MUObjectUtil::isDefined(const QVariant &v)
 {
-    if(v.canConvert(QMetaType::QObjectStar)){
-        if(v.value<QQuickItem*>()!=nullptr)
-            return true;
-
+    switch (qTypeId(v)) {
+    case QMetaType_QObjectStar:
+    {
         if(v.value<QObject*>()!=nullptr)
             return true;
+
+        return false;
     }
-
-    if(v.canConvert(QVariant::Map) || v.canConvert(QVariant::List) || v.canConvert(QVariant::Hash))
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantList:
+    case QMetaType_QStringList:
         return true;
-
-
-    if(v.canConvert(QVariant::Uuid) || v.canConvert(QVariant::Url))
+    case QMetaType_QUuid:
+    case QMetaType_QUrl:
         return true;
-
-    if(v.canConvert(QVariant::ByteArray) || v.canConvert(QVariant::String) || v.canConvert(QVariant::Char) || v.canConvert(QVariant::BitArray)){
+    case QMetaType_QByteArray:
+    case QMetaType_QString:
+    case QMetaType_QChar:
+    case QMetaType_QBitArray:
+    {
         auto s = v.toString().trimmed();
-        return (s!=QStringLiteral("null")) && (s!=QStringLiteral("undefined")) && (!s.isEmpty());
+        return (s!=qsl("null")) && (s!=qsl("undefined")) && (!s.isEmpty());
     }
-
-    if(v.canConvert(QVariant::LongLong) || v.canConvert(QVariant::Int) || v.canConvert(QVariant::Double))
+    case QMetaType_Double:
+    case QMetaType_LongLong:
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_ULongLong:
         return true;
 
-    if(v.canConvert(QVariant::DateTime) || v.canConvert(QVariant::Date) || v.canConvert(QVariant::Time))
+    case QMetaType_QDateTime:
+    case QMetaType_QDate:
+    case QMetaType_QTime:
         return true;
 
-    if(v.canConvert(QVariant::Bool))
+    case QMetaType_Bool:
         return true;
 
-    if(v.canConvert(QMetaType::QJsonObject) || v.canConvert(QMetaType::QJsonArray) || v.canConvert(QMetaType::QJsonValue))
+    case QMetaType_QJsonObject:
+    case QMetaType_QJsonArray:
+    case QMetaType_QJsonValue:
         return true;
-
-
-    return false;
+    default:
+        return false;
+    }
 }
 
 bool MUObjectUtil::isUndefined(const QVariant &v)
@@ -128,14 +146,14 @@ bool MUObjectUtil::isUndefined(const QVariant &v)
 QString MUObjectUtil::makeObjectName(const QVariant &v)
 {
     static int seedRandon=1;
-    static const auto listChar=QStringList()<<QStringLiteral("(")<<QStringLiteral(")")<<QStringLiteral(".")<<QStringLiteral(" ")<<QStringLiteral("{")<<QStringLiteral("}")<<QStringLiteral("-");
+    static const auto listChar=QStringList()<<qsl("(")<<qsl(")")<<qsl(".")<<qsl(" ")<<qsl("{")<<qsl("}")<<qsl("-");
     QString name=v.toString();
-    if(name.contains(QStringLiteral("_QMLTYPE_")))
-        name=name.split(QStringLiteral("_QMLTYPE_")).first().trimmed();
+    if(name.contains(qsl("_QMLTYPE_")))
+        name=name.split(qsl("_QMLTYPE_")).first().trimmed();
 
     if(name.isEmpty())
-        name=QStringLiteral("obj");
-    name+=QStringLiteral("_");
+        name=qsl("obj");
+    name+=qsl("_");
     {
         QRandomGenerator r;
         r.seed(++seedRandon);
@@ -143,10 +161,10 @@ QString MUObjectUtil::makeObjectName(const QVariant &v)
         name+=QString::number(v);
     }
     for(auto&v:listChar){
-        name=name.replace(v,QStringLiteral("_"));
+        name=name.replace(v,qsl("_"));
     }
-    while(name.contains(QStringLiteral("__")))
-        name=name.replace(QStringLiteral("__"),QStringLiteral("_"));
+    while(name.contains(qsl("__")))
+        name=name.replace(qsl("__"),qsl("_"));
     return name;
 }
 
@@ -169,23 +187,23 @@ QVariantHash MUObjectUtil::objectToHash(const QObject *object)
     auto&metaObject = *object->metaObject();
     for(int col = 0; col < metaObject.methodCount(); ++col) {
         auto property = metaObject.property(col);
-        if(property.name()==QByteArrayLiteral("objectName"))
+        if(property.name()==qbl("objectName"))
             continue;
 
-        if(property.name()==QByteArrayLiteral("0"))
+        if(property.name()==qbl("0"))
             continue;
 
         auto k=property.name();
         auto v=property.read(object);
         int typeId=property.type();
         switch (typeId) {
-        case QMetaType::QDate:
+        case QMetaType_QDate:
             v=v.toDate().toString(Qt::ISODate);
             break;
-        case QMetaType::QDateTime:
+        case QMetaType_QDateTime:
             v=v.toDateTime().toString(Qt::ISODateWithMs);
             break;
-        case QVariant::Time:
+        case QMetaType_QTime:
             v=v.toTime().toString(Qt::ISODateWithMs);
             break;
         default:
@@ -204,8 +222,8 @@ bool MUObjectUtil::objectFromHash(QObject *object, const QVariant &v)
 
     int typeId=v.type();
     switch (typeId) {
-    case QMetaType::QVariantMap:
-    case QMetaType::QVariantHash:
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantHash:
     {
         bool __return=false;
         auto map=v.toMap();

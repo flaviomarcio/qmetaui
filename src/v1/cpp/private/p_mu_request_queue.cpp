@@ -3,11 +3,14 @@
 #define dPvt()\
     auto&p = *reinterpret_cast<MURequestQueuePvt*>(this->p)
 
+Q_GLOBAL_STATIC(MURequestQueue, instanceQueue);
 
-static MURequestQueue*newInstanceQueue(){
-    auto queue=new MURequestQueue();
-    return queue;
+static void init()
+{
+    instanceQueue->start();
 }
+
+Q_COREAPP_STARTUP_FUNCTION(init);
 
 MURequestQueue::MURequestQueue(QObject*parent) : QThread(nullptr)
 {
@@ -23,10 +26,7 @@ MURequestQueue::~MURequestQueue()
 
 MURequestQueue &MURequestQueue::instance()
 {
-    static auto _instance = newInstanceQueue();
-    if(!_instance->isRunning())
-        _instance->start();
-    return*_instance;
+    return*instanceQueue;
 }
 
 void MURequestQueue::run()

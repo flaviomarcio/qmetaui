@@ -1,5 +1,4 @@
-#ifndef MUValidationUtilPTB_H
-#define MUValidationUtilPTB_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_validation_util_public.h"
@@ -16,6 +15,7 @@ public:\
 class Q_MU_EXPORT MUValidationUtilPTB : public MUValidationUtilPublic
 {
     Q_OBJECT
+    QML_ELEMENT
 public:
     Q_INVOKABLE explicit MUValidationUtilPTB(QObject *parent = nullptr);
     ~MUValidationUtilPTB();
@@ -29,5 +29,3 @@ public:
 };
 
 //Q_DECLARE_METATYPE(MUValidationUtilPTB)
-
-#endif // MUValidationUtilPTB_H

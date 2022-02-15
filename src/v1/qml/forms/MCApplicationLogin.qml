@@ -15,16 +15,14 @@ Item {
     property MCMsgQuest messageQuestLogoff: null
 
     onSnackBarChanged: {
-        if(snackBar!=__snackBar){
-            if(snackBar==null && snackBar==undefined){
-                __snackBar.load()
-                return;
-            }
+        if(snackBar!=__snackBar && (snackBar==null || snackBar==undefined)){
+            __snackBar.load()
+            return;
         }
         if(snackBar!==__snackBar.item){
             __snackBar.unload()
         }
-        if(snackBar!=null)
+        if(snackBar!=null || snackBar!=undefined)
             snackBar.parent=control
     }
 

@@ -35,7 +35,8 @@ MCFormBase {
                 control.loginStarted( message )
         }
         onLoginSuccessful: {
-            if(enabled)control.loginSuccessful( message )
+            if(enabled)
+                control.loginSuccessful( message )
         }
         onLoginUnsuccessful: {
             if(enabled)

@@ -5,6 +5,11 @@ MUPaintSettingDrawing::MUPaintSettingDrawing(QObject *parent) : QObject(parent)
 
 }
 
+MUPaintSettingDrawing::MUPaintSettingDrawing(const MUPaintSettingDrawing &parent) : QObject(nullptr){
+    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+        setProperty( prop.constData(), parent.property( prop.constData() ) );
+}
+
 MUPaintSettingDrawing::~MUPaintSettingDrawing()
 {
 
@@ -13,7 +18,7 @@ MUPaintSettingDrawing::~MUPaintSettingDrawing()
 void MUPaintSettingDrawing::replaceInvalid(MUPaintSettingDrawing &baseObject)
 {
     auto&control=*this;
-    baseObject.fontFamily=(baseObject.fontFamily.trimmed()=="")?QStringLiteral("Sans Serif"):baseObject.fontFamily;
+    baseObject.fontFamily=(baseObject.fontFamily.trimmed()==qsl_null)?qsl("Sans Serif"):baseObject.fontFamily;
     baseObject.fontSize=(baseObject.fontSize<0)?6:baseObject.fontSize;
     baseObject.borderWidth=(!baseObject.borderWidth.isValid())?0:baseObject.borderWidth;
 
@@ -27,10 +32,10 @@ void MUPaintSettingDrawing::replaceInvalid(MUPaintSettingDrawing &baseObject)
     auto borderWidth     = control.borderWidth ;
 
     fontSize        = (fontSize             )? baseObject.fontSize        : fontSize        ;
-    fontFamily      = (fontFamily==""       )? baseObject.fontFamily      : fontFamily      ;
-    fontColor       = (fontColor==""        )? baseObject.fontColor       : fontColor       ;
+    fontFamily      = (fontFamily==qsl_null )? baseObject.fontFamily      : fontFamily      ;
+    fontColor       = (fontColor==qsl_null  )? baseObject.fontColor       : fontColor       ;
     color =           (color.isValid()      )? baseObject.color : color ;
-    borderColor     = (borderColor==""      )? baseObject.borderColor     : borderColor     ;
+    borderColor     = (borderColor==qsl_null)? baseObject.borderColor     : borderColor     ;
     borderWidth     = (borderWidth.isValid())? baseObject.borderWidth     : borderWidth     ;
 
     control.fontSize        = fontSize       ;

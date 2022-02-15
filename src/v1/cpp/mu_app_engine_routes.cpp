@@ -21,12 +21,13 @@ public:
     {
     }
 
-    void load(){
-        auto appRoute=this->parent->route().value(QStringLiteral("magma/app")).toMap();
-        auto route_info = appRoute.value(QStringLiteral("info"));
-        route_info = stringUtil.isEmptySet(route_info, QStringLiteral("/v1/magma/app/info")).toString();
+    void load()
+    {
+        auto appRoute=this->parent->route().value(qsl("magma/app")).toHash();
+        auto route_info = appRoute.value(qsl("info"));
+        route_info = stringUtil.isEmptySet(route_info, qsl("/v1/magma/app/info")).toString();
         auto server=this->parent->server();
-        this->info = QStringLiteral("%1%2").arg(server, route_info.toString());
+        this->info = qsl("%1%2").arg(server, route_info.toString());
     }
 };
 

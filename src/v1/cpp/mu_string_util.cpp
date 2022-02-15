@@ -13,7 +13,7 @@
 #include <QColor>
 #include <QQuickItem>
 
-static const QString specialMaskChar("(){}[]/-*+.,;");
+Q_GLOBAL_STATIC_WITH_ARGS(QString, specialMaskChar,("(){}[]/-*+.,;"));
 
 MUStringUtil::MUStringUtil(QObject *parent):QObject(parent)
 {
@@ -60,9 +60,17 @@ bool MUStringUtil::isUndefined(const QVariant &v)
 
 bool MUStringUtil::isEmpty(const QVariant &v)
 {
-    if(v.canConvert(QVariant::String) || v.canConvert(QVariant::Char) || v.canConvert(QVariant::ByteArray))
+    int typeId=v.type();
+    switch (typeId) {
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
+    case QMetaType_QChar:
+    case QMetaType_QBitArray:
         return v.toString().trimmed().isEmpty();
-    return true;
+        break;
+    default:
+        return true;
+    }
 }
 
 QVariant MUStringUtil::isEmptySet(const QVariant &vThen, const QVariant &vElse)
@@ -93,7 +101,7 @@ const QString MUStringUtil::toStrNumber(const QVariant &v)
 const QString MUStringUtil::toStrPhone(const QVariant &v)
 {
     auto text=v.toString();
-    auto textValid=QString("+01234567890");
+    static const auto textValid=qsl("+01234567890");
     QString output;
     for(auto&c:text){
         if(textValid.contains(c))
@@ -203,7 +211,7 @@ const QString MUStringUtil::inputText(const QString &value)
 {
     QString mValue;
     for(auto&c:value){
-        if(!specialMaskChar.contains(c))
+        if(!specialMaskChar->contains(c))
             mValue+=c;
     }
     return mValue;
@@ -213,7 +221,7 @@ const QString MUStringUtil::inputMaskClean(const QString &mask)
 {
     auto mMask=mask;
     for (auto&cc:mMask) {
-        if(!specialMaskChar.contains(cc))
+        if(!specialMaskChar->contains(cc))
             cc=' ';
     }
     return mMask.trimmed();
@@ -228,8 +236,8 @@ const QString MUStringUtil::inputMaskFormat(const QString &mask, const QString &
 
     QString editable = value;
     QString editableMask = mask;
-    editableMask.remove(";_");
-    editable.replace(" ", ""); // os espaços atrapalham a lógica
+    editableMask.remove(qsl(";_"));
+    editable.replace(qsl(" "), QString()); // os espaços atrapalham a lógica
 
     for (auto item: editableMask) editable.remove(item); // os caracteres especiais da máscara atrapalham a lógica
     if ( editable.isEmpty()) return value; // se está vazio com as validações retorna o que foi digitado
@@ -254,12 +262,12 @@ int MUStringUtil::inputMaskLength(const QString &mask, const QString &value)
 int MUStringUtil::inputMaskCursorPosition(const QString &mask, const QString &value)
 {
     auto mMask=inputMaskClean(mask);
-    mMask=!mMask.contains(";")?mMask: mMask.mid(0,mMask.lastIndexOf(";"));
+    mMask=!mMask.contains(qsl(";"))?mMask: mMask.mid(0,mMask.lastIndexOf(qsl(";")));
     auto space=' ';
     auto text=inputMaskFormat(mask, value).leftJustified(mMask.length(), space);
     int r=0;
     for (auto&c:text) {
-        if(specialMaskChar.contains(c))
+        if(specialMaskChar->contains(c))
             ++r;
         else if(c!=space)
             ++r;
@@ -274,8 +282,8 @@ int MUStringUtil::inputMaskCursorPosition(const QString &mask, const QString &va
 QString MUStringUtil::isUuidString(const QString &value)
 {
     QUuid uuid(value);
-    if (uuid.isNull()){
-        return "";
-    }
+    if (uuid.isNull())
+        return {};
+
     return uuid.toString();
 }

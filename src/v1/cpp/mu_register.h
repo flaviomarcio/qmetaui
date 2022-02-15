@@ -1,16 +1,16 @@
-#ifndef MU_ENUM_H
-#define MU_ENUM_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
-#include <QQmlApplicationEngine>
+#include <QtQml>
 
 class Q_MU_EXPORT MURegister{
     Q_GADGET
 public:
     static void init(QQmlApplicationEngine &engine);
 
-    explicit MURegister(){
+    explicit MURegister()
+    {
     }
 };
 
@@ -185,5 +185,3 @@ public:
 
     explicit MUEnumInstance(){}
 };
-
-#endif // MU_ENUM_H

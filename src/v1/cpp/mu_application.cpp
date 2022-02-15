@@ -3,9 +3,9 @@
 #include "./mu_notification.h"
 #include <QApplication>
 
-Q_GLOBAL_STATIC(QList<MUApplicationMethodInit>, __methodInit);
+Q_GLOBAL_STATIC(QList<MUApplicationMethodInit>, methodInit);
+Q_GLOBAL_STATIC(MUApplication, muApplication);
 
-static auto&methodInit=*__methodInit;
 
 static QQmlApplicationEngine*static_engine=nullptr;
 
@@ -14,18 +14,15 @@ MUApplication::MUApplication(QObject *parent) : QObject(parent)
     QObject::connect(this, &MUApplication::notify, &MUNotification::i(), &MUNotification::notify);
 }
 
-MUApplication::MUApplication(const MUApplication &parent) : QObject(nullptr){
-    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+MUApplication::MUApplication(const MUApplication &parent) : QObject(nullptr)
+{
+    foreach( const auto &prop, parent.dynamicPropertyNames() )
         setProperty( prop.constData(), parent.property( prop.constData() ) );
 }
 
 MUApplication &MUApplication::i()
 {
-    static MUApplication*__MUApplication=nullptr;
-    if(__MUApplication==nullptr){
-        __MUApplication=new MUApplication(nullptr);
-    }
-    return*__MUApplication;
+    return*muApplication;
 }
 
 QQmlApplicationEngine &MUApplication::engine()
@@ -35,17 +32,17 @@ QQmlApplicationEngine &MUApplication::engine()
 
 QQmlApplicationEngine &MUApplication::engine(QQmlApplicationEngine &v)
 {
-    if(static_engine==nullptr){
-        static_engine=&v;
-        v.rootContext()->setContextProperty(QStringLiteral("qApp"), QApplication::instance());
-        MURegister::init(v);
-        for(auto&v:methodInit)
-            v();
-    }
-    return*static_engine;
+    if(static_engine!=nullptr)
+        return*static_engine;
+    static_engine=&v;
+    v.rootContext()->setContextProperty(qsl("qApp"), QApplication::instance());
+    MURegister::init(v);
+    for(auto&method:*methodInit)
+        method();
+    return*(static_engine=&v);
 }
 
 void MUApplication::initMethodOnLoadEngine(MUApplicationMethodInit method)
 {
-    methodInit.append(method);
+    methodInit->append(method);
 }

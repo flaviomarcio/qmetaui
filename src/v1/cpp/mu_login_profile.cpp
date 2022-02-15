@@ -16,24 +16,79 @@ public:
     QString phone_number;
     bool validated=false;
     MULoginProfile*parent=nullptr;
-    explicit MULoginProfilePvt(MULoginProfile*parent):QObject(parent){
+
+    explicit MULoginProfilePvt(MULoginProfile*parent):QObject(parent)
+    {
         this->parent=parent;
     }
 
-    virtual ~MULoginProfilePvt(){
+    virtual ~MULoginProfilePvt()
+    {
 
     }
 };
 
-MULoginProfile::MULoginProfile(QObject *parent):MUObject(parent){
+MULoginProfile::MULoginProfile(QObject *parent):MUObject(parent)
+{
     this->p = new MULoginProfilePvt(this);
-    emit loaded();
+    //emit loaded();
 }
 
 MULoginProfile::~MULoginProfile()
 {
     dPvt();
     delete&p;
+}
+
+MULoginProfile &MULoginProfile::operator=(const MULoginProfile &v)
+{
+    this->fromHash(v.toHash());
+    return*this;
+}
+
+void MULoginProfile::clear()
+{
+    this->set_uuid({});
+    this->set_hsh_account({});
+    this->set_name({});
+    this->set_dt_birth({});
+    this->set_email({});
+    this->set_document({});
+    this->set_phone_number({});
+    this->set_validated({});
+}
+
+MULoginProfile &MULoginProfile::operator=(const QVariant &v)
+{
+    this->fromHash(v.toHash());
+    return*this;
+}
+
+bool MULoginProfile::loadCurrentSession()
+{
+    auto v=MULoginSession::i().profile()->toHash();
+    auto r=this->fromHash(v);
+    emit loaded();
+    return r;
+}
+
+bool MULoginProfile::isValid()
+{
+    if(this->uuid().isNull()){
+#ifdef Q_MU_LOG
+        mWarning()<<"session uuid is null";
+#endif
+        return false;
+    }
+
+    if(this->hsh_account().trimmed().isEmpty()){
+#ifdef Q_MU_LOG
+        mWarning()<<"hsh_account is invalid";
+#endif
+        return false;
+    }
+
+    return true;
 }
 
 QUuid MULoginProfile::uuid() const
@@ -130,55 +185,4 @@ void MULoginProfile::set_validated(const bool &value)
 {
     dPvt();
     p.validated = value;
-}
-
-MULoginProfile &MULoginProfile::operator=(const MULoginProfile &v)
-{
-    this->fromHash(v.toHash());
-    return*this;
-}
-
-void MULoginProfile::clear()
-{
-    this->set_uuid        (QUuid());
-    this->set_hsh_account ("");
-    this->set_name        ("");
-    this->set_dt_birth    (QDateTime());
-    this->set_email       ("");
-    this->set_document    (0);
-    this->set_phone_number(0);
-    this->set_validated   (false);
-}
-
-MULoginProfile &MULoginProfile::operator=(const QVariant &v)
-{
-    this->fromMap(v.toMap());
-    return*this;
-}
-
-bool MULoginProfile::loadCurrentSession()
-{
-    auto v=MULoginSession::i().profile()->toHash();
-    auto r=this->fromHash(v);
-    emit loaded();
-    return r;
-}
-
-bool MULoginProfile::isValid()
-{
-    if(this->uuid().isNull()){
-#ifdef Q_MU_LOG
-        mWarning()<<"session uuid is null";
-#endif
-        return false;
-    }
-
-    if(this->hsh_account().trimmed().isEmpty()){
-#ifdef Q_MU_LOG
-        mWarning()<<"hsh_account is invalid";
-#endif
-        return false;
-    }
-
-    return true;
 }

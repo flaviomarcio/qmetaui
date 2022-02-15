@@ -26,9 +26,9 @@ Item {
     function show(){
         if(loginSession.isLogged()){
             showHome()
-        } else {
-            showStart()
+            return;
         }
+        showStart()
     }
 
     StackView {

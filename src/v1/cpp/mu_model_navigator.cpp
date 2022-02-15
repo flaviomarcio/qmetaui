@@ -152,13 +152,13 @@ void MUModelNavigator::setLink(MUServerLink *link)
     QObject::connect(p.linkCached, &MUServerLink::destroyed, this, [&p](){
         if(p.linkCached){
             p.linkCached=nullptr;
-            qWarning()<<__PRETTY_FUNCTION__<<QStringLiteral(": clear linkedCache");
+            mWarning()<<__PRETTY_FUNCTION__<<qsl(": clear linkedCache");
         }
     });
-    QObject::connect(p.linkCached, &MUServerLink::changedHeaders, this, [&p](){
+    QObject::connect(p.linkCached, &MUServerLink::headersChanged, this, [&p](){
         if(p.linkCached){
             p.reloadLink();
-            emit p.link.changedHeaders();
+            emit p.link.headersChanged();
         }
     });
     p.reloadLink();

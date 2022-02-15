@@ -7,21 +7,23 @@ Item {
     function startTypePlaceholderText(type){
         if(type===MUFormType.Home)
             return qsTr("");
-        else if(type===MUFormType.LoginEmail)
+
+        if(type===MUFormType.LoginEmail)
             return qsTr("Enter your email");
-        else if(type===MUFormType.LoginSmartPhone)
+
+        if(type===MUFormType.LoginSmartPhone)
             return qsTr("Enter your phone");
-        else if(type===MUFormType.LoginDocument)
+
+        if(type===MUFormType.LoginDocument)
             return qsTr("Enter your document");
-        else if(type===MUFormType.LoginUserName)
+
+        if(type===MUFormType.LoginUserName)
             return qsTr("Enter your username");
-        else if(type===MUFormType.LoginEmailSmartPhone)
+
+        if(type===MUFormType.LoginEmailSmartPhone)
             return qsTr("Enter your email or phone");
-        else
-            return qsTr("Log in for authentication");
 
-
-
+        return qsTr("Log in for authentication");
     }
 
 }

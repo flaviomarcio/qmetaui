@@ -1,6 +1,8 @@
 #include "./mu_validation_util_public.h"
 #include "./mu_string_util.h"
 
+Q_GLOBAL_STATIC(MUValidationUtilPublic, muValidationUtilPublic)
+
 
 MUValidationUtilPublic::MUValidationUtilPublic(QObject *parent):QObject(parent)
 {
@@ -14,36 +16,40 @@ MUValidationUtilPublic::~MUValidationUtilPublic()
 
 bool MUValidationUtilPublic::isEmail(const QVariant &v)
 {
-    if(!v.toString().contains("@"))
+    if(!v.toString().contains(qsl("@")))
         return false;
-    else if(!v.toString().contains("."))
+
+    if(!v.toString().contains(qsl(".")))
         return false;
-    else if(v.toString().length()<=4)
+
+    if(v.toString().length()<=4)
         return false;
-    else if(v.toString().split("@").size()!=2)
+
+    if(v.toString().split(qsl("@")).size()!=2)
         return false;
-    else
-        return true;
+
+    return true;
 }
 
 bool MUValidationUtilPublic::isPhoneNumber(const QVariant &v)
 {
     auto&stringUtil=MUStringUtil::i();
     auto phone=QString::number(stringUtil.toStrPhone(v.toString()).toLongLong());
-    if(phone.length()==9)//9 9876 5432
+    switch (phone.length()) {
+    case 9://9 9876 5432
         return true;
-    else if(phone.length()==10)//99 9876 5432
+    case 10://99 9876 5432
         return true;
-    else if(phone.length()==11)//99 9 9876 5432
+    case 11://99 9 9876 5432
         return true;
-    else if(phone.length()==14)//99 9 9876 5432
+    case 14://99 9 9876 5432
         return true;
-    else
+    default:
         return false;
+    }
 }
 
 MUValidationUtilPublic &MUValidationUtilPublic::i()
 {
-    static MUValidationUtilPublic __i;
-    return __i;
+    return*muValidationUtilPublic;
 }

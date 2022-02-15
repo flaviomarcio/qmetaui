@@ -5,6 +5,11 @@ MUPaintSettingState::MUPaintSettingState(QObject *parent) : QObject(parent), _ge
 
 }
 
+MUPaintSettingState::MUPaintSettingState(const MUPaintSettingState &parent) : QObject(nullptr){
+    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+        setProperty( prop.constData(), parent.property( prop.constData() ) );
+}
+
 MUPaintSettingGeometry &MUPaintSettingState::geometry()
 {
     return this->_geometry;

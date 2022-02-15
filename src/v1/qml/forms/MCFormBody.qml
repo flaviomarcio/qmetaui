@@ -6,7 +6,7 @@ import "qrc:/QMetaUI/Controls"
 MCFormBase {
     id: control
     property Rectangle frameHeader : null
-    property Rectangle frameBody   : null
+    property Rectangle frameBody : null
     property Rectangle frameBottom : null
 
     onFrameHeaderChanged: {
@@ -21,7 +21,7 @@ MCFormBase {
         pvt.changeAnchor()
     }
 
-    MCItem{
+    Item{
         id: pvt
         property Rectangle frameHeader : null
         property Rectangle frameBody : null

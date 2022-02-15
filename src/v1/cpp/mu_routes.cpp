@@ -15,59 +15,81 @@ public:
     MUStringUtil&stringUtil=MUStringUtil::i();
     QString server;
     QVariantHash server_headers;
-    QString server_protocol="http";
-    QString server_hostname="localhost";
+    QString server_protocol=qsl("http");
+    QString server_hostname=qsl("localhost");
     int server_port=80;
-    QVariantMap server_route;
+    QVariantHash server_route;
     MURoutes*parent=nullptr;
-    explicit MURoutesPvt(MURoutes*parent):QObject(parent){
+    explicit MURoutesPvt(MURoutes*parent):QObject(parent)
+    {
         this->parent=parent;
     }
-    virtual ~MURoutesPvt(){
+    virtual ~MURoutesPvt()
+    {
     }
 
-    void clear(){
-        fileNameLoaded="";
+    void clear()
+    {
+        this->fileNameLoaded.clear();
         auto metaObject=this->parent->metaObject();
         for(int i = 0; i < metaObject->propertyCount(); ++i) {
             auto property=metaObject->property(i);
-            if(property.type()==QVariant::String || property.type()==QVariant::ByteArray || property.type()==QVariant::Char || property.type()==QVariant::BitArray)
-                property.write(this->parent,QString());
-            else if(property.type()==QVariant::Double || property.type()==QVariant::Int || property.type()==QVariant::UInt || property.type()==QVariant::LongLong || property.type()==QVariant::ULongLong)
-                property.write(this->parent,0);
-            else if(property.type()==QVariant::Date)
-                property.write(this->parent,QDate());
-            else if(property.type()==QVariant::Time)
-                property.write(this->parent,QTime());
-            else if(property.type()==QVariant::DateTime)
-                property.write(this->parent,QDateTime());
-            else if(property.type()==QVariant::Bool)
-                property.write(this->parent,false);
-            else if(property.type()==QVariant::Uuid)
-                property.write(this->parent,QUuid());
-            else if(property.type()==QVariant::Url)
-                property.write(this->parent,QUrl());
-            else
-                property.write(this->parent,QVariant());
+            switch (qTypeId(property)) {
+            case QMetaType_QString:
+            case QMetaType_QByteArray:
+            case QMetaType_QChar:
+            case QMetaType_QBitArray:
+                property.write(this->parent, QString());
+                break;
+            case QMetaType_Double:
+            case QMetaType_Int:
+            case QVariant::UInt:
+            case QMetaType_LongLong:
+            case QVariant::ULongLong:
+                property.write(this->parent, 0);
+                break;
+            case QMetaType_QDate:
+                property.write(this->parent, QDate());
+                break;
+            case QMetaType_QTime:
+                property.write(this->parent, QTime());
+                break;
+            case QMetaType_QDateTime:
+                property.write(this->parent, QDateTime());
+                break;
+            case QMetaType_Bool:
+                property.write(this->parent, false);
+                break;
+            case QMetaType_QUuid:
+                property.write(this->parent, QUuid());
+                break;
+            case QMetaType_QUrl:
+                property.write(this->parent, QUrl());
+                break;
+            default:
+                property.write(this->parent, QVariant());
+                break;
+            }
         }
     }
 
-    void load(const QString&fileName){
+    void load(const QString&fileName)
+    {
         QFile file(fileName.trimmed());
         if(!file.exists()){
-            file.setFileName(":/qmetaui.json");
+            file.setFileName(qsl(":/qmetaui.json"));
             if(file.exists() && file.open(QFile::ReadOnly)){
 #ifdef QT_DEBUG
-                QString enviroment="debug";
+                QString enviroment=qsl("debug");
 #else
-                QString enviroment="release";
+                QString enviroment=qsl("release");
 #endif
                 auto vMap=QJsonDocument::fromJson(file.readAll()).toVariant().toMap();
                 file.close();
-                auto setting=vMap.value(QStringLiteral("settings")).toHash();
+                auto setting=vMap.value(qsl("settings")).toHash();
                 if(!vMap.isEmpty()){
                     auto envMap=setting.value(enviroment).toHash();
-                    file.setFileName(envMap.value(QStringLiteral("filename")).toString());
+                    file.setFileName(envMap.value(qsl("filename")).toString());
                 }
 
 #if Q_MU_LOG_SUPER_VERBOSE
@@ -80,18 +102,18 @@ public:
             this->fileNameLoaded=file.fileName();
             this->settingsMap=stringUtil.loadFileMap(file.fileName()).toHash();
 
-            auto metaUiV1=settingsMap.value(QStringLiteral("v1")).toHash();
+            auto metaUiV1=settingsMap.value(qsl("v1")).toHash();
             if(!metaUiV1.isEmpty()){
-                auto settings=metaUiV1.value(QStringLiteral("settings")).toHash();
+                auto settings=metaUiV1.value(qsl("settings")).toHash();
                 if(!settings.isEmpty()){
-                    this->server_headers = settings.value(QStringLiteral("headers")).toHash();
-                    this->server_protocol = settings.value(QStringLiteral("protocol")).toString().trimmed();
-                    this->server_hostname = settings.value(QStringLiteral("hostName")).toString().trimmed();
+                    this->server_headers = settings.value(qsl("headers")).toHash();
+                    this->server_protocol = settings.value(qsl("protocol")).toString().trimmed();
+                    this->server_hostname = settings.value(qsl("hostName")).toString().trimmed();
                     if(this->server_hostname.isEmpty())
-                        this->server_hostname = settings.value(QStringLiteral("hostname")).toString();
-                    this->server_port = settings.value(QStringLiteral("port")).toInt();
-                    auto _server_route=settings.value(QStringLiteral("route")).toHash();
-                    this->server = QStringLiteral("%1://%2:%3").arg(server_protocol).arg(server_hostname).arg(server_port);
+                        this->server_hostname = settings.value(qsl("hostname")).toString();
+                    this->server_port = settings.value(qsl("port")).toInt();
+                    auto _server_route=settings.value(qsl("route")).toHash();
+                    this->server = qsl("%1://%2:%3").arg(server_protocol, server_hostname).arg(server_port);
 
                     this->server_route.clear();
                     QHashIterator<QString, QVariant> i(_server_route);
@@ -99,15 +121,15 @@ public:
                         i.next();
                         auto key=i.key();
                         auto&value=i.value();
-                        if(key.toLower().trimmed()==QStringLiteral("authorization"))
-                            key=QStringLiteral("Authorization");
+                        if(key.toLower().trimmed()==qsl("authorization"))
+                            key=qsl("Authorization");
                         this->server_route.insert(key, value);
                     }
                 }
             }
 
-            this->server_protocol = stringUtil.isEmptySet(this->server_protocol          , QStringLiteral("http")).toString();
-            this->server_hostname = stringUtil.isEmptySet(this->server_hostname          , QStringLiteral("localhost")).toString();
+            this->server_protocol = stringUtil.isEmptySet(this->server_protocol          , qsl("http")).toString();
+            this->server_hostname = stringUtil.isEmptySet(this->server_hostname          , qsl("localhost")).toString();
             this->server_port     = this->server_port>0?this->server_port:80;
         }
     }
@@ -215,13 +237,13 @@ void MURoutes::setPort(const QVariant &value)
     p.server_port=value.toInt();
 }
 
-QVariantMap MURoutes::route() const
+QVariantHash MURoutes::route() const
 {
     dPvt();
     return p.server_route;
 }
 
-void MURoutes::setRoute(const QVariantMap &value)
+void MURoutes::setRoute(const QVariantHash &value)
 {
     dPvt();
     p.server_route=value;

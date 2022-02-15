@@ -1,5 +1,4 @@
-#ifndef MUStringUtil_H
-#define MUStringUtil_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -88,5 +87,3 @@ public:
 };
 
 //Q_DECLARE_METATYPE(MUStringUtil             )
-
-#endif // MUStringUtil_H

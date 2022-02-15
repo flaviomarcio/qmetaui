@@ -3,6 +3,7 @@
 #include <QAbstractListModel>
 
 #include "./mu_global.h"
+#include "./mu_macros.h"
 #include "./mu_application.h"
 #include "./mu_notification.h"
 #include "./mu_login_engine.h"
@@ -26,35 +27,8 @@
 #include "./mu_validation_util.h"
 #include "./mu_variant_util.h"
 
-#define MU_DECLARE_ENUM_META_CONTROL(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 1, 0, #enumName, "Not creatable as it is an enum type")
+#include "./statusbar.h"
 
-#define MU_DECLARE_ENUM_META_SECURITY(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Security", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Security", 1, 0, #enumName, "Not creatable as it is an enum type")
-
-#define MU_DECLARE_ENUM_META_NETWORK(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Network", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Network", 1, 0, #enumName, "Not creatable as it is an enum type")
-
-#define MU_DECLARE_CLASS_META_CONTROL(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Controls", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Controls", 0, 0, #className)\
-
-#define MU_DECLARE_CLASS_META_SECURITY(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Security", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Security", 0, 0, #className)\
-
-#define MU_DECLARE_CLASS_META_NETWORK(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Network", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Network", 0, 0, #className)\
-
-#define MU_DECLARE_INSTANCE(className)\
-    engine.rootContext()->setContextProperty("qApp",QGuiApplication::instance());
 
 void MURegister::init(QQmlApplicationEngine &engine)
 {
@@ -65,7 +39,12 @@ void MURegister::init(QQmlApplicationEngine &engine)
     MUEnumRequestMode::init(engine);
     MUEnumPaintSettings::init(engine);
     MUEnumInstance::init(engine);
-    MUCacheUtil::init();
+    //MUCacheUtil::init();
+
+    //TODO ADEAQUAR E MELHOR LOCAL
+    qmlRegisterType<StatusBar>(qbl("StatusBar"), 0, 1, qbl("StatusBar"));
+
+
 }
 
 void MUEnumNotification::init(QQmlApplicationEngine &engine)
@@ -84,7 +63,7 @@ void MUEnumFormType::init(QQmlApplicationEngine &engine)
     MU_DECLARE_CLASS_META_CONTROL(MUApplication             );
     MU_DECLARE_CLASS_META_CONTROL(MUCacheUtil               );
     MU_DECLARE_CLASS_META_CONTROL(MUModelTable              );
-    MU_DECLARE_CLASS_META_CONTROL(MUGenericControl          );
+    //MU_DECLARE_CLASS_META_CONTROL(MUGenericControl          );
 
     MU_DECLARE_CLASS_META_SECURITY(MULoginEngine            );
     MU_DECLARE_CLASS_META_SECURITY(MULoginSession           );
@@ -129,6 +108,7 @@ void MUEnumInstance::init(QQmlApplicationEngine &engine)
 {
     Q_UNUSED(engine)
 
+    //TODO MOVE TO Q_COREAPP_STARTUP_FUNCTION(...);
     MULoginSession::i().load();
 
     engine.rootContext()->setContextProperty("qApp",QGuiApplication::instance());

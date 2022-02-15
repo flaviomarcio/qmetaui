@@ -1,5 +1,4 @@
-#ifndef MUServerLink_H
-#define MUServerLink_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -10,15 +9,15 @@ class Q_MU_EXPORT MUServerLink : public QObject
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(QString      url         READ url                            )
-    Q_PROPERTY(QString      hash        READ hash                           )
-    Q_PROPERTY(QVariantHash headers     READ headers    WRITE setHeaders    )
-    Q_PROPERTY(QString      protocol    READ protocol   WRITE setProtocol   )
-    Q_PROPERTY(QString      host        READ host       WRITE setHost       )
-    Q_PROPERTY(int          port        READ port       WRITE setPort       )
-    Q_PROPERTY(QString      route       READ route      WRITE setRoute      )
-    Q_PROPERTY(QString      endpoint    READ endpoint   WRITE setEndpoint   )
-    Q_PROPERTY(QString      method      READ method     WRITE setMethod     )
+     Q_PROPERTY(QString url READ url NOTIFY methodChanged)
+     Q_PROPERTY(QString hash READ hash NOTIFY endpointChanged)
+     Q_PROPERTY(QVariantHash headers READ headers WRITE setHeaders NOTIFY routeChanged)
+     Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY portChanged)
+     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
+     Q_PROPERTY(int port READ port WRITE setPort NOTIFY protocolChanged)
+     Q_PROPERTY(QString route READ route WRITE setRoute NOTIFY headersChanged)
+     Q_PROPERTY(QString endpoint READ endpoint WRITE setEndpoint NOTIFY hashChanged)
+     Q_PROPERTY(QString method READ method WRITE setMethod NOTIFY urlChanged)
 public:
 
     Q_INVOKABLE explicit MUServerLink(QObject *parent = nullptr);
@@ -60,13 +59,18 @@ public:
     MUServerLink&operator=(const MUServerLink&link);
 
 signals:
-    void changedHeaders();
+    void urlChanged();
+    void hashChanged();
+    void headersChanged();
+    void protocolChanged();
+    void hostChanged();
+    void portChanged();
+    void routeChanged();
+    void endpointChanged();
+    void methodChanged();
 
 public slots:
-    virtual void changeHeaders(const QVariantHash &value);
-
+    virtual void onHeadersChanged(const QVariantHash &value);
 private:
     void*p=nullptr;
 };
-
-#endif // MUServerLink_H

@@ -1,66 +1,71 @@
-#ifndef MURoutes_H
-#define MURoutes_H
+#pragma once
 
-#include "./mu_global.h"
 #include <QObject>
+#include "./mu_global.h"
 #include "./mu_login_session.h"
 
+//!
+//! \brief The MURoutes class
+//!
 class Q_MU_EXPORT MURoutes:public QObject{
     Q_OBJECT
 public:
 
-    Q_PROPERTY(QVariantHash headers     READ headers    WRITE setHeaders    )
-    Q_PROPERTY(QString      server      READ server     WRITE setServer     )
-    Q_PROPERTY(QString      protocol    READ protocol   WRITE setProtocol   )
-    Q_PROPERTY(QString      hostName    READ hostName   WRITE setHostName   )
-    Q_PROPERTY(int          port        READ port       WRITE setPort       )
-    Q_PROPERTY(QVariantMap  route       READ route      WRITE setRoute      )
+    Q_PROPERTY(QVariantHash headers READ headers WRITE setHeaders NOTIFY headersChanged)
+    Q_PROPERTY(QString server READ server WRITE setServer NOTIFY serverChanged)
+    Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
+    Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNameChanged)
+    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(QVariantHash route READ route WRITE setRoute NOTIFY routeChanged)
 
+    //!
+    //! \brief MURoutes
+    //! \param parent
+    //!
     Q_INVOKABLE explicit MURoutes(QObject *parent = nullptr);
     ~MURoutes();
 
-    /**
-     * @brief fileNameLoaded
-     * @return
-     */
+    //!
+    //! \brief fileNameLoaded
+    //! \return
+    //!
     virtual QString fileNameLoaded();
 
-    /**
-     * @brief load
-     */
+    //!
+    //! \brief load
+    //!
     Q_INVOKABLE virtual void load();
     Q_INVOKABLE virtual void load(const QString &fileName);
 
-    /**
-     * @brief settingsMap
-     * @return
-     */
+    //!
+    //! \brief settingsMap
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariantHash&settingsMap();
 
-    /**
-     * @brief clear
-     */
+    //!
+    //! \brief clear
+    //!
     Q_INVOKABLE virtual void clear();
 
-    /**
-     * @brief server
-     * @return
-     */
+    //!
+    //! \brief server
+    //! \return
+    //!
     Q_INVOKABLE virtual QString server() const;
     Q_INVOKABLE virtual void setServer(const QString &value);
 
-
-    /**
-     * @brief headers
-     * @return
-     */
+    //!
+    //! \brief headers
+    //! \return
+    //!
     Q_INVOKABLE virtual QVariantHash headers() const;
     Q_INVOKABLE virtual void setHeaders(const QVariantHash &value);
 
-    /**
-     * @brief protocol
-     * @return
-     */
+    //!
+    //! \brief protocol
+    //! \return
+    //!
     Q_INVOKABLE virtual QString protocol() const;
     Q_INVOKABLE virtual void setProtocol(const QString &value);
 
@@ -71,21 +76,26 @@ public:
     Q_INVOKABLE virtual QString hostName() const;
     Q_INVOKABLE virtual void setHostName(const QString &value);
 
-    /**
-     * @brief port
-     * @return
-     */
+    //!
+    //! \brief port
+    //! \return
+    //!
     Q_INVOKABLE virtual int port() const;
     Q_INVOKABLE virtual void setPort(const QVariant &value);
 
-    /**
-     * @brief route
-     * @return
-     */
-    Q_INVOKABLE virtual QVariantMap route() const;
-    Q_INVOKABLE virtual void setRoute(const QVariantMap &value);
+    //!
+    //! \brief route
+    //! \return
+    //!
+    Q_INVOKABLE virtual QVariantHash route() const;
+    Q_INVOKABLE virtual void setRoute(const QVariantHash &value);
 private:
     void*p=nullptr;
+signals:
+    void headersChanged();
+    void serverChanged();
+    void protocolChanged();
+    void hostNameChanged();
+    void portChanged();
+    void routeChanged();
 };
-
-#endif

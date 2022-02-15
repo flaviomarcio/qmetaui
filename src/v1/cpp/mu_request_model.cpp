@@ -9,10 +9,12 @@ public:
     QVariant jsonObject;
     MURequestModel*parent=nullptr;
     MUModelTable model;
-    explicit MURequestModelPvt(MURequestModel*parent):QObject(parent), model(parent){
+    explicit MURequestModelPvt(MURequestModel*parent): QObject(parent), model(parent)
+    {
         this->parent=parent;
     }
-    virtual ~MURequestModelPvt(){
+    virtual ~MURequestModelPvt()
+    {
     }
 };
 
@@ -44,42 +46,42 @@ QVariant MURequestModel::data() const
     dPvt();
     if(p.model.isEmpty())
         return QVariant();
-    else
-        return p.model.toList();
+    return p.model.toList();
 }
 
 void MURequestModel::setData(const QVariant &v)
 {
     dPvt();
     return p.model.setRows(v);
+    emit itemsChanged();
 }
 
 void MURequestModel::clear()
 {
     dPvt();
     p.model.clear();
-    emit modelChanged();
+    emit itemsChanged();
 }
 
 void MURequestModel::append(const QVariant &vValue)
 {
     dPvt();
     p.model.append(vValue);
-    emit modelChanged();
+    emit itemsChanged();
 }
 
 void MURequestModel::setRows(const QVariant &vRows)
 {
     dPvt();
     p.model.setRows(vRows);
-    emit modelChanged();
+    emit itemsChanged();
 }
 
 QVariant MURequestModel::setJson(const QVariant &v)
 {
     dPvt();
     auto r=p.model.setJson(v);
-    emit modelChanged();
+    emit itemsChanged();
     return r;
 }
 
@@ -87,7 +89,7 @@ QVariant MURequestModel::setCBor(const QVariant &v)
 {
     dPvt();
     auto r=p.model.setCBor(v);
-    emit modelChanged();
+    emit itemsChanged();
     return r;
 }
 
@@ -95,15 +97,20 @@ QVariantList MURequestModel::toList()
 {
     dPvt();
     auto r=p.model.toList();
-    emit modelChanged();
     return r;
 }
 
-QVariantMap MURequestModel::toMap()
+QVariantHash MURequestModel::toMap()
 {
     dPvt();
-    auto r=p.model.toMap();
-    emit modelChanged();
+    auto r=p.model.toHash();
+    return r;
+}
+
+QVariantHash MURequestModel::toHash()
+{
+    dPvt();
+    auto r=p.model.toHash();
     return r;
 }
 

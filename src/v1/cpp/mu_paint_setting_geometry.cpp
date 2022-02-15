@@ -20,6 +20,11 @@ MUPaintSettingGeometry::MUPaintSettingGeometry(QObject *parent) : QObject(parent
     this->p=new MUPaintSettingGeometryPvt(this);
 }
 
+MUPaintSettingGeometry::MUPaintSettingGeometry(const MUPaintSettingGeometry &parent) : QObject(nullptr){
+    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+        setProperty( prop.constData(), parent.property( prop.constData() ) );
+}
+
 MUPaintSettingGeometry::~MUPaintSettingGeometry()
 {
 
@@ -53,9 +58,9 @@ double MUPaintSettingGeometry::calcProportion(const QVariant &size, const double
 double MUPaintSettingGeometry::calcWidth(const QVariant &v)
 {
     QVariant vv;
-    if(v.canConvert(QVariant::Double))
+    if(v.canConvert(QMetaType_Double))
         vv=v.toDouble();
-    else if(v.canConvert(QVariant::String) || v.canConvert(QVariant::ByteArray))
+    else if(v.canConvert(QMetaType_QString) || v.canConvert(QMetaType_QByteArray))
         vv=v.toByteArray();
     vv=vv.isValid()?vv:this->width;
     return MUGeometryUtil::calcProportion(vv, this->desktopAvailableWidth());
@@ -64,7 +69,7 @@ double MUPaintSettingGeometry::calcWidth(const QVariant &v)
 double MUPaintSettingGeometry::calcHeight(const QVariant &v)
 {
     QVariant vv;
-    if(v.canConvert(QVariant::Double))
+    if(v.canConvert(QMetaType_Double))
         vv=v.toDouble();
     vv=vv.isValid()?vv:this->height;
     return MUGeometryUtil::calcProportion(vv, this->desktopAvailableHeight());

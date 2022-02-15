@@ -11,6 +11,8 @@
 #include "./mu_register.h"
 #include "./mu_application.h"
 
+Q_GLOBAL_STATIC(MULoginSession, muLoginSession)
+
 #define dPvt()\
     auto&p = *reinterpret_cast<MULoginSessionPvt*>(this->p)
 
@@ -30,8 +32,8 @@ public:
     explicit MULoginSessionPvt(MULoginSession*parent):QObject(parent), profile(parent), token(parent)
     {
         this->session=parent;
-        connect(&MUNotification::i(), &MUNotification::notify, this, &MULoginSessionPvt::notification);
-        connect(parent, &MULoginSession::sessionUnAuthorized, this, &MULoginSessionPvt::onSessionUnAuthorized);
+        QObject::connect(&MUNotification::i(), &MUNotification::notify, this, &MULoginSessionPvt::notification);
+        QObject::connect(parent, &MULoginSession::sessionUnAuthorized, this, &MULoginSessionPvt::onSessionUnAuthorized);
     }
 
     virtual ~MULoginSessionPvt()
@@ -60,10 +62,10 @@ public:
     bool save()
     {
         QVariantHash data, response;
-        response.insert(QStringLiteral("profile"), this->profile.toHash());
-        response.insert(QStringLiteral("token"), this->token.toHash());
-        response.insert(QStringLiteral("session"), this->session->toHash());
-        data.insert(QStringLiteral("response"), response);
+        response.insert(qsl("profile"), this->profile.toHash());
+        response.insert(qsl("token"), this->token.toHash());
+        response.insert(qsl("session"), this->session->toHash());
+        data.insert(qsl("response"), response);
         return this->save(data);
     }
 
@@ -75,10 +77,10 @@ public:
             this->session->clear();
         }
         else {
-            auto response=this->data.value(QStringLiteral("response")).toHash();
-            this->profile=response.value(QStringLiteral("profile")).toHash();
-            this->token=response.value(QStringLiteral("token")).toHash();
-            *this->session=response.value(QStringLiteral("session")).toHash();
+            auto response=this->data.value(qsl("response")).toHash();
+            this->profile=response.value(qsl("profile")).toHash();
+            this->token=response.value(qsl("token")).toHash();
+            *this->session=response.value(qsl("session")).toHash();
         }
 #if Q_MU_LOG_VERBOSE
         mWarning()<<QString("Session token %1").arg(QString(this->session->hsh_md5()));
@@ -89,19 +91,19 @@ public:
 
     bool save(const QVariant&data)
     {
-        auto vMap=data.toHash();
-        if(!data.canConvert(QVariant::Map) && !data.canConvert(QVariant::Hash))
+        auto vHash=data.toHash();
+        if(!data.canConvert(QMetaType_QVariantMap) && !data.canConvert(QMetaType_QVariantHash))
             return false;
 
-        if(!vMap.contains(QStringLiteral("response"))){
-            if(vMap.contains(QStringLiteral("profile")) && vMap.contains(QStringLiteral("token")) && vMap.contains(QStringLiteral("session")))
-                vMap=QVariantHash{{QStringLiteral("response"), vMap}};
+        if(!vHash.contains(qsl("response"))){
+            if(vHash.contains(qsl("profile")) && vHash.contains(qsl("token")) && vHash.contains(qsl("session")))
+                vHash=QVariantHash{{qsl("response"), vHash}};
         }
 
-        if(!cacheUtil.sessionSaveFile(vMap))
+        if(!cacheUtil.sessionSaveFile(vHash))
             return false;
 
-        this->setData(vMap);
+        this->setData(vHash);
         return true;
     }
 
@@ -155,42 +157,43 @@ public:
         if(this->data.isEmpty())
             return false;
 
-        if(!this->data.contains(QStringLiteral("response")))
+        if(!this->data.contains(qsl("response")))
             return false;
 
-        auto response=this->data.value(QStringLiteral("response")).toHash();
+        auto response=this->data.value(qsl("response")).toHash();
 
-        if(!response.contains(QStringLiteral("token")))
+        if(!response.contains(qsl("token")))
             return false;
 
-        auto token=response.value(QStringLiteral("token"));
+        auto token=response.value(qsl("token"));
         if(!token.isValid())
             return false;
+
         return true;
     }
 public slots:
     void notification(int type, int especification, const QVariant &payload)
     {
-        if(type==MUEnumNotification::nt_Security){
-            switch (especification) {
-            case MUEnumNotification::nse_LoginSuccessful:
-                emit this->session->loginSuccessful(payload);
-                break;
-            case MUEnumNotification::nse_Unknow:
-                emit this->session->loginSuccessful(payload);
-                break;
-            case MUEnumNotification::nse_Error:
-                emit this->session->notifyError(payload);
-                break;
-            case MUEnumNotification::nse_Fail:
-                emit this->session->notifyFail(payload);
-                break;
-            case MUEnumNotification::nse_SessionUnauthorized:
-                emit this->session->sessionUnAuthorized();
-                break;
-            default:
-                break;
-            }
+        if(type!=MUEnumNotification::nt_Security)
+            return;
+        switch (especification) {
+        case MUEnumNotification::nse_LoginSuccessful:
+            emit this->session->loginSuccessful(payload);
+            break;
+        case MUEnumNotification::nse_Unknow:
+            emit this->session->loginSuccessful(payload);
+            break;
+        case MUEnumNotification::nse_Error:
+            emit this->session->notifyError(payload);
+            break;
+        case MUEnumNotification::nse_Fail:
+            emit this->session->notifyFail(payload);
+            break;
+        case MUEnumNotification::nse_SessionUnauthorized:
+            emit this->session->sessionUnAuthorized();
+            break;
+        default:
+            break;
         }
     }
 private slots:
@@ -199,7 +202,6 @@ private slots:
         this->logoff();
     }
 };
-
 
 
 MULoginSession::MULoginSession(QObject *parent) : MUObject(parent)
@@ -217,10 +219,57 @@ MULoginSession::~MULoginSession()
     delete&p;
 }
 
+MULoginSession &MULoginSession::operator=(const QVariant &v)
+{
+    auto map=v.toHash();
+    auto metaObject=this->metaObject();
+    for(int i = 0; i < metaObject->propertyCount(); ++i) {
+        auto property=metaObject->property(i);
+        auto v=map.value(property.name());
+        property.write(this,v);
+    }
+    return*this;
+}
+
 MULoginSession &MULoginSession::i()
 {
-    static MULoginSession __i;
-    return __i;
+    return*muLoginSession;
+}
+
+QVariant MULoginSession::value(const QString &key)const
+{
+    dPvt();
+    if(p.data.contains(key))
+        return p.data.value(key);
+
+    if(p.data.contains(key.toUpper()))
+        return p.data.value(key.toUpper());
+
+    if(p.data.contains(key.toLower()))
+        return p.data.value(key.toLower());
+
+    auto skey=key.toLower();
+    QHashIterator<QString, QVariant> i(p.data);
+    while (i.hasNext()) {
+        i.next();
+        if(skey==i.key())
+            return i.value();
+    }
+    return QVariant();
+}
+
+void MULoginSession::clear()
+{
+    this->token()->clear();
+    this->profile()->clear();
+    this->set_uuid(QUuid());
+    this->set_hsh_md5({});
+}
+
+bool MULoginSession::isLogged()const
+{
+    dPvt();
+    return p.isLogged();
 }
 
 QUuid MULoginSession::uuid() const
@@ -273,28 +322,6 @@ bool MULoginSession::set_profile(const MULoginProfile *v) const
     return false;
 }
 
-QVariant MULoginSession::value(const QString &key)const
-{
-    dPvt();
-    if(p.data.contains(key))
-        return p.data.value(key);
-
-    if(p.data.contains(key.toUpper()))
-        return p.data.value(key.toUpper());
-
-    if(p.data.contains(key.toLower()))
-        return p.data.value(key.toLower());
-
-    auto skey=key.toLower();
-    QHashIterator<QString, QVariant> i(p.data);
-    while (i.hasNext()) {
-        i.next();
-        if(skey==i.key())
-            return i.value();
-    }
-    return QVariant();
-}
-
 bool MULoginSession::load()
 {
     dPvt();
@@ -319,20 +346,6 @@ bool MULoginSession::setData(const QVariant &v)
     return p.save(v);
 }
 
-bool MULoginSession::isLogged()const
-{
-    dPvt();
-    return p.isLogged();
-}
-
-void MULoginSession::clear()
-{
-    this->token()->clear();
-    this->profile()->clear();
-    this->set_uuid(QUuid());
-    this->set_hsh_md5("");
-}
-
 bool MULoginSession::logoff()
 {
     dPvt();
@@ -349,18 +362,6 @@ bool MULoginSession::verifyData()
 {
     dPvt();
     return p.verifyData();
-}
-
-MULoginSession &MULoginSession::operator=(const QVariant &v)
-{
-    auto map=v.toMap();
-    auto metaObject=this->metaObject();
-    for(int i = 0; i < metaObject->propertyCount(); ++i) {
-        auto property=metaObject->property(i);
-        auto v=map.value(property.name());
-        property.write(this,v);
-    }
-    return*this;
 }
 
 

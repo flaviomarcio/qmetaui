@@ -59,48 +59,53 @@ public:
     bool save()
     {
         QVariantMap data, response;
-        response.insert(QStringLiteral("repository"),this->repository.toHash());
-        response.insert(QStringLiteral("app"),this->app.toHash());
-        data.insert(QStringLiteral("response"), response);
+        response.insert(qsl("repository"),this->repository.toHash());
+        response.insert(qsl("app"),this->app.toHash());
+        data.insert(qsl("response"), response);
         return this->save(data);
     }
 
     void setData(const QVariantHash&v)
     {
         this->data=v;
-        auto response=this->data.value(QStringLiteral("response")).toHash();
-        this->repository=response.value(QStringLiteral("repository")).toHash();
-        this->app=response.value(QStringLiteral("app")).toHash();
+        auto response=this->data.value(qsl("response")).toHash();
+        this->repository=response.value(qsl("repository")).toHash();
+        this->app=response.value(qsl("app")).toHash();
     }
 
-    bool save(const QVariant&data)
+    bool save(const QVariant&v)
     {
-        auto vMap=data.toHash();
-        if(data.canConvert(QVariant::Map) || data.canConvert(QVariant::Hash)){
-            if(!vMap.contains(QStringLiteral("response"))){
-                if(vMap.contains(QStringLiteral("repository")) && vMap.contains(QStringLiteral("app"))){
+        switch (qTypeId(v)) {
+        case QMetaType_QVariantHash:
+        case QMetaType_QVariantMap:
+        {
+            auto vHash=v.toHash();
+            if(!vHash.contains(qsl("response"))){
+                if(vHash.contains(qsl("repository")) && vHash.contains(qsl("app"))){
                     QVariantHash map;
-                    map.insert(QStringLiteral("response"),vMap);
-                    vMap=map;
+                    map.insert(qsl("response"),vHash);
+                    vHash=map;
                 }
             }
-            if(cacheUtil.appSaveFile(vMap)){
-                this->setData(vMap);
+            if(cacheUtil.appSaveFile(vHash)){
+                this->setData(vHash);
                 return true;
             }
+            return false;
+            break;
         }
-        return false;
+        default:
+            return false;
+        }
     }
 
     bool isDataValid()
     {
-        bool __return = true;
         if (this->app.version().toDouble()<=0)
-            __return = false;
+            return this->valid = false;
         if (this->repository.url().isEmpty())
-            __return = false;
-        this->valid = __return;
-        return __return;
+            return this->valid = false;
+        return this->valid = true;
     }
 
     void cancel()
@@ -170,6 +175,18 @@ MUAppSession::~MUAppSession()
     delete&p;
 }
 
+MUAppSession &MUAppSession::operator=(const QVariant &v)
+{
+    auto map=v.toHash();
+    auto metaObject=this->metaObject();
+    for(int i = 0; i < metaObject->propertyCount(); ++i) {
+        auto property=metaObject->property(i);
+        auto v=map.value(property.name());
+        property.write(this,v);
+    }
+    return*this;
+}
+
 MUAppSession &MUAppSession::i()
 {
     static MUAppSession __i;
@@ -228,16 +245,4 @@ bool MUAppSession::set_app(MUAppInfo *v)
 {
     Q_UNUSED(v)
     return false;
-}
-
-MUAppSession &MUAppSession::operator=(const QVariant &v)
-{
-    auto map=v.toMap();
-    auto metaObject=this->metaObject();
-    for(int i = 0; i < metaObject->propertyCount(); ++i) {
-        auto property=metaObject->property(i);
-        auto v=map.value(property.name());
-        property.write(this,v);
-    }
-    return*this;
 }

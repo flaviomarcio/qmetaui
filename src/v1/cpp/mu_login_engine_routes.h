@@ -1,10 +1,12 @@
-#ifndef MULoginEngineRoutes_H
-#define MULoginEngineRoutes_H
+#pragma once
 
 #include <QObject>
 #include "./mu_global.h"
 #include "./mu_routes.h"
 
+//!
+//! \brief The MULoginEngineRoutes class
+//!
 class Q_MU_EXPORT MULoginEngineRoutes:public MURoutes{
     Q_OBJECT
 public:
@@ -22,66 +24,72 @@ public:
     Q_PROPERTY(QString session_check    READ session_check    WRITE setSession_check    )
     Q_PROPERTY(QString account_login    READ account_login    WRITE setSession_login    )
 
-
+    //!
+    //! \brief MULoginEngineRoutes
+    //! \param parent
+    //!
     Q_INVOKABLE explicit MULoginEngineRoutes(QObject *parent = nullptr);
     ~MULoginEngineRoutes();
 
+    //!
+    //! \brief load
+    //!
     Q_INVOKABLE virtual void load();
     Q_INVOKABLE virtual void load(const QString &fileName);
 
-    /**
-     * @brief account_salt
-     * @return
-     */
+    //!
+    //! \brief account_salt
+    //! \return
+    //!
     Q_INVOKABLE virtual QString account_salt() const;
     Q_INVOKABLE virtual void setAccount_salt(const QString &account_salt);
 
-    /**
-     * @brief account_match
-     * @return
-     */
+    //!
+    //! \brief account_match
+    //! \return
+    //!
     Q_INVOKABLE virtual QString account_match() const;
     Q_INVOKABLE virtual void setAccount_match(const QString &account_match);
 
-    /**
-     * @brief account_verify
-     * @return
-     */
+    //!
+    //! \brief account_verify
+    //! \return
+    //!
     Q_INVOKABLE virtual QString account_verify() const;
     Q_INVOKABLE virtual void setAccount_verify(const QString &account_verify);
 
-    /**
-     * @brief account_register
-     * @return
-     */
+    //!
+    //! \brief account_register
+    //! \return
+    //!
     Q_INVOKABLE virtual QString account_register() const;
     Q_INVOKABLE virtual void setAccount_register(const QString &account_register);
 
-    /**
-     * @brief account_login
-     * @return
-     */
+    //!
+    //! \brief account_login
+    //! \return
+    //!
     Q_INVOKABLE virtual QString account_login() const;
     Q_INVOKABLE virtual void setSession_login(const QString &account_login);
 
-    /**
-     * @brief session_verify
-     * @return
-     */
+    //!
+    //! \brief session_verify
+    //! \return
+    //!
     Q_INVOKABLE virtual QString session_verify() const;
     Q_INVOKABLE virtual void setSession_verify(const QString &session_verify);
 
-    /**
-     * @brief session_ping
-     * @return
-     */
+    //!
+    //! \brief session_check
+    //! \return
+    //!
     Q_INVOKABLE virtual QString session_check() const;
     Q_INVOKABLE virtual void setSession_check(const QString &session_check);
 
-    /**
-     * @brief session_salt
-     * @return
-     */
+    //!
+    //! \brief session_salt
+    //! \return
+    //!
     Q_INVOKABLE virtual QString session_salt() const;
     Q_INVOKABLE virtual void setSession_salt(const QString &session_salt);
 
@@ -89,5 +97,3 @@ public:
 private:
     void*p=nullptr;
 };
-
-#endif

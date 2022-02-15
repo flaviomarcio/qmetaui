@@ -13,11 +13,21 @@
 #endif
 
 //https://www.allkeysgenerator.com/Random/Security-Encryption-Key-Generator.aspx
-const QByteArray key_256bit("6E5A7234753778214125442A472D4B6150645367566B58703273357638792F42");
-const QByteArray hash_key_256bit=QCryptographicHash::hash(key_256bit, QCryptographicHash::Sha256);
+static const auto key_256bit(qbl("6E5A7234753778214125442A472D4B6150645367566B58703273357638792F42"));
+static const auto hash_key_256bit=QCryptographicHash::hash(key_256bit, QCryptographicHash::Sha256);
 
-const QByteArray key_128bit("68566B59703373367639792442264529");
-const QByteArray hash_key_128bit=QCryptographicHash::hash(key_128bit, QCryptographicHash::Sha256);
+static const auto key_128bit(qbl("68566B59703373367639792442264529"));
+static const auto hash_key_128bit=QCryptographicHash::hash(key_128bit, QCryptographicHash::Sha256);
+
+Q_GLOBAL_STATIC(MUCacheUtil, muCacheUtil)
+
+static void init()
+{
+    MUCacheUtil::init();
+}
+
+Q_COREAPP_STARTUP_FUNCTION(init);
+
 
 MUCacheUtil::MUCacheUtil(QObject *parent) : QObject(parent)
 {
@@ -31,8 +41,7 @@ MUCacheUtil::~MUCacheUtil()
 
 MUCacheUtil &MUCacheUtil::i()
 {
-    static MUCacheUtil __i;
-    return __i;
+    return*muCacheUtil;
 }
 
 const QVariant MUCacheUtil::ifThen(const QVariant &vThen, const QVariant &vElse)
@@ -57,7 +66,7 @@ QString MUCacheUtil::sessionDir()
 
 QString MUCacheUtil::sessionDir(const QString &fileName)
 {
-    return QStringLiteral("%1/%2").arg(sessionDir(), fileName);
+    return qsl("%1/%2").arg(sessionDir(), fileName);
 }
 
 QString MUCacheUtil::tempDir()
@@ -67,17 +76,17 @@ QString MUCacheUtil::tempDir()
 
 QString MUCacheUtil::tempDir(const QString &fileName)
 {
-    return QStringLiteral("%1/%2").arg(tempDir(), fileName);
+    return qsl("%1/%2").arg(tempDir(), fileName);
 }
 
 QString MUCacheUtil::cacheDir()
 {
-    return QStringLiteral("%1/cache").arg(tempDir());
+    return qsl("%1/cache").arg(tempDir());
 }
 
 QString MUCacheUtil::cacheDir(const QString &fileName)
 {
-    return QStringLiteral("%1/%2").arg(cacheDir(), fileName);
+    return qsl("%1/%2").arg(cacheDir(), fileName);
 }
 
 QString MUCacheUtil::appDataDir()
@@ -87,7 +96,7 @@ QString MUCacheUtil::appDataDir()
 
 QString MUCacheUtil::appDataDir(const QString &fileName)
 {
-    return QStringLiteral("%1/%2").arg(appDataDir(), fileName);
+    return qsl("%1/%2").arg(appDataDir(), fileName);
 }
 
 void MUCacheUtil::tempDirClear()
@@ -120,7 +129,7 @@ void MUCacheUtil::dirClear()
     cacheDirClear();
     appDataDirClear();
     sessionDirClear();
-    init();
+    MUCacheUtil::init();
 }
 
 bool MUCacheUtil::fileExists(const QString &fileName)
@@ -130,7 +139,7 @@ bool MUCacheUtil::fileExists(const QString &fileName)
 
 QString MUCacheUtil::sessionFileName()
 {
-    auto sessionFile=QCryptographicHash::hash(QByteArrayLiteral("session"), QCryptographicHash::Md5).toHex();
+    auto sessionFile=QCryptographicHash::hash(qbl("session"), QCryptographicHash::Md5).toHex();
     return sessionDir(sessionFile);
 }
 
@@ -153,7 +162,7 @@ bool MUCacheUtil::sessionRemoveFile()
 
 QString MUCacheUtil::appFileName()
 {
-    auto appFile=QCryptographicHash::hash(QByteArrayLiteral("app"), QCryptographicHash::Md5).toHex();
+    auto appFile=QCryptographicHash::hash(qbl("app"), QCryptographicHash::Md5).toHex();
     return appDataDir(appFile);
 }
 
@@ -177,23 +186,23 @@ bool MUCacheUtil::appRemoveFile()
 bool MUCacheUtil::saveFile(const QString &file, const QVariant &vBytes)
 {
     QFile f(file);
-    if(f.open(QFile::Truncate | QFile::WriteOnly)){
-        f.write(vBytes.toByteArray());
-        f.flush();
-        f.close();
-        return true;
-    }
-    return false;
+    if(!f.open(QFile::Truncate | QFile::WriteOnly))
+        return {};
+
+    f.write(vBytes.toByteArray());
+    f.flush();
+    f.close();
+    return true;
 }
 
 const QByteArray MUCacheUtil::loadFile(const QString &file)
 {
     QByteArray r;
     QFile f(file);
-    if(f.open(QFile::ReadOnly)){
-        r=f.readAll();
-        f.close();
-    }
+    if(!f.open(QFile::ReadOnly))
+        return {};
+    r=f.readAll();
+    f.close();
     return r;
 }
 
@@ -214,23 +223,25 @@ void MUCacheUtil::init()
 
 bool MUCacheUtil::saveJsonFile(const QString &file, const QVariant &vBytes)
 {
-    auto type=vBytes.type();
     QByteArray bytes;
-    if(type==QVariant::Map || type==QVariant::List || type==QVariant::StringList || type==QVariant::Hash){
+    switch (qTypeId(vBytes)) {
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantList:
+    case QMetaType_QStringList:
         bytes=QJsonDocument::fromVariant(vBytes).toJson(QJsonDocument::Compact);
-    }
-    else{
+        break;
+    default:
         bytes=vBytes.toByteArray();
     }
 
     QFile f(file);
-    if(f.open(QFile::Truncate | QFile::WriteOnly)){
-        f.write(bytes);
-        f.flush();
-        f.close();
-        return true;
-    }
-    return false;
+    if(!f.open(QFile::Truncate | QFile::WriteOnly))
+        return false;
+    f.write(bytes);
+    f.flush();
+    f.close();
+    return true;
 }
 
 const QVariantMap MUCacheUtil::loadFileMap(const QString &file)
@@ -254,31 +265,37 @@ const QVariant MUCacheUtil::loadJsonFile(const QString &file)
     auto bytes=loadFile(file).trimmed();
     QJsonParseError*error=nullptr;
     auto doc=QJsonDocument::fromJson(bytes, error);
-    if(error!=nullptr)
+    if(error!=nullptr){
         mWarning()<<error->errorString();
-    else
-        return doc.toVariant();
-    return QVariant();
+        return {};
+    }
+    return doc.toVariant();
 }
 
 bool MUCacheUtil::saveCBorFile(const QString &file, const QVariant &vBytes)
 {
-    auto type=vBytes.type();
     QByteArray bytes;
-    if(type==QVariant::Map || type==QVariant::List || type==QVariant::StringList || type==QVariant::Hash){
+    switch (qTypeId(vBytes)) {
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantList:
+    case QMetaType_QStringList:
         bytes=QCborValue::fromVariant(vBytes).toCbor();
-    } else {
+        break;
+    default:
         bytes=vBytes.toByteArray();
     }
 
     QFile f(file);
-    if(f.open(QFile::Truncate | QFile::WriteOnly)){
-        f.write(bytes);
-        f.flush();
-        f.close();
-        return true;
+    if(!f.open(QFile::Truncate | QFile::WriteOnly)){
+        mWarning()<<f.errorString();
+        return {};
     }
-    return false;
+
+    f.write(bytes);
+    f.flush();
+    f.close();
+    return true;
 }
 
 const QVariant MUCacheUtil::loadCBorFile(const QString &file)
@@ -286,55 +303,56 @@ const QVariant MUCacheUtil::loadCBorFile(const QString &file)
     auto bytes=loadFile(file).trimmed();
     QCborParserError*error=nullptr;
     auto doc=QCborValue::fromCbor(bytes, error);
-    if(error!=nullptr)
+    if(error!=nullptr){
         mWarning()<<error->errorString();
-    else
-        return doc.toVariant();
-    return QVariant();
+        return {};
+    }
+    return doc.toVariant();
 }
 
 bool MUCacheUtil::saveCryptoFile(const QString &file, const QVariant &vBytes)
 {
-    auto type=vBytes.type();
     QByteArray buffer;
-    if(type==QVariant::Map || type==QVariant::List || type==QVariant::StringList || type==QVariant::Hash)
+    switch (qTypeId(vBytes)) {
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantList:
+    case QMetaType_QStringList:
+    case QMetaType_QVariantHash:
         buffer=QJsonDocument::fromVariant(vBytes).toJson(QJsonDocument::Compact);
-    else
+        break;
+    default:
         buffer=vBytes.toByteArray();
-    init();
+    }
     QFile f(file);
-    if(!f.open(QFile::Truncate | QFile::WriteOnly)){
+    if(!!f.open(QFile::Truncate | QFile::WriteOnly)){
         mWarning()<<f.errorString();
+        return {};
     }
-    else{
 #ifdef AES_ENABLED
-        if(!buffer.isEmpty()){//necessario pois vai dar crash se for errado
-            QTinyAes aes(QTinyAes::CTR, hash_key_256bit, hash_key_128bit);
-            buffer=aes.encrypt(buffer);
-        }
-#endif
-        f.write(buffer);
-        f.flush();
-        f.close();
-        return true;
+    if(!buffer.isEmpty()){//necessario pois vai dar crash se for errado
+        QTinyAes aes(QTinyAes::CTR, hash_key_256bit, hash_key_128bit);
+        buffer=aes.encrypt(buffer);
     }
-    return false;
+#endif
+    f.write(buffer);
+    f.flush();
+    f.close();
+    return true;
 }
 
 const QByteArray MUCacheUtil::loadCryptoFile(const QString &fileName)
 {
     auto buffer = loadFile(fileName);
 #ifdef AES_ENABLED
-    if(!buffer.isEmpty()){//necessario pois vai dar crash se for errado
-        QTinyAes aes(QTinyAes::CTR, hash_key_256bit, hash_key_128bit);
-        //todo flavio entender forma de testar antes para conversao para evitar crash
-        static const int AES_BLOCKLEN=16;
-        static const int BlockSize(AES_BLOCKLEN);
-        if(buffer.size() % BlockSize == 0)
-            buffer=aes.decrypt(buffer);
-        else
-            return buffer;
-    }
+    if(buffer.isEmpty())
+        return {};
+    //necessario pois vai dar crash se for errado
+    QTinyAes aes(QTinyAes::CTR, hash_key_256bit, hash_key_128bit);
+    //todo flavio entender forma de testar antes para conversao para evitar crash
+    static const int AES_BLOCKLEN=16;
+    static const int BlockSize(AES_BLOCKLEN);
+    if(buffer.size() % BlockSize == 0)
+        return aes.decrypt(buffer);
 #endif
     return buffer;
 }

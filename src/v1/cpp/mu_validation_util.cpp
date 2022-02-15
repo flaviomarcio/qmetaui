@@ -40,7 +40,7 @@ bool MUValidationUtil::isUndefined(const QVariant &v)
 
 bool MUValidationUtil::isEmpty(const QVariant &v)
 {
-    if(v.canConvert(QVariant::String) || v.canConvert(QVariant::Char) || v.canConvert(QVariant::ByteArray))
+    if(v.canConvert(QMetaType_QString) || v.canConvert(QMetaType_QChar) || v.canConvert(QMetaType_QByteArray))
         return v.toString().trimmed().isEmpty();
     return true;
 }

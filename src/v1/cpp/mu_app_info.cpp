@@ -6,17 +6,17 @@
 
 class MUAppInfoPvt:public QObject{
 public:
-
-    bool    strong  = false;
-    bool    show    = false;
-    QString display = QStringLiteral("Magma Tecnologia");
-    QString version = QStringLiteral("ws1.0");
+    bool strong  = false;
+    bool show    = false;
+    QString display = qsl("Magma Tecnologia");
+    QString version = qsl("ws1.0");
     MUAppInfo*parent=nullptr;
-    explicit MUAppInfoPvt(MUAppInfo*parent):QObject(parent){
+    explicit MUAppInfoPvt(MUAppInfo*parent):QObject(parent)
+    {
         this->parent=parent;
     }
-    virtual ~MUAppInfoPvt(){
-
+    virtual ~MUAppInfoPvt()
+    {
     }
 };
 
@@ -25,7 +25,8 @@ MUAppInfo::MUAppInfo(QObject *parent) : MUObject(parent)
     this->p=new MUAppInfoPvt(this);
 }
 
-MUAppInfo::~MUAppInfo(){
+MUAppInfo::~MUAppInfo()
+{
     dPvt();
     delete&p;
 }

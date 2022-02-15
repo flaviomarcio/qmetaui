@@ -127,10 +127,10 @@ Item {
     MCItem {
         id: pvt
 
-        property MCForm frameStart   : null
-        property MCForm frameLogin   : null
-        property MCForm frameRegister: null
-        property MCForm frameHome    : null
+        property MCForm frameStart : null
+        property MCForm frameLogin : null
+        property MCForm frameRegister : null
+        property MCForm frameHome : null
 
         function show(frame){
             if(frame!==null && frame!==undefined){

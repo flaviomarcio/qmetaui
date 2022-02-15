@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingGeometry_H
-#define MUPaintSettingGeometry_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_string_util.h"
@@ -22,10 +21,7 @@ public:
     Q_PROPERTY(QVariant    roundMargin           MEMBER roundMargin          )
 
     Q_INVOKABLE explicit MUPaintSettingGeometry(QObject *parent = nullptr);
-    Q_INVOKABLE explicit MUPaintSettingGeometry(const MUPaintSettingGeometry &parent) : QObject(nullptr){
-        Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
-                    setProperty( prop.constData(), parent.property( prop.constData() ) );
-    }
+    Q_INVOKABLE explicit MUPaintSettingGeometry(const MUPaintSettingGeometry &parent);
     ~MUPaintSettingGeometry();
 
     Q_INVOKABLE static int desktopAvailableWidth();
@@ -58,5 +54,3 @@ signals:
 };
 
 Q_DECLARE_METATYPE(MUPaintSettingGeometry   )
-
-#endif // MUPaintSettingGeometry_H

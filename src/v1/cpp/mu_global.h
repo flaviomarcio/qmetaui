@@ -1,9 +1,9 @@
-#ifndef MU_GLOBAL_H
-#define MU_GLOBAL_H
+#pragma once
 
 #include <QObject>
 #include <QTranslator>
 #include "./mu_const.h"
+#include "./mu_types.h"
 
 #ifndef QT_STATIC
 #  if defined(QT_BUILD_SQL_LIB)
@@ -14,6 +14,3 @@
 #else
 #  define Q_MU_EXPORT
 #endif
-
-
-#endif // MU_GLOBAL_H

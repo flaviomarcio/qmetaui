@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingDrawing_H
-#define MUPaintSettingDrawing_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_string_util.h"
@@ -21,10 +20,7 @@ public:
     Q_PROPERTY(QVariant borderWidth      MEMBER borderWidth )
 
     Q_INVOKABLE explicit MUPaintSettingDrawing(QObject *parent = nullptr);
-    Q_INVOKABLE explicit MUPaintSettingDrawing(const MUPaintSettingDrawing &parent) : QObject(nullptr){
-        Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
-                    setProperty( prop.constData(), parent.property( prop.constData() ) );
-    }
+    Q_INVOKABLE explicit MUPaintSettingDrawing(const MUPaintSettingDrawing &parent);
     ~MUPaintSettingDrawing();
 
     Q_INVOKABLE void replaceInvalid(MUPaintSettingDrawing &baseObject);
@@ -44,5 +40,3 @@ signals:
 };
 
 Q_DECLARE_METATYPE(MUPaintSettingDrawing    )
-
-#endif // MUPaintSettingDrawing_H
