@@ -1,0 +1,9 @@
+TARGET = QMetaUi
+TEMPLATE = lib
+
+#TODO CREATE PLUGIN
+CONFIG+=qmltypes
+QML_IMPORT_NAME = QMetaUi
+QML_IMPORT_MAJOR_VERSION = 1
+
+include($$PWD/qmetaui.pri)
