@@ -71,5 +71,3 @@ public:
 private:
     void *p=nullptr;
 };
-
-#endif // MUDATEUTIL_H

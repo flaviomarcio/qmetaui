@@ -9,8 +9,8 @@ class Q_MU_EXPORT MUAppEngineRoutes:public MURoutes{
 public:
 
     Q_PROPERTY(QString server READ server WRITE setServer NOTIFY serverChanged )
-    Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY protocoChanged)
-    Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNamChangede)
+    Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
+    Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNameChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged )
     Q_PROPERTY(QString info READ info WRITE setInfo NOTIFY infoChanged )
 
