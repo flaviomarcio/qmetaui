@@ -80,10 +80,12 @@ Item {
     signal editingFinished()
 
     onFocusChanged: {
-        lineEdit.focus=false
         if(focus){
             lineEdit.focus=true
             lineEdit.forceActiveFocus()
+        }
+        else{
+            lineEdit.focus=false
         }
         labelPlaceHolder.changeVisible()
     }
@@ -179,10 +181,9 @@ Item {
     Item {
         id: pvt
         property Rectangle background: {
-            if(control.background===null || control.background===undefined)
+            if(control.background == null || control.background == undefined)
                 return recBackground
-            else
-                return control.background
+            return control.background
         }
     }
 
@@ -268,28 +269,28 @@ Item {
                 TextInput {
                     id: lineEdit
 
-                    property bool ___ignoreEventChanged:false
-                    property string inputMaskExtra     :""
+                    property bool ___ignoreEventChanged : false
+                    property string inputMaskExtra : ""
 
                     anchors {
-                        top   : parent.top
-                        left  : parent.left
+                        top : parent.top
+                        left : parent.left
                         right : parent.right
                         bottom: lineBottom.top
                     }
-                    focus             : false
-                    activeFocusOnTab  : true
-                    activeFocusOnPress: true
-                    enabled           : control.enabled
-                    color             : "gray"
-                    selectByMouse     : true                    
+                    focus : false
+                    activeFocusOnTab : true
+                    activeFocusOnPress : true
+                    enabled : control.enabled
+                    color : "gray"
+                    selectByMouse : true
 
                     horizontalAlignment: Qt.AlignLeft
                     verticalAlignment  : Qt.AlignBottom
 
-                    onFocusChanged    : labelPlaceHolder.changeVisible()
+                    onFocusChanged : labelPlaceHolder.changeVisible()
 
-                    onTextEdited      : control.textEdited()
+                    onTextEdited : control.textEdited()
 
                     onEditingFinished : control.editingFinished()
 
@@ -308,30 +309,32 @@ Item {
                     onPreeditTextChanged: labelPlaceHolder.changeVisible()
 
                     onTextChanged : {
-                        if(!___ignoreEventChanged){
-                            ___ignoreEventChanged=true
-                            if (inputMaskExtra.trim()!==''){
-                                if (control.onlyNumber){
-                                    lineEdit.text = stringUtil.toStrNumber(lineEdit.text)
-                                }
-                                if (inputMaskExtra.trim()!==''){
-                                    var txt=stringUtil.inputMaskFormat(lineEdit.inputMaskExtra, lineEdit.text)
-                                    text = txt
-                                }
-                                if (inputMask.trim()!==''){
-                                    var pos=stringUtil.inputMaskCursorPosition(lineEdit.inputMask, lineEdit.text)
-                                    lineEdit.cursorPosition=pos
-                                }
+                        if(___ignoreEventChanged)
+                            return
+
+                        ___ignoreEventChanged=true
+
+                        if (inputMaskExtra.trim()!==''){
+                            if (control.onlyNumber){
+                                lineEdit.text = stringUtil.toStrNumber(lineEdit.text)
                             }
-                            labelPlaceHolder.changeVisible()
-                            ___ignoreEventChanged=false
+                            if (inputMaskExtra.trim()!==''){
+                                var txt=stringUtil.inputMaskFormat(lineEdit.inputMaskExtra, lineEdit.text)
+                                text = txt
+                            }
+                            if (inputMask.trim()!==''){
+                                var pos=stringUtil.inputMaskCursorPosition(lineEdit.inputMask, lineEdit.text)
+                                lineEdit.cursorPosition=pos
+                            }
                         }
+                        labelPlaceHolder.changeVisible()
+                        ___ignoreEventChanged=false
                     }
 
                     Keys.onPressed: {
                         if(event.key === Qt.Key_Tab) {
                             if(control.activeFocusOnTab){
-                                if(forwardFocus!==null){
+                                if(forwardFocus != null && forwardFocus != undefined){
                                     forwardFocus.forceActiveFocus()
                                 }
                             }
@@ -339,7 +342,7 @@ Item {
                         }
                         else if(event.key ===Qt.Key_Return || event.key===Qt.Key_Enter){
                             if(control.activeFocusOnPress){
-                                if(forwardFocus!==null){
+                                if(forwardFocus != null && forwardFocus != undefined){
                                     forwardFocus.forceActiveFocus()
                                 }
                             }
@@ -362,8 +365,9 @@ Item {
                         Qt.inputMethod.hide()
                         control.accepted(text)
                     }
+
                     function isEmpty(){
-                        return String(lineEdit.text).trim()===""
+                        return String(lineEdit.text).trim().length()===0
                     }
                 }
 

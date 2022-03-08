@@ -28,6 +28,7 @@ HEADERS += \
     $$PWD/cpp/mu_generic_control.h \
     $$PWD/cpp/mu_geometry_util.h \
     $$PWD/cpp/mu_global.h \
+    $$PWD/cpp/mu_image_capture_area.h \
     $$PWD/cpp/mu_macros.h \
     $$PWD/cpp/mu_object.h \
     $$PWD/cpp/mu_request_model.h \
@@ -54,6 +55,8 @@ HEADERS += \
     $$PWD/cpp/mu_validation_util_public.h \
     $$PWD/cpp/mu_validation_util_ptb.h \
     $$PWD/cpp/mu_variant_util.h \
+    $$PWD/cpp/private/p_mu_image_capture_area.h \
+    $$PWD/cpp/private/p_mu_image_capture_area_provider.h \
     $$PWD/cpp/private/p_mu_network_activity.h \
     $$PWD/cpp/private/p_mu_model_navigator.h \
     $$PWD/cpp/private/p_mu_notification.h \
@@ -73,6 +76,7 @@ SOURCES += \
     $$PWD/cpp/mu_date_util.cpp \
     $$PWD/cpp/mu_generic_control.cpp \
     $$PWD/cpp/mu_geometry_util.cpp \
+    $$PWD/cpp/mu_image_capture_area.cpp \
     $$PWD/cpp/mu_object.cpp \
     $$PWD/cpp/mu_request_model.cpp \
     $$PWD/cpp/mu_routes.cpp \
@@ -98,6 +102,8 @@ SOURCES += \
     $$PWD/cpp/mu_validation_util_public.cpp \
     $$PWD/cpp/mu_validation_util_ptb.cpp \
     $$PWD/cpp/mu_variant_util.cpp \
+    $$PWD/cpp/private/p_mu_image_capture_area.cpp \
+    $$PWD/cpp/private/p_mu_image_capture_area_provider.cpp \
     $$PWD/cpp/private/p_mu_notification.cpp \
     $$PWD/cpp/private/p_mu_request.cpp \
     $$PWD/cpp/private/p_mu_request_queue.cpp

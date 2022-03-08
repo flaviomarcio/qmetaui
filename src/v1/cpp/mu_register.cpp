@@ -25,6 +25,7 @@
 #include "./mu_string_util.h"
 #include "./mu_validation_util.h"
 #include "./mu_variant_util.h"
+#include "./mu_image_capture_area.h"
 
 #define MU_DECLARE_ENUM_META_CONTROL(enumClass, enumName)\
     qRegisterMetaType<enumName>(#enumName);\
@@ -66,6 +67,7 @@ void MURegister::init(QQmlApplicationEngine &engine)
     MUEnumPaintSettings::init(engine);
     MUEnumInstance::init(engine);
     MUCacheUtil::init();
+    MUImageCaptureArea::init();
 }
 
 void MUEnumNotification::init(QQmlApplicationEngine &engine)
@@ -85,6 +87,7 @@ void MUEnumFormType::init(QQmlApplicationEngine &engine)
     MU_DECLARE_CLASS_META_CONTROL(MUCacheUtil               );
     MU_DECLARE_CLASS_META_CONTROL(MUModelTable              );
     MU_DECLARE_CLASS_META_CONTROL(MUGenericControl          );
+    MU_DECLARE_CLASS_META_CONTROL(MUImageCaptureArea        );
 
     MU_DECLARE_CLASS_META_SECURITY(MULoginEngine            );
     MU_DECLARE_CLASS_META_SECURITY(MULoginSession           );

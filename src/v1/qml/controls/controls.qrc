@@ -83,5 +83,6 @@
         <file>MCBusyIndicator.qml</file>
         <file>MCAnimationRipple.qml</file>
         <file>MCProgress.qml</file>
+        <file>MCImageCaptureArea.qml</file>
     </qresource>
 </RCC>

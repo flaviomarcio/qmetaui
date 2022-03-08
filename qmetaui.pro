@@ -1,9 +1,20 @@
-TARGET = QMetaUi
-TEMPLATE = lib
+QT += core
+QT += quickcontrols2
+QT += gui
+QT += xml
+QT += qml
+QT += quick
+QT += svg
+QT += network
+QT += websockets
+QT += positioning
+QT += location
 
-#TODO CREATE PLUGIN
-CONFIG+=qmltypes
-QML_IMPORT_NAME = QMetaUi
-QML_IMPORT_MAJOR_VERSION = 1
+INCLUDEPATH += $$PWD
+INCLUDEPATH += $$PWD/cpp
 
-include($$PWD/qmetaui.pri)
+RESOURCES += \
+    $$PWD/qml/controls/controls.qrc \
+    $$PWD/qml/dynamic/dynamic.qrc \
+    $$PWD/qml/forms/forms.qrc \
+    $$PWD/qml/network/network.qrc
