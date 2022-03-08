@@ -1,5 +1,4 @@
-#ifndef MUValidationUtilPTB_H
-#define MUValidationUtilPTB_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_validation_util_public.h"
@@ -29,5 +28,3 @@ public:
 };
 
 //Q_DECLARE_METATYPE(MUValidationUtilPTB)
-
-#endif // MUValidationUtilPTB_H

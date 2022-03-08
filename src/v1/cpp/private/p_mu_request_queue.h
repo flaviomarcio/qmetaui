@@ -1,5 +1,4 @@
-#ifndef MUREQUESTQUEUE_H
-#define MUREQUESTQUEUE_H
+#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -26,5 +25,3 @@ public slots:
 private:
     void*p=nullptr;
 };
-
-#endif // MUREQUESTQUEUE_H

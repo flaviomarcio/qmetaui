@@ -1,5 +1,4 @@
-#ifndef MULoginSession_H
-#define MULoginSession_H
+#pragma once
 
 #include <QObject>
 #include <QUuid>
@@ -80,5 +79,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif // MULoginSession_H

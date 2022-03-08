@@ -1,5 +1,4 @@
-#ifndef MUAppEngineRoutes_H
-#define MUAppEngineRoutes_H
+#pragma once
 
 #include <QObject>
 #include "./mu_global.h"
@@ -10,7 +9,7 @@ class Q_MU_EXPORT MUAppEngineRoutes:public MURoutes{
 public:
 
     Q_PROPERTY(QString server READ server WRITE setServer NOTIFY serverChanged )
-    Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY protocoChangedl)
+    Q_PROPERTY(QString protocol READ protocol WRITE setProtocol NOTIFY protocoChanged)
     Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNamChangede)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged )
     Q_PROPERTY(QString info READ info WRITE setInfo NOTIFY infoChanged )
@@ -38,5 +37,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif

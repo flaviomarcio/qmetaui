@@ -1,6 +1,4 @@
 #pragma once
-#ifndef MURequest_H
-#define MURequest_H
 
 #include "./mu_global.h"
 #include <QNetworkReply>
@@ -87,5 +85,3 @@ signals:
     void requestResponse(const QVariantMap&response);
     void linkChanged();
 };
-
-#endif // MURequest_H

@@ -1,5 +1,4 @@
-#ifndef MUApplication_H
-#define MUApplication_H
+#pragma once
 
 #include <QGuiApplication>
 #include <QObject>
@@ -59,5 +58,3 @@ signals:
 
 
 Q_DECLARE_METATYPE(MUApplication)
-
-#endif // MUApplication_H

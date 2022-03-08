@@ -1,5 +1,4 @@
-#ifndef MUNotification_H
-#define MUNotification_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -40,5 +39,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif // MUNotification_H

@@ -1,5 +1,4 @@
-#ifndef MUAppInfo_H
-#define MUAppInfo_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_object.h"
@@ -44,5 +43,3 @@ private:
 signals:
     void dataChanged();
 };
-
-#endif // MUAppInfo_H

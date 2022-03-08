@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingGeometry_H
-#define MUPaintSettingGeometry_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_string_util.h"
@@ -58,5 +57,3 @@ signals:
 };
 
 Q_DECLARE_METATYPE(MUPaintSettingGeometry   )
-
-#endif // MUPaintSettingGeometry_H

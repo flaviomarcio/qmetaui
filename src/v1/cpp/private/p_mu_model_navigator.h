@@ -1,5 +1,4 @@
-#ifndef MUModelNavigatorPvt_H
-#define MUModelNavigatorPvt_H
+#pragma once
 
 #include "../mu_const.h"
 #include "../mu_login_session.h"
@@ -285,6 +284,3 @@ private slots:
 signals:
     void requestResponse(QVariant v);
 };
-
-
-#endif // MUModelNavigatorPvt_H

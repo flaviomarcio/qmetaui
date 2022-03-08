@@ -1,5 +1,4 @@
-#ifndef MULoginEngine_H
-#define MULoginEngine_H
+#pragma once
 
 #include <QObject>
 #include "./mu_login_session.h"
@@ -125,5 +124,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif // MULoginEngine_H

@@ -1,5 +1,4 @@
-#ifndef MU_CONST_H
-#define MU_CONST_H
+#pragma once
 
 #include <QDebug>
 
@@ -35,5 +34,3 @@ for (int loop = 0; loop < limit; ++loop)
 
 #define orm_sl\
     QStringList()
-
-#endif // MU_CONST_H

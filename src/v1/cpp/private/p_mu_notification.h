@@ -1,5 +1,4 @@
-#ifndef MUNotificationPvt_H
-#define MUNotificationPvt_H
+#pragma once
 
 #include <QTimer>
 #include <QObject>
@@ -214,5 +213,3 @@ public:
             this->pull->deleteLater();
     }
 };
-
-#endif // MUNotificationPvt_H

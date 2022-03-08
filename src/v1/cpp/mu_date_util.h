@@ -1,5 +1,4 @@
-#ifndef MUDATEUTIL_H
-#define MUDATEUTIL_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>

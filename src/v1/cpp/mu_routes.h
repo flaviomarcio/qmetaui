@@ -1,5 +1,4 @@
-#ifndef MURoutes_H
-#define MURoutes_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -87,5 +86,3 @@ public:
 private:
     void*p=nullptr;
 };
-
-#endif

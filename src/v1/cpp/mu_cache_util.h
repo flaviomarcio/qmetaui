@@ -1,5 +1,4 @@
-#ifndef MUCacheUtil_H
-#define MUCacheUtil_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -74,5 +73,3 @@ public:
     static void init();
 
 };
-
-#endif // MUCacheUtil_H

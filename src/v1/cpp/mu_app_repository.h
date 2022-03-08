@@ -1,5 +1,4 @@
-#ifndef MUAppRepository_H
-#define MUAppRepository_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_object.h"
@@ -98,5 +97,3 @@ signals:
     void headersChanged();
     void urlChanged();
 };
-
-#endif // MUAppRepository_H

@@ -1,5 +1,4 @@
-#ifndef MULoginToken_H
-#define MULoginToken_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_object.h"
@@ -46,6 +45,3 @@ private:
 signals:
     void tokenChanged();
 };
-
-
-#endif // MULoginToken_H

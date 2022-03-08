@@ -1,5 +1,4 @@
-#ifndef MUStringUtil_H
-#define MUStringUtil_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -86,7 +85,3 @@ public:
     Q_INVOKABLE static QString isUuidString( const QString&value );
 
 };
-
-//Q_DECLARE_METATYPE(MUStringUtil             )
-
-#endif // MUStringUtil_H

@@ -1,5 +1,4 @@
-#ifndef MUREQUESTMODEL_H
-#define MUREQUESTMODEL_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QAbstractTableModel>
@@ -53,5 +52,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif // MUREQUESTMODEL_H

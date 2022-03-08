@@ -1,5 +1,4 @@
-#ifndef MUNetworkActivity_H
-#define MUNetworkActivity_H
+#pragma once
 
 #include "../mu_global.h"
 #include <QtWebSockets/QWebSocket>
@@ -135,5 +134,3 @@ signals:
     void backOfficeActivity(const bool isWorking);
 
 };
-
-#endif // MUNetworkActivity_H

@@ -1,5 +1,4 @@
-#ifndef MURequestJob_H
-#define MURequestJob_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QDir>
@@ -340,5 +339,3 @@ signals:
     void finishThread(MURequestJob*job);
 
 };
-
-#endif // MURequestJob_H

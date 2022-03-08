@@ -1,5 +1,4 @@
-#ifndef MULoginProfile_H
-#define MULoginProfile_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_object.h"
@@ -117,6 +116,3 @@ signals:
     void validated_Changed();
 
 };
-
-
-#endif // MULoginProfile_H

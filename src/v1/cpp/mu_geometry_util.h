@@ -1,5 +1,4 @@
-#ifndef MUGeometryUtil_H
-#define MUGeometryUtil_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -52,5 +51,3 @@ public:
 private:
         void init();
 };
-
-#endif // MUGeometryUtil_H

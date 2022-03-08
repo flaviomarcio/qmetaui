@@ -1,5 +1,4 @@
-#ifndef MUAppSession_H
-#define MUAppSession_H
+#pragma once
 
 #include "./mu_app_repository.h"
 #include "./mu_app_info.h"
@@ -46,5 +45,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif // MUAppSession_H

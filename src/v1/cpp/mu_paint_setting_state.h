@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingState_H
-#define MUPaintSettingState_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_paint_setting_drawing.h"
@@ -31,6 +30,3 @@ signals:
 };
 
 Q_DECLARE_METATYPE(MUPaintSettingState      )
-
-
-#endif // MUPaintSettingState_H

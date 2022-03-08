@@ -1,5 +1,4 @@
-#ifndef MURequestPvt_H
-#define MURequestPvt_H
+#pragma once
 
 #include "./p_mu_request_response.h"
 #include "./p_mu_request_queue.h"
@@ -127,5 +126,3 @@ signals:
     void requestResponse(const QVariantMap&vResponse);
 
 };
-
-#endif

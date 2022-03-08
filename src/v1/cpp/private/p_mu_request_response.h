@@ -1,5 +1,4 @@
-#ifndef MURequestResponse_H
-#define MURequestResponse_H
+#pragma once
 
 #include "../mu_request.h"
 
@@ -210,9 +209,3 @@ public:
     }
 
 };
-
-
-
-
-
-#endif // MURequestResponse_H

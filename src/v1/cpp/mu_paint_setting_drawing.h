@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingDrawing_H
-#define MUPaintSettingDrawing_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_string_util.h"
@@ -44,5 +43,3 @@ signals:
 };
 
 Q_DECLARE_METATYPE(MUPaintSettingDrawing    )
-
-#endif // MUPaintSettingDrawing_H

@@ -1,5 +1,4 @@
-#ifndef MUPaintSettingItem_H
-#define MUPaintSettingItem_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_paint_setting_state.h"
@@ -33,5 +32,3 @@ signals:
     void refresh();
     void changed();
 };
-
-#endif // MUPaintSettingItem_H

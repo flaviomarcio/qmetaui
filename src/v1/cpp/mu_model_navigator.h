@@ -1,5 +1,4 @@
-#ifndef MUMODELNAVIGATOR_H
-#define MUMODELNAVIGATOR_H
+#pragma once
 
 #include <QObject>
 #include <QAbstractTableModel>
@@ -85,5 +84,3 @@ signals:
 private:
     void*p=nullptr;
 };
-
-#endif // MUMODELNAVIGATOR_H

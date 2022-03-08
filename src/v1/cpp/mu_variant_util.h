@@ -1,5 +1,4 @@
-#ifndef MUVariantUtil_H
-#define MUVariantUtil_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -60,5 +59,3 @@ public:
 signals:
 
 };
-
-#endif // MUVariantUtil_H

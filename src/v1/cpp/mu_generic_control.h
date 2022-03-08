@@ -1,5 +1,4 @@
-#ifndef MUGenericControl_H
-#define MUGenericControl_H
+#pragma once
 
 #include "./mu_global.h"
 
@@ -34,5 +33,3 @@ private:
     mutable QMutex mutex;
     QHash<QVariant, QVariant> p;
 };
-
-#endif // MUGenericControl_H

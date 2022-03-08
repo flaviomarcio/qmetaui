@@ -1,5 +1,4 @@
-#ifndef MUValidationUtil_H
-#define MUValidationUtil_H
+#pragma once
 
 #include "./mu_global.h"
 #include "./mu_object.h"
@@ -41,7 +40,3 @@ private:
 signals:
     void change();
 };
-
-//Q_DECLARE_METATYPE(MUValidationUtil)
-
-#endif // MUValidationUtil_H

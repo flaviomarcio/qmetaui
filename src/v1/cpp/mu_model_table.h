@@ -1,5 +1,4 @@
-#ifndef MUModelTable_H
-#define MUModelTable_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -75,6 +74,3 @@ signals:
 private:
     void*p=nullptr;
 };
-//Q_DECLARE_METATYPE(MUModelTable             )
-
-#endif // MUModelTable_H

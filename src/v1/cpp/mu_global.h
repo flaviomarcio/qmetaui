@@ -1,5 +1,4 @@
-#ifndef MU_GLOBAL_H
-#define MU_GLOBAL_H
+#pragma once
 
 #include <QObject>
 #include <QTranslator>
@@ -14,6 +13,3 @@
 #else
 #  define Q_MU_EXPORT
 #endif
-
-
-#endif // MU_GLOBAL_H

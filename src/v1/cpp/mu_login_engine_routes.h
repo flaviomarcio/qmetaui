@@ -1,5 +1,4 @@
-#ifndef MULoginEngineRoutes_H
-#define MULoginEngineRoutes_H
+#pragma once
 
 #include <QObject>
 #include "./mu_global.h"
@@ -89,5 +88,3 @@ public:
 private:
     void*p=nullptr;
 };
-
-#endif

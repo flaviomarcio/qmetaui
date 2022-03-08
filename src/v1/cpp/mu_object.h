@@ -1,6 +1,4 @@
-#ifndef MUOBJECT_H
-#define MUOBJECT_H
-
+#pragma once
 #include "./mu_global.h"
 #include <QObject>
 #include <QVariant>
@@ -17,8 +15,4 @@ public:
     Q_INVOKABLE QByteArray toJson()const;
     Q_INVOKABLE bool fromMap(const QVariantMap &v);
     Q_INVOKABLE bool fromHash(const QVariantHash &v);
-
-
 };
-
-#endif // MUOBJECT_H

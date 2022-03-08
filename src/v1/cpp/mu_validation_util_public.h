@@ -1,5 +1,4 @@
-#ifndef MUValidationUtilPublic_H
-#define MUValidationUtilPublic_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -30,7 +29,3 @@ public:
 
     static MUValidationUtilPublic &i();
 };
-
-//Q_DECLARE_METATYPE(MUValidationUtilPublic)
-
-#endif // MUValidationUtilPublic_H

@@ -1,5 +1,4 @@
-#ifndef MU_ENUM_H
-#define MU_ENUM_H
+#pragma once
 
 #include "./mu_global.h"
 #include <QObject>
@@ -185,5 +184,3 @@ public:
 
     explicit MUEnumInstance(){}
 };
-
-#endif // MU_ENUM_H

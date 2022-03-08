@@ -1,5 +1,4 @@
-#ifndef MUREQUESTQUEUEPVT_H
-#define MUREQUESTQUEUEPVT_H
+#pragma once
 
 #include "./qrpc_macro.h"
 #include "./p_mu_request.h"
@@ -156,5 +155,3 @@ private slots:
         this->jobRemove(request);
     }
 };
-
-#endif
