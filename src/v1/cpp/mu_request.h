@@ -60,15 +60,15 @@ public:
     Q_INVOKABLE virtual void setUrl(const QString &url);
 
     Q_INVOKABLE virtual MUEnumRequest::Method method() const;
-    Q_INVOKABLE virtual void setMethod(const QVariant &value);
-    Q_INVOKABLE virtual void setMethodHead();
-    Q_INVOKABLE virtual void setMethodGET();
-    Q_INVOKABLE virtual void setMethodPOST();
-    Q_INVOKABLE virtual void setMethodPUT();
-    Q_INVOKABLE virtual void setMethodDELETE();
+    Q_INVOKABLE virtual MURequest &setMethod(const QVariant &value);
+    Q_INVOKABLE virtual MURequest &setMethodHead();
+    Q_INVOKABLE virtual MURequest &setMethodGET();
+    Q_INVOKABLE virtual MURequest &setMethodPOST();
+    Q_INVOKABLE virtual MURequest &setMethodPUT();
+    Q_INVOKABLE virtual MURequest &setMethodDELETE();
 
     Q_INVOKABLE virtual MUEnumRequest::AppType requestAppType() const;
-    Q_INVOKABLE virtual void setRequestAppType(const MUEnumRequest::AppType &value);
+    Q_INVOKABLE virtual MURequest &setRequestAppType(const MUEnumRequest::AppType &value);
 
     Q_INVOKABLE virtual MUStringUtil&u();
     Q_INVOKABLE virtual MUVariantUtil&v();

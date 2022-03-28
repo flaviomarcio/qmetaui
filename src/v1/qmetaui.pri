@@ -8,7 +8,9 @@ QT += svg
 QT += network
 QT += websockets
 QT += positioning
-QT += location
+#QT += location
+
+#INCLUDEPATH += $$PWD/cpp
 
 RESOURCES += \
     $$PWD/qml/controls/controls.qrc \

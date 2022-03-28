@@ -10,6 +10,7 @@
 #include "./mu_notification.h"
 #include "./mu_register.h"
 #include "./mu_application.h"
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MULoginSessionPvt*>(this->p)
@@ -89,10 +90,15 @@ public:
 
     bool save(const QVariant&data)
     {
-        auto vMap=data.toHash();
-        if(!data.canConvert(QVariant::Map) && !data.canConvert(QVariant::Hash))
+        switch (qTypeId(data)){
+        case QMetaType_QVariantMap:
+        case QMetaType_QVariantHash:
+            break;
+        default:
             return false;
+        }
 
+        auto vMap=data.toHash();
         if(!vMap.contains(QStringLiteral("response"))){
             if(vMap.contains(QStringLiteral("profile")) && vMap.contains(QStringLiteral("token")) && vMap.contains(QStringLiteral("session")))
                 vMap=QVariantHash{{QStringLiteral("response"), vMap}};

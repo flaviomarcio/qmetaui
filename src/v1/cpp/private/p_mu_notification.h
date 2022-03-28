@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QJsonDocument>
 #include <QtWebSockets/QWebSocket>
+#include <QStm>
 #include "../mu_notification.h"
 #include "../mu_register.h"
 
@@ -63,10 +64,21 @@ public slots:
 
     void makeNotification(const QByteArray &message){
         auto payload=QJsonDocument::fromJson(message).toVariant().toMap();
-        auto vPayload=payload.isEmpty()?QVariant(message):QVariant(payload);
+        //auto vPayload=payload.isEmpty()?QVariant(message):QVariant(payload);
         auto type=payload[QStringLiteral("type")];
         auto especification=payload[QStringLiteral("especification")];
-        type=(type.canConvert(QVariant::Int)?type.toInt():int(MUNotificationType::nt_Unknow));
+        switch (qTypeId(type)){
+        case QMetaType_Int:
+        case QMetaType_UInt:
+        case QMetaType_Double:
+        case QMetaType_LongLong:
+        case QMetaType_ULongLong:
+            type=type.toInt();
+            break;
+        default:
+            if(type.toInt()==0)
+                type=int(MUNotificationType::nt_Unknow);
+        }
         especification = especification.isValid()?especification:-1;
 
         emit this->parent->notify(type.toInt(), especification.toInt(), payload);
@@ -139,10 +151,11 @@ public slots:
         this->makeNotification(message);
     }
 
-    void socketError(QAbstractSocket::SocketError socketError){
-        mWarning()<<QStringLiteral("websocket error==")<<socketError<<QStringLiteral(", ")<<this->client.errorString();
+    void socketError(QAbstractSocket::SocketError socketError)
+    {
+        mWarning()<<qsl("websocket error==")<<socketError<<qsl(", ")<<this->client.errorString();
         QThread::sleep(5);
-        emit initConnection();
+        QTimer::singleShot(1, this, &MUNotificationPool::initConnection);
     }
 
     void socketPing()

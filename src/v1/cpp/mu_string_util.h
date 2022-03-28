@@ -64,12 +64,12 @@ public:
 
     Q_INVOKABLE static double toDouble(const QVariant &v, QVariant defaultValue=0);
 
-    Q_INVOKABLE static const QVariant convertVar(const QVariant &v, const QVariant::Type&type);
+    Q_INVOKABLE static const QVariant convertVar(const QVariant &v, const int type);
 
     Q_INVOKABLE static const QVariant toAlignment(const QVariant&v, Qt::Alignment alignment=Qt::AlignCenter);
 
-    Q_INVOKABLE static int toVariantType(const QVariant&v);
-    Q_INVOKABLE static const QByteArray toVariantTypeName(int v);
+    //Q_INVOKABLE static int toVariantType(const QVariant&v);
+    //Q_INVOKABLE static const QByteArray toVariantTypeName(int v);
 
     Q_INVOKABLE static const QByteArray loadFile(const QString&file);
     Q_INVOKABLE static const QVariant loadFileMap(const QString&file);

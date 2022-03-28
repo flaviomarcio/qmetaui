@@ -1,5 +1,6 @@
 #include "./mu_validation_util.h"
 #include "./mu_object_util.h"
+#include <QStm>
 
 
 MUValidationUtil::MUValidationUtil(QObject *parent):MUObject(parent)
@@ -40,9 +41,14 @@ bool MUValidationUtil::isUndefined(const QVariant &v)
 
 bool MUValidationUtil::isEmpty(const QVariant &v)
 {
-    if(v.canConvert(QVariant::String) || v.canConvert(QVariant::Char) || v.canConvert(QVariant::ByteArray))
+    switch (qTypeId(v)){
+    case QMetaType_QString:
+    case QMetaType_QChar:
+    case QMetaType_QByteArray:
         return v.toString().trimmed().isEmpty();
-    return true;
+    default:
+        return true;
+    }
 }
 
 QVariant MUValidationUtil::isEmptySet(const QVariant &vThen, const QVariant &vElse)

@@ -2,6 +2,7 @@
 #include "./mu_object_util.h"
 #include <QLocale>
 #include <QDebug>
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUDateUtilPvt*>(this->p)
@@ -26,30 +27,32 @@ public:
     static QString toDateTimeFormat(const QDate &d, const QTime &t,const QString&format)
     {
         Q_UNUSED(format)
-        QString s;
         if(d.isValid() && t.isValid())
-            s+=d.toString(QStringLiteral("d MMM yyyy"))+" "+t.toString(QStringLiteral("HH:mm:ss"));
-        else if(d.isValid())
-            s+=d.toString(QStringLiteral("d MMM yyyy"));
-        else if(t.isValid())
-            s=t.toString(QStringLiteral("HH:mm:ss"));
+            return d.toString(QStringLiteral("d MMM yyyy"))+" "+t.toString(QStringLiteral("HH:mm:ss"));
 
-        return s;
+        if(d.isValid())
+            return d.toString(QStringLiteral("d MMM yyyy"));
+
+        if(t.isValid())
+            return t.toString(QStringLiteral("HH:mm:ss"));
+
+        return {};
     }
 
 
     static QString toDateTimeInput(const QDate &d, const QTime &t,const QString&format)
     {
-        auto ff=format.trimmed();
-        QString s;
+        Q_UNUSED(format)
         if(d.isValid() && t.isValid())
-            s+=d.toString(QStringLiteral("dd/MM/yyyy"))+QStringLiteral(" ")+t.toString(QStringLiteral("HH:mm:ss"));
-        else if(d.isValid())
-            s+=d.toString(QStringLiteral("dd/MM/yyyy"));
-        else if(t.isValid())
-            s=t.toString(QStringLiteral("HH:mm:ss"));
+            return d.toString(QStringLiteral("dd/MM/yyyy"))+QStringLiteral(" ")+t.toString(QStringLiteral("HH:mm:ss"));
 
-        return s;
+        if(d.isValid())
+            return d.toString(QStringLiteral("dd/MM/yyyy"));
+
+        if(t.isValid())
+            return t.toString(QStringLiteral("HH:mm:ss"));
+
+        return {};
     }
 
 };
@@ -100,8 +103,15 @@ bool MUDateUtil::isUndefined(const QVariant &v)
 
 bool MUDateUtil::isEmpty(const QVariant &v)
 {
-    if(v.canConvert(QVariant::String) || v.canConvert(QVariant::Char) || v.canConvert(QVariant::ByteArray))
+    switch (qTypeId(v)){
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
+    case QMetaType_QChar:
         return v.toString().trimmed().isEmpty();
+        break;
+    default:
+        return false;
+    }
     return true;
 }
 
@@ -128,14 +138,16 @@ QDateTime MUDateUtil::currentTime()
 QString MUDateUtil::toString(const QVariant &vDt)
 {
     QString vv;
-    if(vDt.canConvert(QVariant::Time))
+    switch (qTypeId(vDt)){
+    case QMetaType_QTime:
         return vDt.toTime().toString(Qt::ISODate);
-    else if(vDt.canConvert(QVariant::Date))
+    case QMetaType_QDate:
         return vDt.toDate().toString(Qt::ISODate);
-    else if(vDt.canConvert(QVariant::DateTime))
+    case QMetaType_QDateTime:
         return vDt.toDateTime().toString(Qt::ISODateWithMs);
-
-    return {};
+    default:
+        return {};
+    }
 }
 
 QString MUDateUtil::toDateTimeFormat(const QVariant &vDt,const QString&format)
@@ -166,52 +178,57 @@ QString MUDateUtil::toDateInput(const QVariant &vDt, const QString &format)
     return s;
 }
 
-QDateTime MUDateUtil::toDate(const QVariant &vDt)
+const QDateTime MUDateUtil::toDate(const QVariant &vDt)
 {
-    auto dt=vDt.toDate();
-    if(!dt.isValid())
-        dt=QDate::fromString(vDt.toString(),QStringLiteral("dd/MM/yyyy"));
-    if(!dt.isValid())
-        dt=QDate::fromString(vDt.toString(),QStringLiteral("dd-MM-yyyy"));
+    switch (qTypeId(vDt)){
+    case QMetaType_QDate:
+        return QDateTime{vDt.toDate(),QTime()};
+    case QMetaType_QDateTime:
+        return QDateTime{vDt.toDateTime().date(),QTime()};
+    default:
+        QDate dt;
 
-    return QDateTime(dt,QTime());
+        dt=QDate::fromString(vDt.toString());
+        if(dt.isValid())
+            return QDateTime{dt,QTime()};
+
+        dt=QDate::fromString(vDt.toString(),QStringLiteral("dd/MM/yyyy"));
+        if(dt.isValid())
+            return QDateTime{dt,QTime()};
+
+        dt=QDate::fromString(vDt.toString(),QStringLiteral("dd-MM-yyyy"));
+        if(dt.isValid())
+            return QDateTime{dt,QTime()};
+    }
+    return {};
 }
 
-QDateTime MUDateUtil::toTime(const QVariant &vDt)
+
+const QDateTime MUDateUtil::toTime(const QVariant &vDt)
 {
     return QDateTime(QDate(),vDt.toTime());
 }
 
-QDateTime MUDateUtil::toDateTime(const QVariant &vDt)
+const QDateTime MUDateUtil::toDateTime(const QVariant &vDt)
 {
     QDateTime vv;
-    if(vDt.type()==QVariant::DateTime || vDt.type()==QVariant::Date || vDt.type()==QVariant::Time){
-        if(vDt.type()==QVariant::DateTime)
-            vv=vDt.toDateTime();
-        else if(vDt.type()==QVariant::Date)
-            vv=QDateTime(vDt.toDate(),QTime());
-        else if(vDt.type()==QVariant::Time)
-            vv=QDateTime(QDate(1901,1,1),vDt.toTime());
-    }
-    else if(vDt.type()==QVariant::Double || vDt.type()==QVariant::Int || vDt.type()==QVariant::UInt || vDt.type()==QVariant::LongLong || vDt.type()==QVariant::ULongLong){
-        vv=QDateTime::fromMSecsSinceEpoch(vDt.toLongLong());
-    }
-    else{
-        if(vDt.canConvert(QVariant::DateTime))
-            vv=vDt.toDateTime();
-        else if(vDt.canConvert(QVariant::Time))
-            vv=QDateTime(QDate(1901,1,1),vDt.toTime());
-        else if(vDt.canConvert(QVariant::Date))
-            vv=QDateTime::fromString(vDt.toString()).toLocalTime();
 
-        if(!vv.isValid()){
-            if(vDt.canConvert(QVariant::DateTime))
-                vv=QDateTime::fromString(vDt.toString()).toLocalTime();
-            else if(vDt.canConvert(QVariant::Time))
-                vv=QDateTime(QDate(1901,01,01), QTime::fromString(vDt.toString())).toLocalTime();
-            else if(vDt.canConvert(QVariant::Date))
-                vv=QDateTime(QDate::fromString(vDt.toString()),QTime()).toLocalTime();
-        }
+    switch (qTypeId(vDt)){
+    case QMetaType_QTime:
+        return QDateTime(QDate(1901,1,1),vDt.toTime());
+    case QMetaType_QDate:
+        return QDateTime(vDt.toDate(),QTime());
+    case QMetaType_QDateTime:
+        return vDt.toDateTime();
+
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_LongLong:
+    case QMetaType_ULongLong:
+        return QDateTime::fromMSecsSinceEpoch(vDt.toLongLong());
+    default:
+        return QDateTime(QDate::fromString(vDt.toString()),QTime()).toLocalTime();
     }
 
     return vv;
@@ -223,7 +240,7 @@ int MUDateUtil::dayOfWeek(const QVariant &vDt)
     return v.dayOfWeek();
 }
 
-QString MUDateUtil::dayOfWeekName(const QVariant &vDt)
+const QString MUDateUtil::dayOfWeekName(const QVariant &vDt)
 {
     return toDate(vDt).toString(QStringLiteral("dddd"));
 }
@@ -241,7 +258,7 @@ int MUDateUtil::daysInMonth(const QVariant &vDt)
     return daysInMonth(dt.year(), dt.month());
 }
 
-QVariantList MUDateUtil::daysMonthModel(const QVariant &year, const QVariant &month)
+const QVariantList MUDateUtil::daysMonthModel(const QVariant &year, const QVariant &month)
 {
     QVariantList vList;
     for (int day = 0; day < daysInMonth(year, month); ++day) {
@@ -256,20 +273,38 @@ QVariantList MUDateUtil::daysMonthModel(const QVariant &year, const QVariant &mo
 
 int MUDateUtil::year(const QVariant &date)
 {
-    auto v=date.canConvert(QVariant::Date)?date.toDate():QDate::currentDate();
-    return v.year();
+    switch (qTypeId(date)){
+    case QMetaType_QDate:
+        return date.toDate().year();
+    case QMetaType_QDateTime:
+        return date.toDateTime().date().year();
+    default:
+        return QDate::currentDate().year();
+    }
 }
 
 int MUDateUtil::month(const QVariant &date)
 {
-    auto v=date.canConvert(QVariant::Date)?date.toDate():QDate::currentDate();
-    return v.month();
+    switch (qTypeId(date)){
+    case QMetaType_QDate:
+        return date.toDate().month();
+    case QMetaType_QDateTime:
+        return date.toDateTime().date().month();
+    default:
+        return QDate::currentDate().month();
+    }
 }
 
 int MUDateUtil::day(const QVariant &date)
 {
-    auto v=date.canConvert(QVariant::Date)?date.toDate():QDate::currentDate();
-    return v.day();
+    switch (qTypeId(date)){
+    case QMetaType_QDate:
+        return date.toDate().day();
+    case QMetaType_QDateTime:
+        return date.toDateTime().date().day();
+    default:
+        return QDate::currentDate().day();
+    }
 }
 
 QDateTime MUDateUtil::firstDayMonth(const QVariant &year, const QVariant &month)
@@ -310,7 +345,17 @@ QDateTime MUDateUtil::nextDayMonth(const QVariant &year, const QVariant &month)
 
 QDateTime MUDateUtil::lastDayNextMonth(const QVariant &date)
 {
-    auto dt=date.canConvert(QVariant::Date)?date.toDate():QDate::currentDate();//
+    QDate dt;
+    switch (qTypeId(date)){
+    case QMetaType_QDate:
+        dt=date.toDate();
+        break;
+    case QMetaType_QDateTime:
+        dt=date.toDateTime().date();
+        break;
+    default:
+        dt=QDate::currentDate();
+    }
     dt=nextDayMonth(dt.year(),dt.month()).date();
     dt=QDate(dt.year(), dt.month(), dt.daysInMonth());
     return QDateTime(dt,QTime());
@@ -319,59 +364,66 @@ QDateTime MUDateUtil::lastDayNextMonth(const QVariant &date)
 QString MUDateUtil::monthName(const QVariant &month)
 {
     int m=0;
-    if(month.canConvert(QVariant::Int))
+    switch (qTypeId(month)){
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_LongLong:
+    case QMetaType_ULongLong:
+    case QMetaType_Double:
         m=month.toInt();
-    else if(month.canConvert(QVariant::DateTime))
-        m=month.toDateTime().date().month();
-    else if(month.canConvert(QVariant::Date))
+        break;
+    case QMetaType_QDate:
         m=month.toDate().month();
-    else
+        break;
+    case QMetaType_QDateTime:
+        m=month.toDateTime().date().month();
+        break;
+    default:
         m=QDate::currentDate().month();
-
+    }
     m=(m>0 && m<=12)?m:1;
-
     return QLocale::c().monthName(m);
 }
 
 bool MUDateUtil::isHigherDateTime(const QVariant &v1, const QVariant &v2)
 {
-    auto d1=v1.canConvert(QVariant::DateTime)?v1.toDateTime():QDateTime(v1.toDate(), QTime());
-    auto d2=v2.canConvert(QVariant::DateTime)?v2.toDateTime():QDateTime(v2.toDate(), QTime());
+    auto d1=toDateTime(v1);
+    auto d2=toDateTime(v2);
     return (d1>=d2);
 }
 
 bool MUDateUtil::isLowerDateTime(const QVariant &v1, const QVariant &v2)
 {
-    auto d1=v1.canConvert(QVariant::DateTime)?v1.toDateTime():QDateTime(v1.toDate(), QTime());
-    auto d2=v2.canConvert(QVariant::DateTime)?v2.toDateTime():QDateTime(v2.toDate(), QTime());
+    auto d1=toDateTime(v1);
+    auto d2=toDateTime(v2);
     return (d1<d2);
 }
 
 bool MUDateUtil::isBetweenDateTime(const QVariant &v1, const QVariant &v2)
 {
-    auto d1=v1.canConvert(QVariant::DateTime)?v1.toDateTime():QDateTime(v1.toDate(), QTime());
-    auto d2=v2.canConvert(QVariant::DateTime)?v2.toDateTime():QDateTime(v2.toDate(), QTime());
+    auto d1=toDateTime(v1);
+    auto d2=toDateTime(v2);
     auto da = QDateTime::currentDateTime();
     return (da >= d1) && (da <= d2);
 }
 
 bool MUDateUtil::equalDate(const QVariant &v1, const QVariant &v2)
 {
-    auto d1=v1.canConvert(QVariant::DateTime)?v1.toDateTime().date():v1.toDate();
-    auto d2=v2.canConvert(QVariant::DateTime)?v2.toDateTime().date():v2.toDate();
-    return (d1==d2);    
+    auto d1=toDate(v1);
+    auto d2=toDate(v2);
+    return (d1==d2);
 }
 
 bool MUDateUtil::equalDateTime(const QVariant &v1, const QVariant &v2)
 {
-    auto d1=v1.canConvert(QVariant::DateTime)?v1.toDateTime():QDateTime();
-    auto d2=v2.canConvert(QVariant::DateTime)?v2.toDateTime():QDateTime();
+    auto d1=toDate(v1);
+    auto d2=toDate(v2);
     return (d1==d2);
 }
 
 bool MUDateUtil::equalTime(const QVariant &v1, const QVariant &v2)
 {
-    auto d1=v1.canConvert(QVariant::DateTime)?v1.toDateTime().time():v1.toTime();
-    auto d2=v2.canConvert(QVariant::DateTime)?v2.toDateTime().time():v2.toTime();
+    auto d1=toTime(v1);
+    auto d2=toTime(v2);
     return (d1==d2);
 }

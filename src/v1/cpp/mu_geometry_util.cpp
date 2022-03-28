@@ -4,7 +4,7 @@
 #if defined(Q_OS_ANDROID)
     #include <QtAndroid>
 #endif
-
+#include <QStm>
 #include <QGuiApplication>
 #include <QScreen>
 #include "statusbar.h"
@@ -72,27 +72,49 @@ void MUGeometryUtil::setDesktopAvailableHeight(int value)
 double MUGeometryUtil::toDoubleSize(const QVariant &v, QVariant defaultValue)
 {
     auto vv=QVariant(v.toString().replace("%",""));
-    if(vv.canConvert(QVariant::Double))
+    switch (qTypeId(vv)){
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_LongLong:
+    case QMetaType_ULongLong:
         return vv.toDouble();
-    else
+    default:
         return defaultValue.toDouble();
+    }
 }
 
 qlonglong MUGeometryUtil::toIntSize(const QVariant &v, QVariant defaultValue)
 {
     auto vv=QVariant(v.toString().replace("%",""));
-    if(vv.canConvert(QVariant::LongLong))
+    switch (qTypeId(vv)){
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_LongLong:
+    case QMetaType_ULongLong:
         return vv.toLongLong();
-    return defaultValue.toLongLong();
+    default:
+        return defaultValue.toLongLong();
+    }
 }
 
 const QString MUGeometryUtil::toProportion(const QVariant &v)
 {
     if(!v.isValid())
-        return QString();
+        return {};
 
-    if(!v.canConvert(QVariant::String))
-        return QString();
+    auto vv=QVariant(v.toString().replace("%",""));
+    switch (qTypeId(vv)){
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
+    case QMetaType_QChar:
+    case QMetaType_QBitArray:
+    case QMetaType_ULongLong:
+        break;
+    default:
+        return {};
+    }
 
     if(v.toString().contains("%"))
         return "%";

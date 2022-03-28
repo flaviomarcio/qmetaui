@@ -1,6 +1,7 @@
 #include "./mu_server_link.h"
 #include <QNetworkAccessManager>
 #include <QMetaProperty>
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUServerLinkPvt*>(this->p)
@@ -9,12 +10,12 @@ class MUServerLinkPvt
 {
 public:
     QVariantHash headers;
-    QString protocol="";
-    QString method="";
-    QString host="";
+    QString protocol;
+    QString method;
+    QString host;
     int port=-1;
-    QString route="";
-    QString endpoint="";
+    QString route;
+    QString endpoint;
 
     explicit MUServerLinkPvt(){
     }
@@ -59,26 +60,31 @@ QString MUServerLink::url() const
     auto sendpoint=this->endpoint().trimmed();
 
     if(sprot.isEmpty() || shost.isEmpty())
-        return QString();
+        return {};
 
-    auto url = QStringLiteral("%1:||%2:%3/%4/%5").arg(sprot).arg(shost, sport, sroute, sendpoint);
-    while(url.contains(QStringLiteral("//")))
-        url=url.replace(QStringLiteral("//"), QStringLiteral("/"));
-    return url.replace(QStringLiteral(":||"), QStringLiteral("://"));
+    auto url = qsl("%1:||%2:%3/%4/%5").arg(sprot, shost, sport, sroute, sendpoint);
+    while(url.contains(qsl("//")))
+        url=url.replace(qsl("//"), qsl("/"));
+    return url.replace(qsl(":||"), qsl("://"));
 
 }
 
 bool MUServerLink::read(const QVariant &link)
 {
-    if(link.canConvert(QVariant::Map)){
-        auto map=link.toMap();
+    switch (qTypeId(link)){
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantHash:
+    {
+        auto map=link.toHash();
         for(int i = 0; i < this->metaObject()->propertyCount(); ++i) {
             auto property=this->metaObject()->property(i);
             property.write(this, map.value(property.name()));
         }
         return true;
     }
-    return false;
+    default:
+        return false;
+    }
 }
 
 QVariantHash&MUServerLink::headers()
@@ -107,7 +113,7 @@ QString MUServerLink::protocol() const
 void MUServerLink::setProtocol(const QString &value)
 {
     dPvt();
-    p.protocol = QString(value).replace("\"","");
+    p.protocol = QString(value).replace(qsl("\""), qsl_null);
 }
 
 QString MUServerLink::host() const
@@ -119,7 +125,7 @@ QString MUServerLink::host() const
 void MUServerLink::setHost(const QString &value)
 {
     dPvt();
-    p.host = QString(value).replace("\"","");
+    p.host = QString(value).replace(qsl("\""), qsl_null);
 }
 
 int MUServerLink::port() const
@@ -143,21 +149,21 @@ QString MUServerLink::route() const
 void MUServerLink::setRoute(const QString &value)
 {
     dPvt();
-    p.route = QString(value).replace("\"","");
+    p.route = QString(value).replace(qsl("\""),qsl_null);
 }
 
 QString MUServerLink::endpoint() const
 {
     dPvt();
     auto endpoint=p.endpoint.trimmed();
-    endpoint = endpoint.isEmpty()?"":QStringLiteral("/%1").arg(endpoint).replace("//","/");
+    endpoint = endpoint.isEmpty()?"":qsl("/%1").arg(endpoint).replace(qsl("//"), qsl_null);
     return endpoint;
 }
 
 void MUServerLink::setEndpoint(const QString &value)
 {
     dPvt();
-    auto endpoint=QString(value).replace("\"","").trimmed();
+    auto endpoint=QString(value).replace(qsl("\""),qsl_null).trimmed();
     p.endpoint = endpoint;
 }
 

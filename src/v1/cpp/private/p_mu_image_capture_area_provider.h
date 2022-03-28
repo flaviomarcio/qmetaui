@@ -7,11 +7,16 @@
 #include <QQuickItem>
 #include <QQuickImageProvider>
 
-class MUImageCaptureAreaProvider:public QObject, QQuickImageProvider{
+class MUImageCaptureAreaProvider:
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        public QQuickImageProvider{
+#else
+        public QObject, QQuickImageProvider{
+#endif
     Q_OBJECT
 public:
     explicit MUImageCaptureAreaProvider(QObject*parent=nullptr);
-    ~MUImageCaptureAreaProvider();
+    virtual ~MUImageCaptureAreaProvider();
 
     QQmlImageProviderBase*imageProvider();
 

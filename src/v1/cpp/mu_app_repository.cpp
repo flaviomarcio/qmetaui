@@ -1,5 +1,6 @@
 #include "./mu_app_repository.h"
 #include <QString>
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUAppRepositoryPvt*>(this->p)
@@ -32,18 +33,18 @@ public:
             localurl.append(hostName);
             route=route.trimmed();
             if (port>0){
-                localurl.append(QStringLiteral(":%1").arg(port));
+                localurl.append(qsl(":%1").arg(port));
             }
             if (!route.isEmpty()){
-                localurl.append(QStringLiteral("/%3").arg(route));
+                localurl.append(qsl("/%3").arg(route));
             }
 
-            while(localurl.contains(QStringLiteral("//")))
-                localurl=localurl.replace(QStringLiteral("//"), QStringLiteral("/"));
+            while(localurl.contains(qsl("//")))
+                localurl=localurl.replace(qsl("//"), qsl("/"));
 
             protocol = protocol.toString().trimmed();
             if (!protocol.toString().isEmpty()){
-                localurl.prepend(QStringLiteral("%1://").arg(protocol.toString()));
+                localurl.prepend(qsl("%1://").arg(protocol.toString()));
             }
 
             url = localurl;
@@ -109,10 +110,10 @@ QVariant MUAppRepository::parserUrl(const QVariant &v)const
         return "";
 
     QString url = p.url;
-    if(url.contains(QStringLiteral("{md5}")))
-        url = url.replace(QStringLiteral("{md5}"),sss);
+    if(url.contains(qsl("{md5}")))
+        url = url.replace(qsl("{md5}"),sss);
     else
-        url = QStringLiteral("%1/%2").arg(p.url,sss);
+        url = qsl("%1/%2").arg(p.url,sss);
     return url;
 }
 

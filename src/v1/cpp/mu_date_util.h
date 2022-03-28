@@ -37,15 +37,15 @@ public:
 
     Q_INVOKABLE static QString toDateInput(const QVariant&vDt, const QString &format=QString());
 
-    Q_INVOKABLE static QDateTime toDate(const QVariant&vDt);
-    Q_INVOKABLE static QDateTime toTime(const QVariant&vDt);
-    Q_INVOKABLE static QDateTime toDateTime(const QVariant&vDt);
+    Q_INVOKABLE static const QDateTime toDate(const QVariant&vDt);
+    Q_INVOKABLE static const QDateTime toTime(const QVariant&vDt);
+    Q_INVOKABLE static const QDateTime toDateTime(const QVariant&vDt);
     Q_INVOKABLE static int dayOfWeek(const QVariant&vDt);
-    Q_INVOKABLE static QString dayOfWeekName(const QVariant&vDt);
+    Q_INVOKABLE static const QString dayOfWeekName(const QVariant&vDt);
     Q_INVOKABLE static int daysInMonth(const QVariant&year, const QVariant&month);
     Q_INVOKABLE static int daysInMonth(const QVariant&vDt);
 
-    Q_INVOKABLE static QVariantList daysMonthModel(const QVariant&year, const QVariant&month);
+    Q_INVOKABLE static const QVariantList daysMonthModel(const QVariant&year, const QVariant&month);
 
     Q_INVOKABLE static int year(const QVariant&date=QVariant());
     Q_INVOKABLE static int month(const QVariant&date=QVariant());

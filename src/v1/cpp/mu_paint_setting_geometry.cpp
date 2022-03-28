@@ -1,5 +1,6 @@
 #include "./mu_paint_setting_geometry.h"
 #include "./mu_geometry_util.h"
+#include <QStm>
 
 #define dPvt()\
     auto&pvt = *reinterpret_cast<MUPaintSettingGeometryPvt*>(this->p)
@@ -53,10 +54,21 @@ double MUPaintSettingGeometry::calcProportion(const QVariant &size, const double
 double MUPaintSettingGeometry::calcWidth(const QVariant &v)
 {
     QVariant vv;
-    if(v.canConvert(QVariant::Double))
+    switch (qTypeId(v)){
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_LongLong:
+    case QMetaType_ULongLong:
         vv=v.toDouble();
-    else if(v.canConvert(QVariant::String) || v.canConvert(QVariant::ByteArray))
-        vv=v.toByteArray();
+        break;
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
+        vv=v.toString();
+        break;
+    default:
+        vv={};
+    }
     vv=vv.isValid()?vv:this->width;
     return MUGeometryUtil::calcProportion(vv, this->desktopAvailableWidth());
 }
@@ -64,8 +76,17 @@ double MUPaintSettingGeometry::calcWidth(const QVariant &v)
 double MUPaintSettingGeometry::calcHeight(const QVariant &v)
 {
     QVariant vv;
-    if(v.canConvert(QVariant::Double))
+    switch (qTypeId(v)){
+    case QMetaType_Double:
+    case QMetaType_Int:
+    case QMetaType_UInt:
+    case QMetaType_LongLong:
+    case QMetaType_ULongLong:
         vv=v.toDouble();
+        break;
+    default:
+        vv={};
+    }
     vv=vv.isValid()?vv:this->height;
     return MUGeometryUtil::calcProportion(vv, this->desktopAvailableHeight());
 }
@@ -74,8 +95,8 @@ void MUPaintSettingGeometry::replaceInvalid(MUPaintSettingGeometry &baseObject)
 {
     auto&control=*this;
 
-    baseObject.height                  =baseObject.height.isValid()?baseObject.height:"0.5%";
-    baseObject.width                   =baseObject.width.isValid()?baseObject.width:"0.5%";
+    baseObject.height                  =baseObject.height.isValid()?baseObject.height:qsl("0.5%");
+    baseObject.width                   =baseObject.width.isValid()?baseObject.width:qsl("0.5%");
 
     baseObject.anchorsMarginOnTop      =(baseObject.anchorsMarginOnTop.isValid())?0:baseObject.anchorsMarginOnTop;
     baseObject.anchorsMarginOnBottom   =(baseObject.anchorsMarginOnBottom.isValid())?0:baseObject.anchorsMarginOnBottom;

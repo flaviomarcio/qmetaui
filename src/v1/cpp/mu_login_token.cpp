@@ -1,5 +1,6 @@
 #include "./mu_login_token.h"
 #include <QMetaProperty>
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MULoginTokenPvt*>(this->p)
@@ -100,9 +101,8 @@ MULoginToken &MULoginToken::operator=(const QVariantHash &v)
     for(int i = 0; i < metaObject->propertyCount(); ++i) {
         auto property=metaObject->property(i);
         auto vv=v.value(property.name());
-        if(vv.type()!=property.type() && property.type()==QVariant::DateTime){
+        if(qTypeId(vv)!=qTypeId(property) && qTypeId(property)==QMetaType_QDateTime)
             vv=vv.toDateTime();
-        }
         property.write(this,vv);
     }
     return*this;

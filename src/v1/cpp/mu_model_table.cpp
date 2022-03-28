@@ -5,6 +5,7 @@
 #include "./mu_cache_util.h"
 
 #include <QVariantHash>
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUModelTablePvt*>(this->p)
@@ -35,7 +36,7 @@ public:
     QHash<int,QByteArray> columnNames;
     QHash<int,int> columnRole;
     QVariantHash headerSetting;
-    QMap<int,QVariantMap> columnSetting;
+    QMap<int,QVariantHash> columnSetting;
     QVariantHash setting;
     QVariantHash rowSetting;
     QMap<QByteArray,int> columnIndex;
@@ -103,69 +104,78 @@ public:
         auto&p=*this;        
         auto setting = this->variantUtil.toVar(vSetting);
         if(setting.isValid()){
-            if(setting.canConvert(QVariant::List) || setting.canConvert(QVariant::Map) || setting.canConvert(QVariant::StringList)){
-                QVariantList list;
-                if(setting.type()==QVariant::Map || setting.type()==QVariant::Hash){
-                    QMap<int, QVariant> map;
-                    QMapIterator<QString, QVariant> i(setting.toMap());
-                    int maxCol=-1;
-                    while (i.hasNext()) {
-                        i.next();
-                        map.insert(i.key().toInt(), i.value());
-                        if(i.key().toInt()>maxCol)
-                            maxCol=i.key().toInt();
-                    }
-                    for (int i = 0; i <= maxCol; ++i){
-                        auto v=map.value(i);
-                        list<<v;
-                    }
+            QVariantList list;
+            switch (qTypeId(setting)){
+            case QMetaType_QVariantHash:
+            case QMetaType_QVariantMap:
+            {
+                QHash<int, QVariant> map;
+                QHashIterator<QString, QVariant> i(setting.toHash());
+                int maxCol=-1;
+                while (i.hasNext()) {
+                    i.next();
+                    map.insert(i.key().toInt(), i.value());
+                    if(i.key().toInt()>maxCol)
+                        maxCol=i.key().toInt();
                 }
-                else if(setting.type()==QVariant::List){
-                    list=setting.toList();
+                for (int i = 0; i <= maxCol; ++i){
+                    auto v=map.value(i);
+                    list<<v;
                 }
-                else if(setting.type()==QVariant::StringList){
-                    for(auto&s:setting.toStringList())
-                        list<<s;
-                }
+                break;
+            }
+            case QMetaType_QVariantList:
+            case QMetaType_QStringList:
+            {
+                    QVariantList list=setting.toList();
 
-                for (int colIndex = 0; colIndex < list.count(); ++colIndex){
-                    auto v=list.at(colIndex);
-                    QByteArray roleName;
-                    QVariantMap map;
-                    if(v.type()==QVariant::Map || v.type()==QVariant::Hash){
-                        map = v.toMap();
+                    for (int colIndex = 0; colIndex < list.count(); ++colIndex){
+                        auto v=list.at(colIndex);
+                        QByteArray roleName;
+                        QVariantHash map;
+                        switch (qTypeId(v)){
+                        case QMetaType_QVariantHash:
+                        case QMetaType_QVariantMap:
+                        {
+                            map = v.toHash();
 
-                        if(map.contains(QStringLiteral("role")))
-                            roleName=map.value(QStringLiteral("role")).toByteArray().trimmed();
-                        else if(map.contains(QStringLiteral("display")))
-                            roleName=map.value(QStringLiteral("display")).toByteArray().trimmed();
-#if Q_MU_LOG
-                        else
-                            mWarning()<<"Invalid property [role] or [display] in : "<<map;
-#endif
-                    } else {
-                        roleName=v.toByteArray().trimmed();
+                            if(map.contains(QStringLiteral("role")))
+                                roleName=map.value(QStringLiteral("role")).toByteArray().trimmed();
+                            else if(map.contains(QStringLiteral("display")))
+                                roleName=map.value(QStringLiteral("display")).toByteArray().trimmed();
+    #if Q_MU_LOG
+                            else
+                                mWarning()<<"Invalid property [role] or [display] in : "<<map;
+    #endif
+                            break;
+                        }
+                        default:
+                            roleName=v.toByteArray().trimmed();
+                        }
+
+                        if(!roleName.isEmpty()){
+                            int roleIndex=-1;
+                            if(p.roleIndex.contains(roleName))
+                                roleIndex=p.roleIndex[roleName];
+                            roleIndex=(roleIndex>=0)?roleIndex:Qt::maxRole+colIndex;
+                            auto map=v.toHash();
+                            map.insert(QStringLiteral("horizontalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("horizontalAlignment"))));
+                            map.insert(QStringLiteral("verticalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("verticalAlignment"))));
+                            map.insert(QStringLiteral("type") , variantUtil.toVariantType(map.value(QStringLiteral("type"))));
+
+                            p.columnRole.insert(colIndex, roleIndex);
+                            p.roleNames.insert(roleIndex, roleName);
+                            p.columnNames.insert(colIndex, roleName);
+                            p.columnSetting.insert(colIndex, map);
+                            p.columnIndex.insert(roleName,colIndex);
+                            p.roleIndex.insert(roleName,roleIndex);
+
+                        }
                     }
-
-                    if(!roleName.isEmpty()){
-                        int roleIndex=-1;
-                        if(p.roleIndex.contains(roleName))
-                            roleIndex=p.roleIndex[roleName];
-                        roleIndex=(roleIndex>=0)?roleIndex:Qt::maxRole+colIndex;
-                        auto map=v.toMap();
-                        map.insert(QStringLiteral("horizontalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("horizontalAlignment"))));
-                        map.insert(QStringLiteral("verticalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("verticalAlignment"))));
-                        map.insert(QStringLiteral("type") , variantUtil.toVariantType(map.value(QStringLiteral("type"))));
-
-                        p.columnRole.insert(colIndex, roleIndex);
-                        p.roleNames.insert(roleIndex, roleName);
-                        p.columnNames.insert(colIndex, roleName);
-                        p.columnSetting.insert(colIndex, map);
-                        p.columnIndex.insert(roleName,colIndex);
-                        p.roleIndex.insert(roleName,roleIndex);
-
-                    }
-                }
+                    break;
+            }
+            default:
+                break;
             }
         }
 
@@ -183,9 +193,9 @@ public:
         return this->list[key];
     }
 
-    QVariantMap rowData(int row)const
+    QVariantHash rowData(int row)const
     {
-        QVariantMap map;
+        QVariantHash map;
         QHashIterator<int,QByteArray> i(this->roleNames);
         while (i.hasNext()) {
             i.next();
@@ -360,15 +370,15 @@ QVariant MUModelTable::columnWidth(int column) const
     return v;
 }
 
-QVariant::Type MUModelTable::columnType(int column) const
+int MUModelTable::columnType(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto v=QVariant::Invalid;
+    auto v=QMetaType::UnknownType;
     if(map.contains(QStringLiteral("type"))){
-        v=QVariant::Type(map.value(QStringLiteral("type")).toInt());
+        v=QMetaType::Type(map.value(QStringLiteral("type")).toInt());
         if(p.headerSetting.contains(QStringLiteral("type")))
-            v=QVariant::Type(p.headerSetting.value(QStringLiteral("type")).toInt());
+            v=QMetaType::Type(p.headerSetting.value(QStringLiteral("type")).toInt());
     }
     return v;
 }
@@ -462,23 +472,28 @@ void MUModelTable::clear()
 void MUModelTable::append(const QVariant &vValue)
 {
     dPvt();
-    QList<QVariantMap> lst;
+    QList<QVariantHash> lst;
     auto v=p.variantUtil.toVar(vValue);
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash){
-        lst<<v.toMap();
-    }
-    else if(v.type()==QVariant::List){
+    switch (qTypeId(v)){
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
+        lst<<v.toHash();
+        break;
+    case QMetaType_QVariantList:
+    {
         for(auto&v:v.toList()){
-            auto m=v.toMap();
-            if(!m.isEmpty()){
+            auto m=v.toHash();
+            if(!m.isEmpty())
                 lst<<m;
-            }
         }
+        break;
     }
-
+    default:
+        break;
+    }
 
     if(!lst.isEmpty()){
-        auto map=QVariantMap(lst.first());
+        auto map=QVariantHash(lst.first());
         if(p.roleNames.isEmpty()){
             auto v=QVariant(map.keys());
             this->setHeaderSetting(v);
@@ -495,7 +510,7 @@ void MUModelTable::append(const QVariant &vValue)
         this->beginInsertRows( QModelIndex() , __rowStart, __rowFinish );
         for( auto &map: lst ){
             auto&row = p.rowCount;
-            QMapIterator<QString, QVariant> i(map);
+            QHashIterator<QString, QVariant> i(map);
             while (i.hasNext()) {
                 i.next();
                 const auto&roleName=i.key().toUtf8();
@@ -516,13 +531,20 @@ void MUModelTable::setRows(const QVariant &vRows)
     dPvt();
     p.clear();
     auto v=p.variantUtil.toVar(vRows);
-    if(v.type()==QVariant::Map || v.type()==QVariant::Hash){
+    switch (qTypeId(v)){
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
         this->append(v);
-    }
-    else if(v.type()==QVariant::List || v.type()==QVariant::StringList){
+        break;
+    case QMetaType_QVariantList:
+    case QMetaType_QStringList:
+    {
         for(auto&i:v.toList()){
             this->append(i);
         }
+    }
+    default:
+        break;
     }
 }
 
@@ -531,10 +553,18 @@ QVariant MUModelTable::setJson(const QVariant &v)
     dPvt();
     p.clear();
     QVariant data;
-    if(v.canConvert(QVariant::Map) || v.canConvert(QVariant::List))
+    switch (qTypeId(v)){
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
         data=v;
-    else if(v.canConvert(QVariant::String) || v.canConvert(QVariant::ByteArray))
+        break;
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
         data=QJsonDocument::fromJson(v.toByteArray()).toVariant();
+        break;
+    default:
+        break;
+    }
 
     if(data.isValid())
         this->append(data);
@@ -546,10 +576,18 @@ QVariant MUModelTable::setCBor(const QVariant &v)
     dPvt();
     p.clear();
     QVariant data;
-    if(v.canConvert(QVariant::Map) || v.canConvert(QVariant::List))
+    switch (qTypeId(v)){
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
         data=v;
-    else if(v.canConvert(QVariant::String) || v.canConvert(QVariant::ByteArray))
+        break;
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
         data=QCborValue::fromCbor(v.toByteArray()).toVariant();
+        break;
+    default:
+        break;
+    }
 
     if(data.isValid())
         this->append(data);
@@ -574,11 +612,11 @@ QVariantHash MUModelTable::toHash()
     return p.toHash();
 }
 
-QVariantMap MUModelTable::columnSetting() const
+QVariantHash MUModelTable::columnSetting() const
 {
     dPvt();
-    QVariantMap list;
-    QMapIterator<int, QVariantMap> i(p.columnSetting);
+    QVariantHash list;
+    QMapIterator<int, QVariantHash> i(p.columnSetting);
     while (i.hasNext()) {
         i.next();
         auto map=i.value();
@@ -588,14 +626,14 @@ QVariantMap MUModelTable::columnSetting() const
     return list;
 }
 
-QVariantMap MUModelTable::rowSetting() const
+QVariantHash MUModelTable::rowSetting() const
 {
     dPvt();
-    QVariantMap list;
+    QVariantHash list;
     QHashIterator<QString, QVariant> i(p.rowSetting);
     while (i.hasNext()) {
         i.next();
-        auto map=i.value().toMap();
+        auto map=i.value().toHash();
         map.insert(QStringLiteral("column"),i.key());
         list.insert(i.key(), map);
     }

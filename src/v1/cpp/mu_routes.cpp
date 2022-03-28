@@ -3,6 +3,8 @@
 #include "./mu_string_util.h"
 #include "./mu_request.h"
 #include <QFile>
+#include <QStm>
+#include <QBitArray>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MURoutesPvt*>(this->p)
@@ -31,24 +33,47 @@ public:
         auto metaObject=this->parent->metaObject();
         for(int i = 0; i < metaObject->propertyCount(); ++i) {
             auto property=metaObject->property(i);
-            if(property.type()==QVariant::String || property.type()==QVariant::ByteArray || property.type()==QVariant::Char || property.type()==QVariant::BitArray)
-                property.write(this->parent,QString());
-            else if(property.type()==QVariant::Double || property.type()==QVariant::Int || property.type()==QVariant::UInt || property.type()==QVariant::LongLong || property.type()==QVariant::ULongLong)
+            switch (qTypeId(property)){
+            case QMetaType_QString:
+                property.write(this->parent, QString{});
+                break;
+            case QMetaType_QByteArray:
+                property.write(this->parent, QByteArray{});
+                break;
+            case QMetaType_QChar:
+                property.write(this->parent, QChar{});
+                break;
+            case QMetaType_QBitArray:
+                property.write(this->parent, QBitArray{});
+                break;
+            case QMetaType_Double:
+            case QMetaType_Int:
+            case QMetaType_UInt:
+            case QMetaType_LongLong:
+            case QMetaType_ULongLong:
                 property.write(this->parent,0);
-            else if(property.type()==QVariant::Date)
-                property.write(this->parent,QDate());
-            else if(property.type()==QVariant::Time)
-                property.write(this->parent,QTime());
-            else if(property.type()==QVariant::DateTime)
-                property.write(this->parent,QDateTime());
-            else if(property.type()==QVariant::Bool)
+                break;
+            case QMetaType_QDate:
+                property.write(this->parent,QDate{});
+                break;
+            case QMetaType_QTime:
+                property.write(this->parent,QTime{});
+                break;
+            case QMetaType_QDateTime:
+                property.write(this->parent,QDateTime{});
+                break;
+            case QMetaType_Bool:
                 property.write(this->parent,false);
-            else if(property.type()==QVariant::Uuid)
-                property.write(this->parent,QUuid());
-            else if(property.type()==QVariant::Url)
-                property.write(this->parent,QUrl());
-            else
-                property.write(this->parent,QVariant());
+                break;
+            case QMetaType_QUuid:
+                property.write(this->parent,QUuid{});
+                break;
+            case QMetaType_QUrl:
+                property.write(this->parent,QUrl{});
+                break;
+            default:
+                property.write(this->parent,QVariant{});
+            }
         }
     }
 
@@ -62,7 +87,7 @@ public:
 #else
                 QString enviroment="release";
 #endif
-                auto vMap=QJsonDocument::fromJson(file.readAll()).toVariant().toMap();
+                auto vMap=QJsonDocument::fromJson(file.readAll()).toVariant().toHash();
                 file.close();
                 auto setting=vMap.value(QStringLiteral("settings")).toHash();
                 if(!vMap.isEmpty()){
@@ -91,7 +116,7 @@ public:
                         this->server_hostname = settings.value(QStringLiteral("hostname")).toString();
                     this->server_port = settings.value(QStringLiteral("port")).toInt();
                     auto _server_route=settings.value(QStringLiteral("route")).toHash();
-                    this->server = QStringLiteral("%1://%2:%3").arg(server_protocol).arg(server_hostname).arg(server_port);
+                    this->server = QStringLiteral("%1://%2:%3").arg(server_protocol, server_hostname).arg(server_port);
 
                     this->server_route.clear();
                     QHashIterator<QString, QVariant> i(_server_route);

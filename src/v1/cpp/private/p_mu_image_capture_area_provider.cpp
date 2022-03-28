@@ -1,10 +1,12 @@
 #include "./p_mu_image_capture_area_provider.h"
 #include "../mu_application.h"
+#include <QPixmap>
+#include <QStm>
 
 static void staticInit()
 {
     auto&engine=MUApplication::engine();
-    engine.addImageProvider(QStringLiteral("muimagecapturearea"), MUImageCaptureAreaProvider::instance().imageProvider());
+    engine.addImageProvider(qsl("muimagecapturearea"), MUImageCaptureAreaProvider::instance().imageProvider());
 }
 
 static MUImageCaptureAreaProvider*muImageCaptureArea=nullptr;
@@ -17,8 +19,15 @@ static void init()
 Q_COREAPP_STARTUP_FUNCTION(init)
 
 
-MUImageCaptureAreaProvider::MUImageCaptureAreaProvider(QObject *parent):QObject(parent), QQuickImageProvider(Pixmap)
+MUImageCaptureAreaProvider::MUImageCaptureAreaProvider(QObject *parent)
+    :
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+      QObject(parent), QQuickImageProvider(Pixmap)
+#else
+      QQuickImageProvider(Pixmap)
+#endif
 {
+    Q_UNUSED(parent)
     this->pixmapNo=QPixmap::fromImage(QImage(10,10,QImage::Format_Mono));
 }
 
@@ -48,7 +57,7 @@ QPixmap MUImageCaptureAreaProvider::requestPixmap(const QString &id, QSize *size
     Q_UNUSED(requestedSize)
     Q_UNUSED(id)
     Q_UNUSED(size)
-    QPixmap result = (id=="")?this->pixmapNo:this->pixelmap;
+    QPixmap result = (id==qsl_null)?this->pixmapNo:this->pixelmap;
 
 
     if(result.isNull()) {
@@ -66,5 +75,5 @@ void MUImageCaptureAreaProvider::captureResourceAdd(QPixmap pixelmap)
 {
     static int i=0;
     this->pixelmap=pixelmap;
-    emit captureResource(QString("image://muimagecapturearea/image%1").arg(++i));
+    emit captureResource(qsl("image://muimagecapturearea/image%1").arg(++i));
 }

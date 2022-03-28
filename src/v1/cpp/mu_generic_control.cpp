@@ -1,6 +1,7 @@
 #include "./mu_generic_control.h"
 
 #include <QMutex>
+#include <QStm>
 
 uint qHash( const QVariant & var )
 {
@@ -8,65 +9,39 @@ uint qHash( const QVariant & var )
         //return -1;
         Q_ASSERT(0);
 
-    switch ( var.type() )
+    switch ( qTypeId(var) )
     {
-        case QVariant::Int:
+        case QMetaType_Int:
                 return qHash( var.toInt() );
             break;
-        case QVariant::UInt:
+        case QMetaType_UInt:
                 return qHash( var.toUInt() );
-            break;
-        case QVariant::Bool:
+        case QMetaType_Bool:
                 return qHash( var.toUInt() );
-            break;
-        case QVariant::Double:
+        case QMetaType_Double:
                 return qHash( var.toUInt() );
-            break;
-        case QVariant::LongLong:
+        case QMetaType_LongLong:
                 return qHash( var.toLongLong() );
-            break;
-        case QVariant::ULongLong:
+        case QMetaType_ULongLong:
                 return qHash( var.toULongLong() );
-            break;
-        case QVariant::String:
+        case QMetaType_QString:
                 return qHash( var.toString() );
-            break;
-        case QVariant::Char:
+        case QMetaType_QChar:
                 return qHash( var.toChar() );
-            break;
-        case QVariant::StringList:
+        case QMetaType_QStringList:
                 return qHash( var.toString() );
-            break;
-        case QVariant::ByteArray:
-                return qHash( var.toByteArray() );
-            break;
-        case QVariant::Date:
-        case QVariant::Time:
-        case QVariant::DateTime:
-        case QVariant::Url:
-        case QVariant::Locale:
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        case QVariant::RegularExpression:
-#else
-        case QVariant::RegExp:
-#endif
-                return qHash( var.toString() );
-            break;
-        case QVariant::Map:
-        case QVariant::List:
-        case QVariant::BitArray:
-        case QVariant::Size:
-        case QVariant::SizeF:
-        case QVariant::Rect:
-        case QVariant::LineF:
-        case QVariant::Line:
-        case QVariant::RectF:
-        case QVariant::Point:
-        case QVariant::PointF:
-            // not supported yet
-            break;
-        case QVariant::UserType:
-        case QVariant::Invalid:
+        case QMetaType_QByteArray:
+            return qHash( var.toByteArray() );
+        case QMetaType_QDate:
+            return qHash( var.toDate().toString() );
+        case QMetaType_QTime:
+            return qHash( var.toTime().toString() );
+        case QMetaType_QDateTime:
+            return qHash( var.toDateTime().toString() );
+        case QMetaType_QUrl:
+            return qHash( var.toUrl().toString() );
+        case QMetaType_QUuid:
+            return qHash( var.toUuid().toString() );
         default:
             return -1;
     }

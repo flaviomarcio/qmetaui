@@ -2,6 +2,7 @@
 #include "./mu_app_engine_routes.h"
 #include "./mu_cache_util.h"
 #include "./mu_request.h"
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUAppSessionPvt*>(this->p)
@@ -75,8 +76,11 @@ public:
 
     bool save(const QVariant&data)
     {
-        auto vMap=data.toHash();
-        if(data.canConvert(QVariant::Map) || data.canConvert(QVariant::Hash)){
+        switch (qTypeId(data)){
+        case QMetaType_QVariantMap:
+        case QMetaType_QVariantHash:
+        {
+            auto vMap=data.toHash();
             if(!vMap.contains(QStringLiteral("response"))){
                 if(vMap.contains(QStringLiteral("repository")) && vMap.contains(QStringLiteral("app"))){
                     QVariantHash map;
@@ -88,19 +92,23 @@ public:
                 this->setData(vMap);
                 return true;
             }
+            break;
+        }
+        default:
+            break;
         }
         return false;
+
     }
 
     bool isDataValid()
     {
-        bool __return = true;
         if (this->app.version().toDouble()<=0)
-            __return = false;
+            return (this->valid=false);
+
         if (this->repository.url().isEmpty())
-            __return = false;
-        this->valid = __return;
-        return __return;
+            return (this->valid=false);
+        return (this->valid=true);
     }
 
     void cancel()
@@ -117,23 +125,23 @@ public:
 public slots:
     bool getData()
     {
-        if (this->request.canStart()){
-            emit this->session->startloadingInfo();
+        if (!this->request.canStart())
+            return false;
 
-            auto onErr=[this](const MURequest*){
-                emit this->session->errorLoadingInfo();
-            };
+        emit this->session->startloadingInfo();
 
-            auto onOk=[this](const MURequest*r){
-                auto vBody=r->responseBodyMap();
-                this->save(vBody);
-                emit this->session->finishLoadingInfo();
-            };
-            this->request.setHeader(this->routes.headers());
-            this->request.setMethod(MUEnumRequest::Method::rmGet);
-            return this->request.start(this->routes.info(), onOk, onErr);
-        }
-        return false;
+        auto onErr=[this](const MURequest*){
+            emit this->session->errorLoadingInfo();
+        };
+
+        auto onOk=[this](const MURequest*r){
+            auto vBody=r->responseBodyMap();
+            this->save(vBody);
+            emit this->session->finishLoadingInfo();
+        };
+        this->request.setHeader(this->routes.headers());
+        this->request.setMethod(MUEnumRequest::Method::rmGet);
+        return this->request.start(this->routes.info(), onOk, onErr);
     }
 
     void errorLoading()
@@ -150,9 +158,8 @@ public slots:
 
     void finishLoading()
     {
-        if (this->isDataValid()){
+        if (this->isDataValid())
             emit this->session->appStart();
-        }
     }
 };
 

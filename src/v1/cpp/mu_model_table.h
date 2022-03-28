@@ -33,7 +33,7 @@ public:
 
     Q_INVOKABLE virtual QVariant columnHeight() const;
     Q_INVOKABLE virtual QVariant columnWidth(int column = 0) const;
-    Q_INVOKABLE virtual QVariant::Type columnType(int column = 0) const;
+    Q_INVOKABLE virtual int columnType(int column = 0) const;
 
     Q_INVOKABLE virtual QColor columnForeground(int column = 0) const;
     Q_INVOKABLE virtual QColor columnBackground(int column = 0) const;
@@ -66,8 +66,8 @@ public:
     Q_INVOKABLE virtual void setRowSetting(const QVariant&setting);
 
     Q_INVOKABLE virtual QVariantHash headerSetting()const;
-    Q_INVOKABLE virtual QVariantMap columnSetting()const;
-    Q_INVOKABLE virtual QVariantMap rowSetting()const;
+    Q_INVOKABLE virtual QVariantHash columnSetting()const;
+    Q_INVOKABLE virtual QVariantHash rowSetting()const;
 
 signals:
 

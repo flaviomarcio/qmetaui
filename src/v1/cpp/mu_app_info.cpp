@@ -1,5 +1,6 @@
 #include "./mu_app_info.h"
 #include <QString>
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUAppInfoPvt*>(this->p)
@@ -9,8 +10,8 @@ public:
 
     bool    strong  = false;
     bool    show    = false;
-    QString display = QStringLiteral("Magma Tecnologia");
-    QString version = QStringLiteral("ws1.0");
+    QString display = qsl("Magma Tecnologia");
+    QString version = qsl("ws1.0");
     MUAppInfo*parent=nullptr;
     explicit MUAppInfoPvt(MUAppInfo*parent):QObject(parent){
         this->parent=parent;

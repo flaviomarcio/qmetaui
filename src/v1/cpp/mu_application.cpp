@@ -2,6 +2,7 @@
 #include "./mu_register.h"
 #include "./mu_notification.h"
 #include <QApplication>
+#include <QStm>
 
 Q_GLOBAL_STATIC(QList<MUApplicationMethodInit>, __methodInit);
 
@@ -37,7 +38,7 @@ QQmlApplicationEngine &MUApplication::engine(QQmlApplicationEngine &v)
 {
     if(static_engine==nullptr){
         static_engine=&v;
-        v.rootContext()->setContextProperty(QStringLiteral("qApp"), QApplication::instance());
+        v.rootContext()->setContextProperty(qsl("qApp"), QApplication::instance());
         MURegister::init(v);
         for(auto&v:methodInit)
             v();
