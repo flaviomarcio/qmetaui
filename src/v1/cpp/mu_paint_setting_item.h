@@ -9,10 +9,7 @@ class Q_MU_EXPORT MUPaintSettingItem : public QObject
 public:
     MU_DECLARE_MUStringUtil()
     Q_INVOKABLE explicit MUPaintSettingItem(QObject *parent = nullptr);
-    Q_INVOKABLE explicit MUPaintSettingItem(const MUPaintSettingItem &parent) : QObject(nullptr){
-        Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
-                    setProperty( prop.constData(), parent.property( prop.constData() ) );
-    }
+    explicit MUPaintSettingItem(const MUPaintSettingItem &parent);
 
     Q_INVOKABLE MUPaintSettingState&active();
     Q_INVOKABLE MUPaintSettingState&focused();

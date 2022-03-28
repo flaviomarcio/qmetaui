@@ -3,20 +3,20 @@
 #include "./mu_global.h"
 #include "./mu_object.h"
 
-#include <QVariantMap>
+#include <QVariantHash>
 
 class Q_MU_EXPORT MUAppRepository : public MUObject
 {
     Q_OBJECT
 public:
 
-    Q_PROPERTY(QVariantMap  headers  READ headers   WRITE setHeaders  NOTIFY headersChanged )
-    Q_PROPERTY(QString      hostName READ hostName  WRITE setHostName NOTIFY urlChanged     )
-    Q_PROPERTY(QString      method   READ method    WRITE setMethod   NOTIFY urlChanged     )
-    Q_PROPERTY(QVariant     protocol READ protocol  WRITE setProtocol NOTIFY urlChanged     )
-    Q_PROPERTY(int          port     READ port      WRITE setPort     NOTIFY urlChanged     )
-    Q_PROPERTY(QString      route    READ route     WRITE setRoute    NOTIFY urlChanged     )
-    Q_PROPERTY(QString      url      READ url                         NOTIFY urlChanged     )
+    Q_PROPERTY(QVariantHash headers  READ headers   WRITE setHeaders  NOTIFY headersChanged)
+    Q_PROPERTY(QString      hostName READ hostName  WRITE setHostName NOTIFY hostNameChanged)
+    Q_PROPERTY(QString      method   READ method    WRITE setMethod   NOTIFY methodChanged)
+    Q_PROPERTY(QVariant     protocol READ protocol  WRITE setProtocol NOTIFY protocolChanged)
+    Q_PROPERTY(int          port     READ port      WRITE setPort     NOTIFY portChanged)
+    Q_PROPERTY(QString      route    READ route     WRITE setRoute    NOTIFY routeChanged)
+    Q_PROPERTY(QString      url      READ url                         NOTIFY urlChanged)
 
     /**
      * @brief MUAppRepository
@@ -38,8 +38,8 @@ public:
      * @brief headers
      * @return
      */
-    Q_INVOKABLE virtual QVariantMap headers() const;
-    Q_INVOKABLE virtual void setHeaders(const QVariantMap &v);
+    Q_INVOKABLE virtual QVariantHash headers() const;
+    Q_INVOKABLE virtual void setHeaders(const QVariantHash &v);
 
 
     /**
@@ -92,8 +92,12 @@ public:
 
 private:
     void*p=nullptr;
-
 signals:
     void headersChanged();
+    void hostNameChanged();
+    void methodChanged();
+    void protocolChanged();
+    void portChanged();
+    void routeChanged();
     void urlChanged();
 };

@@ -7,6 +7,9 @@
 #define dPvt()\
     auto&p = *reinterpret_cast<MUAppSessionPvt*>(this->p)
 
+
+Q_GLOBAL_STATIC(MUAppSession, __i)
+
 class MUAppSessionPvt: public QObject {
 public:
     bool valid = false;
@@ -59,32 +62,32 @@ public:
 
     bool save()
     {
-        QVariantMap data, response;
-        response.insert(QStringLiteral("repository"),this->repository.toHash());
-        response.insert(QStringLiteral("app"),this->app.toHash());
-        data.insert(QStringLiteral("response"), response);
+        QVariantHash data, response;
+        response.insert(qsl("repository"),this->repository.toHash());
+        response.insert(qsl("app"),this->app.toHash());
+        data.insert(qsl("response"), response);
         return this->save(data);
     }
 
     void setData(const QVariantHash&v)
     {
         this->data=v;
-        auto response=this->data.value(QStringLiteral("response")).toHash();
-        this->repository=response.value(QStringLiteral("repository")).toHash();
-        this->app=response.value(QStringLiteral("app")).toHash();
+        auto response=this->data.value(qsl("response")).toHash();
+        this->repository=response.value(qsl("repository")).toHash();
+        this->app=response.value(qsl("app")).toHash();
     }
 
     bool save(const QVariant&data)
     {
         switch (qTypeId(data)){
-        case QMetaType_QVariantMap:
         case QMetaType_QVariantHash:
+        case QMetaType_QVariantMap:
         {
             auto vMap=data.toHash();
-            if(!vMap.contains(QStringLiteral("response"))){
-                if(vMap.contains(QStringLiteral("repository")) && vMap.contains(QStringLiteral("app"))){
+            if(!vMap.contains(qsl("response"))){
+                if(vMap.contains(qsl("repository")) && vMap.contains(qsl("app"))){
                     QVariantHash map;
-                    map.insert(QStringLiteral("response"),vMap);
+                    map.insert(qsl("response"),vMap);
                     vMap=map;
                 }
             }
@@ -179,8 +182,7 @@ MUAppSession::~MUAppSession()
 
 MUAppSession &MUAppSession::i()
 {
-    static MUAppSession __i;
-    return __i;
+    return *__i;
 }
 
 bool MUAppSession::load()

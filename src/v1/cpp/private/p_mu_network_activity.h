@@ -18,42 +18,40 @@ class Q_MU_EXPORT MUNetworkActivity : public QThread
     Q_OBJECT
 public:
 
-//    class Action{
-
-//    };
-
-    explicit MUNetworkActivity():QThread(nullptr){
+    explicit MUNetworkActivity() : QThread{nullptr}
+    {
         this->moveToThread(this);
     }
-    ~MUNetworkActivity(){
+    ~MUNetworkActivity()
+    {
     }
 
     QWebSocket m_socket;
     QString hostName;
     int port=0;
+    QList<QTimer*> lst_timerInterface;
 
     void run(){
-        QList<QTimer*> lst_timerInterface;
-        auto doRun=[&lst_timerInterface, this](){
+
+        auto doRun=[this](){
             {
                 auto timer=new QTimer(nullptr);
-                timer=new QTimer(nullptr);
                 timer->setInterval(5000);
-                QObject::connect(timer, &QTimer::timeout, this, &MUNetworkActivity::on_check_interface);
+                QObject::connect(timer, &QTimer::timeout, this, &MUNetworkActivity::onCheckInterface);
                 lst_timerInterface<<timer;
             }
 
             {
                 auto timer=new QTimer(nullptr);
                 timer->setInterval(10000);
-                QObject::connect(timer, &QTimer::timeout, this, &MUNetworkActivity::on_check_service);
+                QObject::connect(timer, &QTimer::timeout, this, &MUNetworkActivity::onCheckService);
                 lst_timerInterface<<timer;
             }
 
             {
                 auto timer=new QTimer(nullptr);
                 timer->setInterval(10000);
-                QObject::connect(timer, &QTimer::timeout, this, &MUNetworkActivity::on_check_backoffice);
+                QObject::connect(timer, &QTimer::timeout, this, &MUNetworkActivity::onCheckBackoffice);
                 lst_timerInterface<<timer;
             }
 
@@ -61,7 +59,7 @@ public:
                 timer->start();
 
         };
-        QTimer::singleShot(1, doRun);
+        QTimer::singleShot(1, this, doRun);
         this->exec();
         for(auto&timer:lst_timerInterface){
             timer->stop();
@@ -69,19 +67,19 @@ public:
         }
     }
 public slots:
-    virtual void on_check_interface()
+    virtual void onCheckInterface()
     {
         if(port>0)
             emit localActivity(this->interfaceIsWorking());
     }
 
-    virtual void on_check_service()
+    virtual void onCheckService()
     {
         if(port>0)
             this->serviceActivity(this->serviceIsWorking());
     }
 
-    virtual void on_check_backoffice()
+    virtual void onCheckBackoffice()
     {
         if(port>0)
             this->backOfficeActivity(this->backOfficeIsWorking());
@@ -89,8 +87,8 @@ public slots:
 private:
     bool interfaceIsWorking(){
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-        QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
-        for (QNetworkInterface i : interfaces){
+        auto interfaces = QNetworkInterface::allInterfaces();
+        for (auto& i : interfaces){
             if(i.flags().testFlag(i.IsUp))
                 return true;
         }

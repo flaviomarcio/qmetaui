@@ -4,7 +4,7 @@
 
 Q_GLOBAL_STATIC(MUObjectUtil,__i)
 
-MUObjectUtil::MUObjectUtil(QObject *parent) : QObject(parent)
+MUObjectUtil::MUObjectUtil(QObject *parent) : QObject{parent}
 {
 
 }

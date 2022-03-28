@@ -2,6 +2,7 @@
 #include "./mu_object_util.h"
 #include "./mu_string_util.h"
 #include "./mu_request.h"
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MULoginEngineRoutesPvt*>(this->p)
@@ -20,42 +21,45 @@ public:
     QString session_salt    ;
 
     MULoginEngineRoutes*parent=nullptr;
-    explicit MULoginEngineRoutesPvt(MULoginEngineRoutes*parent):QObject(parent){
+    explicit MULoginEngineRoutesPvt(MULoginEngineRoutes*parent):QObject(parent)
+    {
         this->parent=parent;
     }
-    virtual ~MULoginEngineRoutesPvt(){
+
+    virtual ~MULoginEngineRoutesPvt()
+    {
     }
 
     void load(){
         auto aclRoute=this->parent->route().value("acl").toMap();
 
-        auto route_account_register = aclRoute.value(QStringLiteral("account_reg"     ));
-        auto route_account_match    = aclRoute.value(QStringLiteral("account_match"   ));
-        auto route_account_verify   = aclRoute.value(QStringLiteral("account_verify"  ));
-        auto route_account_salt     = aclRoute.value(QStringLiteral("account_salt"    ));
-        auto route_account_login    = aclRoute.value(QStringLiteral("account_login"   ));
-        auto route_session_verify   = aclRoute.value(QStringLiteral("session_verify"  ));
-        auto route_session_check    = aclRoute.value(QStringLiteral("session_check"   ));
-        auto route_session_salt     = aclRoute.value(QStringLiteral("session_salt"    ));
+        auto route_account_register = aclRoute.value(qsl("account_reg"     ));
+        auto route_account_match    = aclRoute.value(qsl("account_match"   ));
+        auto route_account_verify   = aclRoute.value(qsl("account_verify"  ));
+        auto route_account_salt     = aclRoute.value(qsl("account_salt"    ));
+        auto route_account_login    = aclRoute.value(qsl("account_login"   ));
+        auto route_session_verify   = aclRoute.value(qsl("session_verify"  ));
+        auto route_session_check    = aclRoute.value(qsl("session_check"   ));
+        auto route_session_salt     = aclRoute.value(qsl("session_salt"    ));
 
-        route_account_register = stringUtil.isEmptySet(route_account_register , QStringLiteral("/v1/acl/account/reg")).toString();
-        route_account_match    = stringUtil.isEmptySet(route_account_match    , QStringLiteral("/v1/acl/account/match")).toString();
-        route_account_verify   = stringUtil.isEmptySet(route_account_verify   , QStringLiteral("/v1/acl/account/verify")).toString();
-        route_account_salt     = stringUtil.isEmptySet(route_account_salt     , QStringLiteral("/v1/acl/account/salt")).toString();
-        route_account_login    = stringUtil.isEmptySet(route_account_login    , QStringLiteral("/v1/acl/account/login")).toString();
-        route_session_verify   = stringUtil.isEmptySet(route_session_verify   , QStringLiteral("/v1/acl/session/verify")).toString();
-        route_session_check    = stringUtil.isEmptySet(route_session_check    , QStringLiteral("/v1/acl/session/check")).toString();
-        route_session_salt     = stringUtil.isEmptySet(route_session_salt     , QStringLiteral("/v1/acl/session/salt")).toString();
+        route_account_register = stringUtil.isEmptySet(route_account_register , qsl("/v1/acl/account/reg")).toString();
+        route_account_match    = stringUtil.isEmptySet(route_account_match    , qsl("/v1/acl/account/match")).toString();
+        route_account_verify   = stringUtil.isEmptySet(route_account_verify   , qsl("/v1/acl/account/verify")).toString();
+        route_account_salt     = stringUtil.isEmptySet(route_account_salt     , qsl("/v1/acl/account/salt")).toString();
+        route_account_login    = stringUtil.isEmptySet(route_account_login    , qsl("/v1/acl/account/login")).toString();
+        route_session_verify   = stringUtil.isEmptySet(route_session_verify   , qsl("/v1/acl/session/verify")).toString();
+        route_session_check    = stringUtil.isEmptySet(route_session_check    , qsl("/v1/acl/session/check")).toString();
+        route_session_salt     = stringUtil.isEmptySet(route_session_salt     , qsl("/v1/acl/session/salt")).toString();
 
         auto server=this->parent->server();
-        this->account_register = QStringLiteral("%1%2").arg(server, route_account_register.toString() );
-        this->account_match    = QStringLiteral("%1%2").arg(server, route_account_match   .toString() );
-        this->account_verify   = QStringLiteral("%1%2").arg(server, route_account_verify  .toString() );
-        this->account_login    = QStringLiteral("%1%2").arg(server, route_account_login   .toString() );
-        this->account_salt     = QStringLiteral("%1%2").arg(server, route_session_salt    .toString() );
-        this->session_verify   = QStringLiteral("%1%2").arg(server, route_session_verify  .toString() );
-        this->session_check    = QStringLiteral("%1%2").arg(server, route_session_check   .toString() );
-        this->session_salt     = QStringLiteral("%1%2").arg(server, route_session_salt    .toString() );
+        this->account_register = qsl("%1%2").arg(server, route_account_register.toString() );
+        this->account_match    = qsl("%1%2").arg(server, route_account_match   .toString() );
+        this->account_verify   = qsl("%1%2").arg(server, route_account_verify  .toString() );
+        this->account_login    = qsl("%1%2").arg(server, route_account_login   .toString() );
+        this->account_salt     = qsl("%1%2").arg(server, route_session_salt    .toString() );
+        this->session_verify   = qsl("%1%2").arg(server, route_session_verify  .toString() );
+        this->session_check    = qsl("%1%2").arg(server, route_session_check   .toString() );
+        this->session_salt     = qsl("%1%2").arg(server, route_session_salt    .toString() );
     }
 
 };

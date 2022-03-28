@@ -30,9 +30,23 @@ MULoginToken::MULoginToken(QObject *parent):MUObject(parent)
     this->p= new MULoginTokenPvt(this);
 }
 
-MULoginToken::~MULoginToken(){
+MULoginToken::~MULoginToken()
+{
     dPvt();
     delete&p;
+}
+
+MULoginToken &MULoginToken::operator=(const QVariantHash &v)
+{
+    auto metaObject=this->metaObject();
+    for(int i = 0; i < metaObject->propertyCount(); ++i) {
+        auto property=metaObject->property(i);
+        auto vv=v.value(property.name());
+        if(qTypeId(vv)!=qTypeId(property) && qTypeId(property)==QMetaType_QDateTime)
+            vv=vv.toDateTime();
+        property.write(this,vv);
+    }
+    return*this;
 }
 
 QDateTime MULoginToken::exp() const
@@ -95,26 +109,13 @@ void MULoginToken::setToken(const QByteArray &value)
     p.token = value;
 }
 
-MULoginToken &MULoginToken::operator=(const QVariantHash &v)
-{
-    auto metaObject=this->metaObject();
-    for(int i = 0; i < metaObject->propertyCount(); ++i) {
-        auto property=metaObject->property(i);
-        auto vv=v.value(property.name());
-        if(qTypeId(vv)!=qTypeId(property) && qTypeId(property)==QMetaType_QDateTime)
-            vv=vv.toDateTime();
-        property.write(this,vv);
-    }
-    return*this;
-}
-
 void MULoginToken::clear()
 {
     this->setIat(QDateTime());
     this->setExp(QDateTime());
-    this->setMd5("");
-    this->setPayload("");
-    this->setToken("");
+    this->setMd5({});
+    this->setPayload({});
+    this->setToken({});
 }
 
 bool MULoginToken::isRecent()

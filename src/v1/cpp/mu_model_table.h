@@ -10,11 +10,9 @@ class Q_MU_EXPORT MUModelTable : public QAbstractTableModel
     Q_OBJECT
 public:
 
-     Q_INVOKABLE explicit MUModelTable(QObject *parent = nullptr);
-     Q_INVOKABLE explicit MUModelTable(const MUModelTable &parent) : QAbstractTableModel(nullptr){
-         Q_UNUSED(parent)
-     }
-     ~MUModelTable();
+    Q_INVOKABLE explicit MUModelTable(QObject *parent = nullptr);
+    explicit MUModelTable(const MUModelTable &parent);
+    ~MUModelTable();
 
     Q_INVOKABLE QVariant headerData(int section, Qt::Orientation, int role = Qt::DisplayRole) const override;
     Q_INVOKABLE virtual int count(const QModelIndex &parent = QModelIndex()) const;

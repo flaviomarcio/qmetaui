@@ -4,7 +4,9 @@
 #define dPvt()\
     auto&p = *reinterpret_cast<MUNotificationPvt*>(this->p)
 
-MUNotification::MUNotification(QObject *parent) : QObject(parent)
+Q_GLOBAL_STATIC(MUNotification ,__i)
+
+MUNotification::MUNotification(QObject *parent) : QObject{parent}
 {
     this->p = new MUNotificationPvt(this);
 }
@@ -16,8 +18,7 @@ MUNotification::~MUNotification()
 
 MUNotification &MUNotification::i()
 {
-    static MUNotification __i;
-    return __i;
+    return *__i;
 }
 
 QVariant MUNotification::notifyPayload(const QVariant &payload)
@@ -33,5 +34,5 @@ QVariant MUNotification::notifyPayload(int type, const QVariant &payload)
 QVariant MUNotification::notifyPayload(int type, int especification, const QVariant &payload)
 {
     emit notify(type, especification, payload);
-    return QVariant();
+    return {};
 }

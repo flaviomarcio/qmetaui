@@ -2,11 +2,12 @@
 
 #include <QCoreApplication>
 #include <QDir>
+#include <QStm>
 #include "./p_mu_request_response.h"
 
 static bool _MuLogRegister=false;
-static auto _MuLogDirBase=QString("%1/QMetaUiLog").arg(QDir::homePath());
-static auto _MuLogDir=_MuLogDirBase;
+Q_GLOBAL_STATIC_WITH_ARGS(QString, _MuLogDirBase, (qsl("%1/QMetaUiLog").arg(QDir::homePath())))
+Q_GLOBAL_STATIC_WITH_ARGS(QString, _MuLogDir, (qsl("%1/%2").arg(*_MuLogDirBase).arg(qApp->applicationName())))
 
 static void _MuLogClearDir(const QString&ormLogDir){
     QStringList dir_found;
@@ -16,50 +17,53 @@ static void _MuLogClearDir(const QString&ormLogDir){
         auto scanDir = dir_found.takeFirst();
         dir_rm_file.append(scanDir);
         QDir dir(scanDir);
-        if(dir.exists(scanDir)){
-            dir.setFilter(QDir::AllDirs);
-            for(auto&scanInDir:dir.entryList()){
-                if(scanInDir=="." || scanInDir=="..")
-                    continue;
-                else{
-                    auto dir=QString("%1/%2").arg(scanDir).arg(scanInDir);
-                    dir_rm_file.append(dir);
-                    dir_found.append(dir);
-                }
-            }
+        if(!dir.exists(scanDir))
+            continue;
+
+        dir.setFilter(QDir::AllDirs);
+        for(auto&scanInDir:dir.entryList()){
+            if(scanInDir==qsl(".") || scanInDir==qsl(".."))
+                continue;
+
+            auto dir=qsl("%1/%2").arg(scanDir, scanInDir);
+            dir_rm_file.append(dir);
+            dir_found.append(dir);
         }
     }
 
-    auto ext=QStringList()<<"*.*";
+    static auto ext=QStringList{qsl("*.*")};
     for(auto&sdir:dir_rm_file){
         QDir scanDir(sdir);
-        if(scanDir.exists()){
-            scanDir.setFilter(QDir::Drives | QDir::Files);
-            scanDir.setNameFilters(ext);
-            for(auto&dirFile : scanDir.entryList()){
-                auto fileName=sdir+"/"+dirFile;
-                QFile::remove(fileName);
-            }
+        if(!scanDir.exists())
+            continue;
+
+        scanDir.setFilter(QDir::Drives | QDir::Files);
+        scanDir.setNameFilters(ext);
+        for(auto&dirFile : scanDir.entryList()){
+            auto fileName=sdir+qsl("/")+dirFile;
+            QFile::remove(fileName);
         }
     }
 }
 
-static void _MuInitLogDir(){
+static void _MuInitLogDir()
+{
     auto env = QString(getenv("logRegister")).trimmed();
 #ifdef QT_DEBUG
     _MuLogRegister = env.isEmpty()?true :QVariant(env).toBool();
 #else
     _MuLogRegister = env.isEmpty()?false:QVariant(env).toBool();
 #endif
-    if(_MuLogRegister){
-        _MuLogDir=QStringLiteral("%1/%2").arg(_MuLogDirBase).arg(qApp->applicationName());
-        QDir dir(_MuLogDir);
-        if(!dir.exists(_MuLogDir))
-            dir.mkpath(_MuLogDir);
-        if(dir.exists(_MuLogDir)){
-            _MuLogClearDir(_MuLogDir);
-        }
-    }
+
+    if(!_MuLogRegister)
+        return;
+
+    QDir dir(*_MuLogDir);
+    if(!dir.exists(*_MuLogDir))
+        dir.mkpath(*_MuLogDir);
+
+    if(dir.exists(*_MuLogDir))
+        _MuLogClearDir(*_MuLogDir);
 }
 
 Q_COREAPP_STARTUP_FUNCTION(_MuInitLogDir);
@@ -75,12 +79,12 @@ public:
     QUrl url()const{
         return response.request_url.toString();
     }
-    explicit MURequestJob():QThread(nullptr)
+    explicit MURequestJob() : QThread{nullptr}
     {
-        this->fileLog=QStringLiteral("%1/%2.log").arg(_MuLogDir).arg(QString::number(qlonglong(QThread::currentThreadId()),16));
+        this->fileLog=qsl("%1/%2.log").arg(*_MuLogDir, QString::number(qlonglong(QThread::currentThreadId()),16));
         static qlonglong taskCount=0;
         ++taskCount;
-        this->setObjectName(QStringLiteral("MUReqJob%1").arg(taskCount));
+        this->setObjectName(qsl("MUReqJob%1").arg(taskCount));
         this->moveToThread(this);
     }
     ~MURequestJob()
@@ -91,15 +95,17 @@ public:
     {
         if(!_MuLogRegister)
             return;
+
         if(request.isEmpty())
             return;
+
         QFile file(this->fileLog);
-        if (file.open(QIODevice::Append | QIODevice::WriteOnly | QIODevice::Text))
+        if (!file.open(QIODevice::Append | QIODevice::WriteOnly | QIODevice::Text))
             return;
 
         QTextStream outText(&file);
         auto request_method=MUEnumRequestMethodName.value(response.request_method).toUpper();
-        outText << request_method<<QStringLiteral(": ")<<response.request_url.toString()<<'\n';
+        outText << request_method<<qsl(": ")<<response.request_url.toString()<<'\n';
         outText << QJsonDocument::fromVariant(request).toJson(QJsonDocument::Indented);
         outText << '\n';
         outText << '\n';
@@ -242,34 +248,34 @@ public slots:
         auto request_url = this->response.request_url.toString();
 
         if(method==MUEnumRequest::Method::rmGet || method==MUEnumRequest::Method::rmDelete){
-            QVariantMap requestMap = muRequest->bodyMap();
+            auto requestMap = muRequest->bodyHash();
             QStringList parameters;
-            QMapIterator<QString, QVariant> i(requestMap);
+            QHashIterator<QString, QVariant> i(requestMap);
             while (i.hasNext()){
                 i.next();
-                parameters<<QStringLiteral("%1=%2").arg(i.key()).arg(i.value().toString());
+                parameters<<qsl("%1=%2").arg(i.key()).arg(i.value().toString());
             }
             if(!parameters.isEmpty())
-                request_url+=QStringLiteral("?%1").arg(parameters.join(','));
+                request_url+=qsl("?%1").arg(parameters.join(','));
         }
 
         QUrl url(request_url);
         QNetworkRequest request(url);
 
-        auto contentType=QByteArrayLiteral("application/x-www-form-urlencoded");
+        auto contentType=qbl("application/x-www-form-urlencoded");
 
         switch (muRequest->requestAppType()) {
         case MUEnumRequest::AppType::atCBor:
-            contentType=QByteArrayLiteral("application/cbor");
+            contentType=qbl("application/cbor");
             break;
         case MUEnumRequest::AppType::atJson:
-            contentType=QByteArrayLiteral("application/json");
+            contentType=qbl("application/json");
             break;
         case MUEnumRequest::AppType::atXml:
-            contentType=QByteArrayLiteral("application/xml");
+            contentType=qbl("application/xml");
             break;
         case MUEnumRequest::AppType::atBinary:
-            contentType=QByteArrayLiteral("application/binary");
+            contentType=qbl("application/binary");
             break;
         default:
             break;
@@ -277,9 +283,9 @@ public slots:
         request.setHeader(QNetworkRequest::ContentTypeHeader, contentType);
 
 #if Q_MU_LOG
-        mWarning()<<QStringLiteral(":request.url(%1)").arg(request_url);
+        mWarning()<<qsl(":request.url(%1)").arg(request_url);
 #endif
-        QMapIterator<QString, QVariant> i(response.request_header);
+        QHashIterator<QString, QVariant> i(response.request_header);
         while (i.hasNext()) {
             i.next();
             auto k=i.key().toUtf8();
@@ -291,8 +297,8 @@ public slots:
         }
 
 #if Q_MU_LOG_SUPER_VERBOSE
-        mWarning()<<QStringLiteral(":request.method(%1)").arg(QString(response.request_method));
-        mWarning()<<QStringLiteral(":request.body(%1)").arg(QString(response.request_body));
+        mWarning()<<qsl(":request.method(%1)").arg(QString(response.request_method));
+        mWarning()<<qsl(":request.body(%1)").arg(QString(response.request_body));
 #endif
 
         switch (method) {

@@ -8,7 +8,7 @@
 class MUAppRepositoryPvt:public QObject{
 public:
 
-    QVariantMap headers;
+    QVariantHash headers;
     QString     url;
     QString     hostName;
     QString     method;
@@ -17,11 +17,13 @@ public:
     QString     route;
 
     MUAppRepository*parent=nullptr;
-    explicit MUAppRepositoryPvt(MUAppRepository*parent):QObject(parent){
+    explicit MUAppRepositoryPvt(MUAppRepository*parent):QObject(parent)
+    {
         this->parent=parent;
     }
 
-    virtual ~MUAppRepositoryPvt(){
+    virtual ~MUAppRepositoryPvt()
+    {
 
     }
 
@@ -29,26 +31,27 @@ public:
     {
         QString localurl;
         hostName=hostName.trimmed();        
-        if (!hostName.isEmpty()){
-            localurl.append(hostName);
-            route=route.trimmed();
-            if (port>0){
-                localurl.append(qsl(":%1").arg(port));
-            }
-            if (!route.isEmpty()){
-                localurl.append(qsl("/%3").arg(route));
-            }
+        if (hostName.isEmpty())
+            return;
 
-            while(localurl.contains(qsl("//")))
-                localurl=localurl.replace(qsl("//"), qsl("/"));
-
-            protocol = protocol.toString().trimmed();
-            if (!protocol.toString().isEmpty()){
-                localurl.prepend(qsl("%1://").arg(protocol.toString()));
-            }
-
-            url = localurl;
+        localurl.append(hostName);
+        route=route.trimmed();
+        if (port>0){
+            localurl.append(qsl(":%1").arg(port));
         }
+        if (!route.isEmpty()){
+            localurl.append(qsl("/%3").arg(route));
+        }
+
+        while(localurl.contains(qsl("//")))
+            localurl=localurl.replace(qsl("//"), qsl("/"));
+
+        protocol = protocol.toString().trimmed();
+        if (!protocol.toString().isEmpty()){
+            localurl.prepend(qsl("%1://").arg(protocol.toString()));
+        }
+
+        url = localurl;
     }
 };
 
@@ -83,13 +86,13 @@ bool MUAppRepository::isValid()
     return !this->url().isEmpty();
 }
 
-QVariantMap MUAppRepository::headers() const
+QVariantHash MUAppRepository::headers() const
 {
     dPvt();
     return p.headers;
 }
 
-void MUAppRepository::setHeaders(const QVariantMap &v)
+void MUAppRepository::setHeaders(const QVariantHash &v)
 {
     dPvt();
     p.headers = v;

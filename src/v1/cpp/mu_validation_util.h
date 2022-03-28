@@ -9,9 +9,9 @@
     auto&u=MUValidationUtil::i();
 
 #define MU_DECLARE_MUValidationUtil()\
-public:\
+    public:\
     static MUValidationUtil&u(){\
-        return MUValidationUtil::i();\
+    return MUValidationUtil::i();\
     }
 
 class Q_MU_EXPORT MUValidationUtil : public MUObject

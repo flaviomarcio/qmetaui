@@ -34,7 +34,7 @@ public:
     bool cacheAutoLoad=false;
     bool cacheAutoSave=false;
 
-    explicit MUModelNavigatorPvt(MUModelNavigator *parent = nullptr) : QObject(parent), link(parent), request(parent), model(parent)
+    explicit MUModelNavigatorPvt(MUModelNavigator *parent = nullptr) : QObject{parent}, link(parent), request(parent), model(parent)
     {
         QObject::connect(this, &MUModelNavigatorPvt::requestResponse, this, &MUModelNavigatorPvt::onRequestResponse);
         this->parent=parent;
@@ -215,7 +215,7 @@ public:
 #elif Q_MU_LOG_VERBOSE
                 mWarning()<<QStringLiteral("error:")<<r->stateCodeQt()<<","<<r->stateCode()<<","<<r->statePhrase();
 #endif
-                QString msg;                
+                QString msg;
                 if(r->isUnAuthorized()){
                     msg=r->statePhrase().toString().trimmed();
                     msg=msg.isEmpty()?tr("Não autorizado"):msg;

@@ -8,18 +8,18 @@ class Q_MU_EXPORT MUModelNavigator : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(int searchRowCount READ searchRowCount WRITE setSearchRowCount)
-    Q_PROPERTY(int searchPageCount READ searchPageCount WRITE setSearchPageCount)
-    Q_PROPERTY(bool searchActiveNavigator READ searchActiveNavigator WRITE setSearchActiveNavigator)
-    Q_PROPERTY(QString cacheFileName READ cacheFileName WRITE setCacheFileName)
-    Q_PROPERTY(bool cacheAutoLoad READ cacheAutoLoad WRITE setCacheAutoLoad)
-    Q_PROPERTY(bool cacheAutoSave READ cacheAutoSave WRITE setCacheAutoSave)
-    Q_PROPERTY(QVariant setting READ setting WRITE setSetting)
-    Q_PROPERTY(QVariant data READ data WRITE setData)
+    Q_PROPERTY(int searchRowCount READ searchRowCount WRITE setSearchRowCount NOTIFY searchRowCountChanged)
+    Q_PROPERTY(int searchPageCount READ searchPageCount WRITE setSearchPageCount NOTIFY searchPageCountChanged)
+    Q_PROPERTY(bool searchActiveNavigator READ searchActiveNavigator WRITE setSearchActiveNavigator NOTIFY searchActiveNavigatorChanged)
+    Q_PROPERTY(QString cacheFileName READ cacheFileName WRITE setCacheFileName NOTIFY cacheFileNameChanged)
+    Q_PROPERTY(bool cacheAutoLoad READ cacheAutoLoad WRITE setCacheAutoLoad NOTIFY cacheAutoLoadChanged)
+    Q_PROPERTY(bool cacheAutoSave READ cacheAutoSave WRITE setCacheAutoSave NOTIFY cacheAutoSaveChanged)
+    Q_PROPERTY(QVariant setting READ setting WRITE setSetting NOTIFY settingChanged)
+    Q_PROPERTY(QVariant data READ data WRITE setData NOTIFY dataChanged)
     Q_PROPERTY(QAbstractTableModel*model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(MUServerLink*link READ link WRITE setLink NOTIFY linkChanged)
-    Q_PROPERTY(int count READ count NOTIFY linkChanged)
-    Q_PROPERTY(bool isEmpty READ isEmpty NOTIFY linkChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(bool isEmpty READ isEmpty NOTIFY isEmptyChanged)
 
 public:
 
@@ -79,8 +79,18 @@ signals:
     void searchFail(const QVariant&message);
     void searchError(const QVariant&message);
 
+    void searchRowCountChanged();
+    void searchPageCountChanged();
+    void searchActiveNavigatorChanged();
+    void cacheFileNameChanged();
+    void cacheAutoLoadChanged();
+    void cacheAutoSaveChanged();
+    void settingChanged();
+    void dataChanged();
     void modelChanged();
     void linkChanged();
+    void countChanged();
+    void isEmptyChanged();
 private:
     void*p=nullptr;
 };

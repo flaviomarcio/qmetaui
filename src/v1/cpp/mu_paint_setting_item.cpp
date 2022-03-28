@@ -1,8 +1,13 @@
 #include "mu_paint_setting_item.h"
 
-MUPaintSettingItem::MUPaintSettingItem(QObject *parent) : QObject(parent)
+MUPaintSettingItem::MUPaintSettingItem(QObject *parent) : QObject{parent}
 {
 
+}
+
+MUPaintSettingItem::MUPaintSettingItem(const MUPaintSettingItem &parent) : QObject{nullptr}{
+    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+        setProperty( prop.constData(), parent.property( prop.constData() ) );
 }
 
 MUPaintSettingState&MUPaintSettingItem::active()
@@ -30,10 +35,10 @@ void MUPaintSettingItem::readValues(const QVariant &json)
     auto jsonObject=this->u().toMap(json);
 
     if(!jsonObject.isEmpty()){
-        auto jsonSettingActive = jsonObject.value("active");
-        auto jsonSettingFocused = jsonObject.value("focused");
-        auto jsonSettingPressed = jsonObject.value("pressed");
-        auto jsonSettingInactive = jsonObject.value("inactive");
+        auto jsonSettingActive = jsonObject.value(QStringLiteral("active"));
+        auto jsonSettingFocused = jsonObject.value(QStringLiteral("focused"));
+        auto jsonSettingPressed = jsonObject.value(QStringLiteral("pressed"));
+        auto jsonSettingInactive = jsonObject.value(QStringLiteral("inactive"));
 
         this->active().readValues(jsonSettingActive);
         this->focused().readValues(jsonSettingFocused);

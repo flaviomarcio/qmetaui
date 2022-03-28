@@ -8,12 +8,12 @@ class Q_MU_EXPORT MURoutes:public QObject{
     Q_OBJECT
 public:
 
-    Q_PROPERTY(QVariantHash headers     READ headers    WRITE setHeaders    )
-    Q_PROPERTY(QString      server      READ server     WRITE setServer     )
-    Q_PROPERTY(QString      protocol    READ protocol   WRITE setProtocol   )
-    Q_PROPERTY(QString      hostName    READ hostName   WRITE setHostName   )
-    Q_PROPERTY(int          port        READ port       WRITE setPort       )
-    Q_PROPERTY(QVariantMap  route       READ route      WRITE setRoute      )
+    Q_PROPERTY(QVariantHash headers     READ headers    WRITE setHeaders    NOTIFY headersChanged)
+    Q_PROPERTY(QString      server      READ server     WRITE setServer     NOTIFY serverChanged)
+    Q_PROPERTY(QString      protocol    READ protocol   WRITE setProtocol   NOTIFY protocolChanged)
+    Q_PROPERTY(QString      hostName    READ hostName   WRITE setHostName   NOTIFY hostNameChanged)
+    Q_PROPERTY(int          port        READ port       WRITE setPort       NOTIFY portChanged)
+    Q_PROPERTY(QVariantMap  route       READ route      WRITE setRoute      NOTIFY routeChanged)
 
     Q_INVOKABLE explicit MURoutes(QObject *parent = nullptr);
     ~MURoutes();
@@ -85,4 +85,11 @@ public:
     Q_INVOKABLE virtual void setRoute(const QVariantMap &value);
 private:
     void*p=nullptr;
+signals:
+    void headersChanged();
+    void serverChanged();
+    void protocolChanged();
+    void hostNameChanged();
+    void portChanged();
+    void routeChanged();
 };

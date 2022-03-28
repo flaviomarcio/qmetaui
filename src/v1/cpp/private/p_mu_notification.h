@@ -25,7 +25,7 @@ public:
     QByteArray payloadPong;
     MUNotification*parent=nullptr;
 
-    explicit MUNotificationPool(QString url, MUNotification *parent = nullptr):QThread(nullptr), client(), timerPing()
+    explicit MUNotificationPool(QString url, MUNotification *parent = nullptr) : QThread{nullptr}, client(), timerPing()
     {
         this->url=url;
         this->parent=parent;
@@ -47,8 +47,8 @@ public:
 
     void run() {
         if(this->parent==&MUNotification::i()){
-// emit this->startTimer(); //NOTE FLAVIO COMENTADO PARA DEPOIS ENTENDER O FUNCIONAMENTO DISSO.
-// TÁ CAUSANDO FREEZE NA MAIN GUI
+            // emit this->startTimer(); //NOTE FLAVIO COMENTADO PARA DEPOIS ENTENDER O FUNCIONAMENTO DISSO.
+            // TÁ CAUSANDO FREEZE NA MAIN GUI
             this->exec();
             this->client.disconnect();
         }
@@ -163,7 +163,7 @@ public slots:
         this->timerPing.stop();
         this->timerPong.start();
         payloadPing=QDateTime::currentDateTime().toString().left(4).toUtf8();
-        payloadPong="";
+        payloadPong={};
         this->client.ping(payloadPing);
     }
 
@@ -209,8 +209,8 @@ class Q_MU_EXPORT MUNotificationPvt : public QObject
 public:
     MUNotification*parent=nullptr;
     MUNotificationPool*pull=nullptr;
-    QString url="localhost";
-    Q_INVOKABLE explicit MUNotificationPvt(MUNotification *parent = nullptr) : QObject(parent)
+    QString url=qsl("localhost");
+    Q_INVOKABLE explicit MUNotificationPvt(MUNotification *parent = nullptr) : QObject{parent}
     {
         this->parent=parent;
         this->pull = new MUNotificationPool(this->url,parent);

@@ -1,5 +1,4 @@
 #include "./mu_generic_control.h"
-
 #include <QMutex>
 #include <QStm>
 
@@ -11,46 +10,46 @@ uint qHash( const QVariant & var )
 
     switch ( qTypeId(var) )
     {
-        case QMetaType_Int:
-                return qHash( var.toInt() );
-            break;
-        case QMetaType_UInt:
-                return qHash( var.toUInt() );
-        case QMetaType_Bool:
-                return qHash( var.toUInt() );
-        case QMetaType_Double:
-                return qHash( var.toUInt() );
-        case QMetaType_LongLong:
-                return qHash( var.toLongLong() );
-        case QMetaType_ULongLong:
-                return qHash( var.toULongLong() );
-        case QMetaType_QString:
-                return qHash( var.toString() );
-        case QMetaType_QChar:
-                return qHash( var.toChar() );
-        case QMetaType_QStringList:
-                return qHash( var.toString() );
-        case QMetaType_QByteArray:
-            return qHash( var.toByteArray() );
-        case QMetaType_QDate:
-            return qHash( var.toDate().toString() );
-        case QMetaType_QTime:
-            return qHash( var.toTime().toString() );
-        case QMetaType_QDateTime:
-            return qHash( var.toDateTime().toString() );
-        case QMetaType_QUrl:
-            return qHash( var.toUrl().toString() );
-        case QMetaType_QUuid:
-            return qHash( var.toUuid().toString() );
-        default:
-            return -1;
+    case QMetaType_Int:
+        return qHash( var.toInt() );
+        break;
+    case QMetaType_UInt:
+        return qHash( var.toUInt() );
+    case QMetaType_Bool:
+        return qHash( var.toUInt() );
+    case QMetaType_Double:
+        return qHash( var.toUInt() );
+    case QMetaType_LongLong:
+        return qHash( var.toLongLong() );
+    case QMetaType_ULongLong:
+        return qHash( var.toULongLong() );
+    case QMetaType_QString:
+        return qHash( var.toString() );
+    case QMetaType_QChar:
+        return qHash( var.toChar() );
+    case QMetaType_QStringList:
+        return qHash( var.toString() );
+    case QMetaType_QByteArray:
+        return qHash( var.toByteArray() );
+    case QMetaType_QDate:
+        return qHash( var.toDate().toString() );
+    case QMetaType_QTime:
+        return qHash( var.toTime().toString() );
+    case QMetaType_QDateTime:
+        return qHash( var.toDateTime().toString() );
+    case QMetaType_QUrl:
+        return qHash( var.toUrl().toString() );
+    case QMetaType_QUuid:
+        return qHash( var.toUuid().toString() );
+    default:
+        return -1;
     }
 
     // could not generate a hash for the given variant
     return -1;
 }
 
-MUGenericControl::MUGenericControl(QObject *parent) : QObject(parent)
+MUGenericControl::MUGenericControl(QObject *parent) : QObject{parent}
 {
 }
 
@@ -125,8 +124,8 @@ QVariantMap MUGenericControl::takeFist()
         QHash<QVariant, QVariant>::const_iterator it = p.constBegin();
         auto key = it.key();
         auto value = p.take(key);
-        retorno["key"] = key;
-        retorno["value"] = value;
+        retorno[qsl("key")] = key;
+        retorno[qsl("value")] = value;
         emit dataChanged();
     }
     return retorno;

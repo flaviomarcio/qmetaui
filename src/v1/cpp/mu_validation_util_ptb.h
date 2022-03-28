@@ -7,9 +7,9 @@
     auto&u=MUValidationUtilPTB::i();
 
 #define MU_DECLARE_MUValidationUtilPTB()\
-public:\
+    public:\
     static MUValidationUtilPTB&u(){\
-        return MUValidationUtilPTB::i();\
+    return MUValidationUtilPTB::i();\
     }
 
 class Q_MU_EXPORT MUValidationUtilPTB : public MUValidationUtilPublic

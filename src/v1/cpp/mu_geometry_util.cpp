@@ -2,7 +2,7 @@
 #include "./mu_object_util.h"
 
 #if defined(Q_OS_ANDROID)
-    #include <QtAndroid>
+#include <QtAndroid>
 #endif
 #include <QStm>
 #include <QGuiApplication>
@@ -12,7 +12,17 @@
 static int _desktopAvailableWidth=1024;
 static int _desktopAvailableHeight=640;
 
-MUGeometryUtil::MUGeometryUtil(QObject *parent) : QObject(parent)
+static void init()
+{
+    qmlRegisterType<StatusBar>(qbl("StatusBar"), 0, 1, qbl("StatusBar"));
+}
+
+Q_COREAPP_STARTUP_FUNCTION(init);
+
+Q_GLOBAL_STATIC(MUGeometryUtil, __i);
+
+
+MUGeometryUtil::MUGeometryUtil(QObject *parent) : QObject{parent}
 {
 
 }
@@ -24,15 +34,9 @@ MUGeometryUtil::~MUGeometryUtil()
 
 MUGeometryUtil &MUGeometryUtil::i()
 {
-    static MUGeometryUtil __i;
-    __i.init();
-    return __i;
+    return *__i;
 }
 
-void MUGeometryUtil::init()
-{
-    qmlRegisterType<StatusBar>("StatusBar", 0, 1, "StatusBar");
-}
 
 const QVariant MUGeometryUtil::ifThen(const QVariant &vThen, const QVariant &vElse)
 {
@@ -71,7 +75,7 @@ void MUGeometryUtil::setDesktopAvailableHeight(int value)
 
 double MUGeometryUtil::toDoubleSize(const QVariant &v, QVariant defaultValue)
 {
-    auto vv=QVariant(v.toString().replace("%",""));
+    auto vv=QVariant(v.toString().replace(qsl("%"), qsl_null));
     switch (qTypeId(vv)){
     case QMetaType_Double:
     case QMetaType_Int:
@@ -86,7 +90,7 @@ double MUGeometryUtil::toDoubleSize(const QVariant &v, QVariant defaultValue)
 
 qlonglong MUGeometryUtil::toIntSize(const QVariant &v, QVariant defaultValue)
 {
-    auto vv=QVariant(v.toString().replace("%",""));
+    auto vv=QVariant(v.toString().replace(qsl("%"), qsl_null));
     switch (qTypeId(vv)){
     case QMetaType_Double:
     case QMetaType_Int:
@@ -104,7 +108,7 @@ const QString MUGeometryUtil::toProportion(const QVariant &v)
     if(!v.isValid())
         return {};
 
-    auto vv=QVariant(v.toString().replace("%",""));
+    auto vv=QVariant(v.toString().replace(qsl("%"), qsl_null));
     switch (qTypeId(vv)){
     case QMetaType_QString:
     case QMetaType_QByteArray:
@@ -116,15 +120,15 @@ const QString MUGeometryUtil::toProportion(const QVariant &v)
         return {};
     }
 
-    if(v.toString().contains("%"))
-        return "%";
+    if(v.toString().contains(qsl("%")))
+        return qsl("%");
     return v.toString();
 }
 
 double MUGeometryUtil::calcProportion(const QVariant &vSize, const QVariant &vSizeMax)
 {
     auto sizeMax=vSizeMax.toDouble();
-    bool proportion=vSize.toString().contains("%");
+    bool proportion=vSize.toString().contains(qsl("%"));
     double size=toDoubleSize(vSize);
     size=toDoubleSize(size);
     if(proportion)

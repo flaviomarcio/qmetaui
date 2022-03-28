@@ -34,14 +34,12 @@ MUAppInfo::~MUAppInfo(){
 MUAppInfo &MUAppInfo::operator=(const MUAppInfo &v)
 {
     this->fromHash(v.toHash());
-    emit dataChanged();
     return*this;
 }
 
 MUAppInfo &MUAppInfo::operator=(const QVariant &v)
 {
     this->fromHash(v.toHash());
-    emit dataChanged();
     return*this;
 }
 

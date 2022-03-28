@@ -3,7 +3,7 @@
 #define dPvt()\
     auto&p = *reinterpret_cast<MUModelNavigatorPvt*>(this->p)
 
-MUModelNavigator::MUModelNavigator(QObject *parent) : QObject(parent)
+MUModelNavigator::MUModelNavigator(QObject *parent) : QObject{parent}
 {
     this->p = new MUModelNavigatorPvt(this);
 }

@@ -23,7 +23,7 @@ public:
     MUEnumRequest::Mode modeSynchronous=MUEnumRequest::Mode::mdASync;
     MUEnumRequest::AppType requestAppType=MUEnumRequest::AppType::atJson;
     QUuid uuid;
-    QVariantMap header;
+    QVariantHash header;
     QVariant body;
     MURequest*request=nullptr;
     Q_INVOKABLE explicit MURequestPvt(MURequest*parent):QObject(parent), link(this)

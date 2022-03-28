@@ -21,9 +21,9 @@
     auto&u=MUStringUtil::i();
 
 #define MU_DECLARE_MUStringUtil()\
-public:\
+    public:\
     static MUStringUtil&u(){\
-        return MUStringUtil::i();\
+    return MUStringUtil::i();\
     }
 
 class Q_MU_EXPORT MUStringUtil : public QObject

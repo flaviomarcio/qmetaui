@@ -21,7 +21,7 @@ public:
     Q_PROPERTY(QVariant    roundMargin           MEMBER roundMargin          )
 
     Q_INVOKABLE explicit MUPaintSettingGeometry(QObject *parent = nullptr);
-    Q_INVOKABLE explicit MUPaintSettingGeometry(const MUPaintSettingGeometry &parent) : QObject(nullptr){
+    Q_INVOKABLE explicit MUPaintSettingGeometry(const MUPaintSettingGeometry &parent) : QObject{nullptr}{
         Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
                     setProperty( prop.constData(), parent.property( prop.constData() ) );
     }
@@ -43,8 +43,8 @@ public:
 private:
     void*p=nullptr;
 
-    QVariant height = "0.5%";
-    QVariant width = "0.5%";
+    QVariant height = QStringLiteral("0.5%");
+    QVariant width = QStringLiteral("0.5%");
     QVariant anchorsMarginOnTop = 0;
     QVariant anchorsMarginOnBottom = 0;
     QVariant anchorsMarginOnLeft = 0;

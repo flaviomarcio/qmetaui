@@ -4,18 +4,23 @@
 #define dPvt()\
     auto&p = *reinterpret_cast<MUPaintSettingPvt*>(this->p)
 
+
+Q_GLOBAL_STATIC(MUPaintSetting, __MUPaintSetting);
+
 class MUPaintSettingPvt{
 public:
     QVariant jsonObject;
     MUPaintSetting*parent=nullptr;
-    explicit MUPaintSettingPvt(MUPaintSetting*parent) {
+    explicit MUPaintSettingPvt(MUPaintSetting*parent)
+    {
         this->parent=parent;
     }
-    virtual ~MUPaintSettingPvt(){
+    virtual ~MUPaintSettingPvt()
+    {
     }
 };
 
-MUPaintSetting::MUPaintSetting(QObject *parent) : QObject(parent)
+MUPaintSetting::MUPaintSetting(QObject *parent) : QObject{parent}
   ,initV(settingBase)
   ,initV(button)
   ,initV(buttonTool)
@@ -71,12 +76,7 @@ void MUPaintSetting::setDesktopAvailableHeight(int value)
 
 MUPaintSetting &MUPaintSetting::i()
 {
-    static MUPaintSetting*__MUPaintSetting=nullptr;
-    if(__MUPaintSetting==nullptr){
-        __MUPaintSetting=new MUPaintSetting(nullptr);
-    }
-
-    return*__MUPaintSetting;
+    return *__MUPaintSetting;
 }
 
 //void MUPaintSetting::loadSettings(QString fileName)

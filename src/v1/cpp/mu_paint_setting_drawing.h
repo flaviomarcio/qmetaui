@@ -10,27 +10,24 @@ class Q_MU_EXPORT MUPaintSettingDrawing : public QObject
 public:
     MU_DECLARE_MUStringUtil()
 
-    Q_PROPERTY(int      fontSize         MEMBER fontSize    )
-    Q_PROPERTY(QString  fontFamily       MEMBER fontFamily  )
-    Q_PROPERTY(QColor   fontColor        MEMBER fontColor   )
-    Q_PROPERTY(bool     fontItalic       MEMBER fontItalic  )
-    Q_PROPERTY(bool     fontBold         MEMBER fontBold    )
-    Q_PROPERTY(QColor   color            MEMBER color       )
-    Q_PROPERTY(QColor   borderColor      MEMBER borderColor )
-    Q_PROPERTY(QVariant borderWidth      MEMBER borderWidth )
+    Q_PROPERTY(int      fontSize         MEMBER fontSize    NOTIFY fontSizeChanged)
+    Q_PROPERTY(QString  fontFamily       MEMBER fontFamily  NOTIFY fontFamilyChanged)
+    Q_PROPERTY(QColor   fontColor        MEMBER fontColor   NOTIFY fontColorChanged)
+    Q_PROPERTY(bool     fontItalic       MEMBER fontItalic  NOTIFY fontItalicChanged)
+    Q_PROPERTY(bool     fontBold         MEMBER fontBold    NOTIFY fontBoldChanged)
+    Q_PROPERTY(QColor   color            MEMBER color       NOTIFY colorChanged)
+    Q_PROPERTY(QColor   borderColor      MEMBER borderColor NOTIFY borderColorChanged)
+    Q_PROPERTY(QVariant borderWidth      MEMBER borderWidth NOTIFY borderWidthChanged)
 
     Q_INVOKABLE explicit MUPaintSettingDrawing(QObject *parent = nullptr);
-    Q_INVOKABLE explicit MUPaintSettingDrawing(const MUPaintSettingDrawing &parent) : QObject(nullptr){
-        Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
-                    setProperty( prop.constData(), parent.property( prop.constData() ) );
-    }
+    Q_INVOKABLE explicit MUPaintSettingDrawing(const MUPaintSettingDrawing &parent);
     ~MUPaintSettingDrawing();
 
     Q_INVOKABLE void replaceInvalid(MUPaintSettingDrawing &baseObject);
 
 private:
     int fontSize = 9;
-    QString fontFamily = "Sans Serif";
+    QString fontFamily = QStringLiteral("Sans Serif");
     QColor fontColor= Qt::gray;
     bool fontItalic = false;
     bool fontBold = false;
@@ -39,7 +36,14 @@ private:
     QVariant borderWidth = 0;
 
 signals:
-    void refresh();
+    void fontSizeChanged();
+    void fontFamilyChanged();
+    void fontColorChanged();
+    void fontItalicChanged();
+    void fontBoldChanged();
+    void colorChanged();
+    void borderColorChanged();
+    void borderWidthChanged();
 };
 
 Q_DECLARE_METATYPE(MUPaintSettingDrawing    )

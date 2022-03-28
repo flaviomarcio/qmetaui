@@ -18,16 +18,16 @@ for (int loop = 0; loop < limit; ++loop)
     const QVariant&v=QVariant()
 
 #define mDebug()\
-    qDebug()<<QString(__PRETTY_FUNCTION__).replace("virtual","").split("(").first().trimmed()<<":"
+    qDebug()<<QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QString{}).split(QStringLiteral("(")).first().trimmed()<<QStringLiteral(":")
 
 #define mCritical()\
-    qCritical()<<QString(__PRETTY_FUNCTION__).replace("virtual","").split("(").first().trimmed()<<":"
+    qCritical()<<QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QString{}).split(QStringLiteral("(")).first().trimmed()<<QStringLiteral(":")
 
 #define mInfo()\
-    qInfo()<<QString(__PRETTY_FUNCTION__).replace("virtual","").split("(").first().trimmed()<<":"
+    qInfo()<<QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QString{}).split(QStringLiteral("(")).first().trimmed()<<QStringLiteral(":")
 
 #define mWarning()\
-    qWarning()<<QString(__PRETTY_FUNCTION__).replace("virtual","").split("(").first().trimmed()<<":"
+    qWarning()<<QString(__PRETTY_FUNCTION__).replace(QStringLiteral("virtual"),QString{}).split(QStringLiteral("(")).first().trimmed()<<QStringLiteral(":")
 
 #define orm_vl\
     QVariantList()

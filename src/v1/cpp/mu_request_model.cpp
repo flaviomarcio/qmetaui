@@ -19,6 +19,11 @@ public:
 MURequestModel::MURequestModel(QObject *parent) : MURequest(parent)
 {
     this->p=new MURequestModelPvt(this);
+
+    QObject::connect(this, &MURequestModel::modelChanged, this, &MURequestModel::dataChanged);
+    QObject::connect(this, &MURequestModel::modelChanged, this, &MURequestModel::countChanged);
+    QObject::connect(this, &MURequestModel::modelChanged, this, &MURequestModel::isEmptyChanged);
+
 }
 
 MURequestModel::~MURequestModel()

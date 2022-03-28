@@ -8,15 +8,17 @@
 class MUPaintSettingGeometryPvt{
 public:
     MUPaintSettingGeometry*parent=nullptr;
-    explicit MUPaintSettingGeometryPvt(MUPaintSettingGeometry*parent) {
+    explicit MUPaintSettingGeometryPvt(MUPaintSettingGeometry*parent)
+    {
         this->parent=parent;
     }
-    virtual ~MUPaintSettingGeometryPvt(){
+    virtual ~MUPaintSettingGeometryPvt()
+    {
     }
 };
 
 
-MUPaintSettingGeometry::MUPaintSettingGeometry(QObject *parent) : QObject(parent)
+MUPaintSettingGeometry::MUPaintSettingGeometry(QObject *parent) : QObject{parent}
 {
     this->p=new MUPaintSettingGeometryPvt(this);
 }

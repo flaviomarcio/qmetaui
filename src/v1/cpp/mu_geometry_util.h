@@ -49,5 +49,5 @@ public:
 
     Q_INVOKABLE static void hideSplashScreen();
 private:
-        void init();
+    void init();
 };

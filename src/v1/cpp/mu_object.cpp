@@ -2,7 +2,7 @@
 #include "./mu_object_util.h"
 #include <QJsonDocument>
 
-MUObject::MUObject(QObject *parent) : QObject(parent)
+MUObject::MUObject(QObject *parent) : QObject{parent}
 {
 
 }
@@ -15,9 +15,7 @@ QVariantHash MUObject::toHash() const
 
 QByteArray MUObject::toJson() const
 {
-    auto v=this->toHash();
-    auto bytes=QJsonDocument::fromVariant(v).toJson(QJsonDocument::Compact);
-    return bytes;
+    return QJsonDocument::fromVariant(this->toHash()).toJson(QJsonDocument::Compact);
 }
 
 bool MUObject::fromMap(const QVariantMap&v)

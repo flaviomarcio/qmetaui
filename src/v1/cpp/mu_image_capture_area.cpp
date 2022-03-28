@@ -5,7 +5,7 @@
 
 
 #define dPvt()\
-auto&p = *reinterpret_cast<MUImageCaptureAreaPvt*>(this->p)
+    auto&p = *reinterpret_cast<MUImageCaptureAreaPvt*>(this->p)
 
 
 

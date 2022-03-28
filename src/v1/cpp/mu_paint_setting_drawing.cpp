@@ -1,8 +1,13 @@
 #include "mu_paint_setting_drawing.h"
 
-MUPaintSettingDrawing::MUPaintSettingDrawing(QObject *parent) : QObject(parent)
+MUPaintSettingDrawing::MUPaintSettingDrawing(QObject *parent) : QObject{parent}
 {
 
+}
+
+MUPaintSettingDrawing::MUPaintSettingDrawing(const MUPaintSettingDrawing &parent) : QObject{nullptr}{
+    Q_FOREACH( const QByteArray & prop, parent.dynamicPropertyNames() )
+        setProperty( prop.constData(), parent.property( prop.constData() ) );
 }
 
 MUPaintSettingDrawing::~MUPaintSettingDrawing()

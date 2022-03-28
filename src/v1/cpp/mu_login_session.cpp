@@ -61,10 +61,10 @@ public:
     bool save()
     {
         QVariantHash data, response;
-        response.insert(QStringLiteral("profile"), this->profile.toHash());
-        response.insert(QStringLiteral("token"), this->token.toHash());
-        response.insert(QStringLiteral("session"), this->session->toHash());
-        data.insert(QStringLiteral("response"), response);
+        response.insert(qsl("profile"), this->profile.toHash());
+        response.insert(qsl("token"), this->token.toHash());
+        response.insert(qsl("session"), this->session->toHash());
+        data.insert(qsl("response"), response);
         return this->save(data);
     }
 
@@ -76,10 +76,10 @@ public:
             this->session->clear();
         }
         else {
-            auto response=this->data.value(QStringLiteral("response")).toHash();
-            this->profile=response.value(QStringLiteral("profile")).toHash();
-            this->token=response.value(QStringLiteral("token")).toHash();
-            *this->session=response.value(QStringLiteral("session")).toHash();
+            auto response=this->data.value(qsl("response")).toHash();
+            this->profile=response.value(qsl("profile")).toHash();
+            this->token=response.value(qsl("token")).toHash();
+            *this->session=response.value(qsl("session")).toHash();
         }
 #if Q_MU_LOG_VERBOSE
         mWarning()<<QString("Session token %1").arg(QString(this->session->hsh_md5()));
@@ -99,9 +99,9 @@ public:
         }
 
         auto vMap=data.toHash();
-        if(!vMap.contains(QStringLiteral("response"))){
-            if(vMap.contains(QStringLiteral("profile")) && vMap.contains(QStringLiteral("token")) && vMap.contains(QStringLiteral("session")))
-                vMap=QVariantHash{{QStringLiteral("response"), vMap}};
+        if(!vMap.contains(qsl("response"))){
+            if(vMap.contains(qsl("profile")) && vMap.contains(qsl("token")) && vMap.contains(qsl("session")))
+                vMap=QVariantHash{{qsl("response"), vMap}};
         }
 
         if(!cacheUtil.sessionSaveFile(vMap))
@@ -161,15 +161,15 @@ public:
         if(this->data.isEmpty())
             return false;
 
-        if(!this->data.contains(QStringLiteral("response")))
+        if(!this->data.contains(qsl("response")))
             return false;
 
-        auto response=this->data.value(QStringLiteral("response")).toHash();
+        auto response=this->data.value(qsl("response")).toHash();
 
-        if(!response.contains(QStringLiteral("token")))
+        if(!response.contains(qsl("token")))
             return false;
 
-        auto token=response.value(QStringLiteral("token"));
+        auto token=response.value(qsl("token"));
         if(!token.isValid())
             return false;
         return true;

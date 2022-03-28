@@ -24,7 +24,7 @@ Q_GLOBAL_STATIC_WITH_ARGS(QByteArray, hash_key_256bit, (QCryptographicHash::hash
 Q_GLOBAL_STATIC_WITH_ARGS(QByteArray, key_128bit, ("68566B59703373367639792442264529"))
 Q_GLOBAL_STATIC_WITH_ARGS(QByteArray, hash_key_128bit, (QCryptographicHash::hash(*key_128bit, QCryptographicHash::Sha256)))
 
-MUCacheUtil::MUCacheUtil(QObject *parent) : QObject(parent)
+MUCacheUtil::MUCacheUtil(QObject *parent) : QObject{parent}
 {
 
 }
@@ -324,15 +324,15 @@ bool MUCacheUtil::saveCryptoFile(const QString &file, const QVariant &vBytes)
         return false;
     }
 #ifdef AES_ENABLED
-        if(!bytes.isEmpty()){//necessario pois vai dar crash se for errado
-            QTinyAes aes(QTinyAes::CTR, *hash_key_256bit, *hash_key_128bit);
-            bytes=aes.encrypt(bytes);
-        }
+    if(!bytes.isEmpty()){//necessario pois vai dar crash se for errado
+        QTinyAes aes(QTinyAes::CTR, *hash_key_256bit, *hash_key_128bit);
+        bytes=aes.encrypt(bytes);
+    }
 #endif
-        f.write(bytes);
-        f.flush();
-        f.close();
-        return true;
+    f.write(bytes);
+    f.flush();
+    f.close();
+    return true;
 }
 
 const QByteArray MUCacheUtil::loadCryptoFile(const QString &fileName)

@@ -2,6 +2,7 @@
 #include "./mu_object_util.h"
 #include "./mu_string_util.h"
 #include "./mu_request.h"
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MULoginEnginePvt*>(this->p)
@@ -22,7 +23,7 @@ public:
     QVariantHash makeBodyAccount()
     {
         QVariantHash map;
-        map.insert(QStringLiteral("hsh_account"), hsh_account());
+        map.insert(qsl("hsh_account"), hsh_account());
         return map;
     }
 
@@ -32,14 +33,14 @@ public:
         auto hsh_salt_pwd=this->hsh_salt_pwd();
         auto hsh_salt_code=this->hsh_salt_code();
         auto pwd=(!hsh_salt_pwd.isEmpty())?hsh_salt_pwd:hsh_salt_code;
-        map.insert(QStringLiteral("hsh_salt_pwd"),pwd);
+        map.insert(qsl("hsh_salt_pwd"),pwd);
         return map;
     }
 
     QVariantHash makeBodySession()
     {
         auto map=makeBodyAccount();
-        map.insert(QStringLiteral("hsh_md5"), hsh_md5);
+        map.insert(qsl("hsh_md5"), hsh_md5);
         return map;
     }
 
@@ -47,7 +48,7 @@ public:
     {
         auto map=makeBodySession();
         auto hsh_salt_code=this->hsh_salt_code();
-        map.insert(QStringLiteral("hsh_salt_code"), hsh_salt_code);
+        map.insert(qsl("hsh_salt_code"), hsh_salt_code);
         return map;
     }
 
@@ -130,9 +131,9 @@ public slots:
     void notification(const QVariant&payload)
     {
         auto vHash=payload.toHash();
-        auto type=vHash[QStringLiteral("type")];
-        auto especification=vHash[QStringLiteral("especification")];
-        auto message=vHash[QStringLiteral("message")];
+        auto type=vHash[qsl("type")];
+        auto especification=vHash[qsl("especification")];
+        auto message=vHash[qsl("message")];
         if(type==MUEnumNotification::nt_Security){
             switch (especification.toInt()){
             case MUEnumNotification::nse_LoginSuccessful:
@@ -154,7 +155,7 @@ public slots:
     }
 };
 
-MULoginEngine::MULoginEngine(QObject *parent) : QObject(parent)
+MULoginEngine::MULoginEngine(QObject *parent) : QObject{parent}
 {
     this->p = new MULoginEnginePvt(this);
     connect(this, &MULoginEngine::loginStarted      ,this, &MULoginEngine::loginMessage);
@@ -189,7 +190,7 @@ bool MULoginEngine::account_match(const QVariant &account)
     p.var.clear();
     p.var.dig_account=account.toByteArray();
     QVariantHash map;
-    map.insert(QStringLiteral("hsh_account"), p.var.hsh_account());
+    map.insert(qsl("hsh_account"), p.var.hsh_account());
     p.request().setBody(map);
     auto onOK=[this](const MURequest*){
         emit this->loginMatch(tr("Conta já existe"));
@@ -209,8 +210,8 @@ bool MULoginEngine::account_autenticate(const QVariant &account, const QVariant 
     p.var.dig_account=account.toByteArray();
     p.var.dig_phone_number=p.stringUtil.toStrPhone(phone_number).toUtf8();
     QVariantMap map;
-    map.insert(QStringLiteral("hsh_account"), p.var.hsh_account());
-    map.insert(QStringLiteral("phone_number"), p.var.dig_phone_number);
+    map.insert(qsl("hsh_account"), p.var.hsh_account());
+    map.insert(qsl("phone_number"), p.var.dig_phone_number);
     p.request().setBody(map);
     auto onOk=[this](const MURequest*){
         emit this->loginCodeSent(tr("Código enviado para seu numero"));
@@ -237,8 +238,8 @@ bool MULoginEngine::account_autenticate_password(const QVariant &account, const 
     auto doAutho=[&onErr, this](){
         dPvt();
         QVariantHash hash;
-        hash.insert(QStringLiteral("hsh_account"), p.var.hsh_account());
-        hash.insert(QStringLiteral("hsh_salt_pwd"), p.var.hsh_salt_pwd());
+        hash.insert(qsl("hsh_account"), p.var.hsh_account());
+        hash.insert(qsl("hsh_salt_pwd"), p.var.hsh_salt_pwd());
         p.request().setBody(hash);
         auto onOk=[this](const MURequest*){
             emit this->loginSuccessful(tr("Autenticação concluída"));
@@ -248,12 +249,12 @@ bool MULoginEngine::account_autenticate_password(const QVariant &account, const 
 
 
     QVariantHash hash;
-    hash.insert(QStringLiteral("hsh_account"), p.stringUtil.toMd5(p.var.hsh_account()));
+    hash.insert(qsl("hsh_account"), p.stringUtil.toMd5(p.var.hsh_account()));
     p.request().setBody(hash);
     auto onOk=[this, &doAutho](const MURequest*r){
         dPvt();
         auto vBody=r->responseBodyMap();
-        p.var.hsh_salt=vBody[QStringLiteral("hsh_salt")].toByteArray();
+        p.var.hsh_salt=vBody[qsl("hsh_salt")].toByteArray();
         doAutho();
     };
 
@@ -277,13 +278,13 @@ bool MULoginEngine::account_autenticate_code(const QVariant &account, const QVar
         emit loginError(tr("Código informado não é valido"));
     else{
         auto hash=p.var.makeBodyAccountCode();
-        hash.insert(QStringLiteral("hsh_account"), p.var.hsh_account());
-        hash.insert(QStringLiteral("hsh_salt_pwd"), p.var.hsh_salt_code());
+        hash.insert(qsl("hsh_account"), p.var.hsh_account());
+        hash.insert(qsl("hsh_salt_pwd"), p.var.hsh_salt_code());
         p.request().setBody(hash);
         auto onOk=[this](const MURequest*r){
             QVariantHash hash;
-            hash.insert(QStringLiteral("request"), r->body());
-            hash.insert(QStringLiteral("response"), r->responseBodyMap());
+            hash.insert(qsl("request"), r->body());
+            hash.insert(qsl("response"), r->responseBodyMap());
             this->session().setData(hash);
             if(this->session().isLogged())
                 emit this->loginSuccessful(tr("Autenticação concluída"));
@@ -306,8 +307,8 @@ bool MULoginEngine::account_register(const QVariant &account)
     emit loginStarted(tr("Atualizando dados"));
     dPvt();
     p.var.clear();
-    p.var.dig_account=vBody[QStringLiteral("account")].toByteArray();
-    p.var.dig_password=vBody[QStringLiteral("password")].toByteArray();
+    p.var.dig_account=vBody[qsl("account")].toByteArray();
+    p.var.dig_password=vBody[qsl("password")].toByteArray();
 
     auto onErr=[this](const MURequest*){
         emit this->loginUnsuccessful(tr("Falha na atualização"));
@@ -316,8 +317,8 @@ bool MULoginEngine::account_register(const QVariant &account)
     auto doAutho=[&onErr, this](){
         dPvt();
         QVariantHash hash;
-        hash.insert(QStringLiteral("hsh_account"), p.var.hsh_account());
-        hash.insert(QStringLiteral("hsh_salt_pwd"), p.var.hsh_salt_pwd());
+        hash.insert(qsl("hsh_account"), p.var.hsh_account());
+        hash.insert(qsl("hsh_salt_pwd"), p.var.hsh_salt_pwd());
         p.request().setBody(hash);
         auto onOk=[this](const MURequest*){
             emit this->loginSuccessful(tr("Atualização concluída"));
@@ -327,12 +328,12 @@ bool MULoginEngine::account_register(const QVariant &account)
 
 
     QVariantHash hash;
-    hash.insert(QStringLiteral("hsh_account"), p.stringUtil.toMd5(p.var.hsh_account()));
+    hash.insert(qsl("hsh_account"), p.stringUtil.toMd5(p.var.hsh_account()));
     p.request().setBody(hash);
     auto onOk=[this, &doAutho](const MURequest*r){
         dPvt();
         auto vBody=r->responseBodyMap();
-        p.var.hsh_salt=vBody[QStringLiteral("hsh_salt")].toByteArray();
+        p.var.hsh_salt=vBody[qsl("hsh_salt")].toByteArray();
         doAutho();
     };
 
@@ -351,18 +352,17 @@ bool MULoginEngine::account_session_verify()
 
     if(session.token()->isRecent())
         return false;
-    {
-    }
+
     emit loginStarted(tr("Verificando sessão"));
-        auto onErr=[this, &session](const MURequest*r){
-              if(r->isUnAuthorized()){
-                  emit this->loginSessionInvalid(tr("Sessão foi desconectada"));
-                      session.logoff();
-              }
-          };
+    auto onErr=[this, &session](const MURequest*r){
+        if(r->isUnAuthorized()){
+            emit this->loginSessionInvalid(tr("Sessão foi desconectada"));
+            session.logoff();
+        }
+    };
 
     QVariantHash hash;
-    hash.insert(QStringLiteral("hsh_md5"), session.hsh_md5());
+    hash.insert(qsl("hsh_md5"), session.hsh_md5());
     p.request().setBody(hash);
     p.request().setAuthoBearer(session.hsh_md5());
     auto onOk=[this](const MURequest*){

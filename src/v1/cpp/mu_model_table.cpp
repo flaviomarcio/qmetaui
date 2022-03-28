@@ -11,18 +11,18 @@
     auto&p = *reinterpret_cast<MUModelTablePvt*>(this->p)
 
 namespace Qt{
-    static const int StartRole     = Qt::UserRole+1;
-    static const int id            = StartRole + 1;
-    static const int Uuid          = StartRole + 2;
-    static const int Md5id         = StartRole + 3;
-    static const int Revision      = StartRole + 4;
-    static const int RowRole       = StartRole + 5;
-    static const int ColumnWidth   = StartRole + 6;
-    static const int ColumnHeight  = StartRole + 7;
-    static const int RowWidthRole  = StartRole + 8;
-    static const int RowHeightRole = StartRole + 9;
-    static const int ColumnRole    = StartRole +10;
-    static const int maxRole       = StartRole +11;
+static const int StartRole     = Qt::UserRole+1;
+static const int id            = StartRole + 1;
+static const int Uuid          = StartRole + 2;
+static const int Md5id         = StartRole + 3;
+static const int Revision      = StartRole + 4;
+static const int RowRole       = StartRole + 5;
+static const int ColumnWidth   = StartRole + 6;
+static const int ColumnHeight  = StartRole + 7;
+static const int RowWidthRole  = StartRole + 8;
+static const int RowHeightRole = StartRole + 9;
+static const int ColumnRole    = StartRole +10;
+static const int maxRole       = StartRole +11;
 }
 
 
@@ -40,11 +40,11 @@ public:
     QVariantHash setting;
     QVariantHash rowSetting;
     QMap<QByteArray,int> columnIndex;
-    QMap<QByteArray,int> roleIndex;    
+    QMap<QByteArray,int> roleIndex;
 
     QByteArray makeKey(int col, int row)const
     {
-        return QStringLiteral("%1.%2").arg(col).arg(row).toUtf8();
+        return qsl("%1.%2").arg(col).arg(row).toUtf8();
     }
 
     void clear()
@@ -58,7 +58,7 @@ public:
         p.columnNames.clear();
         p.columnIndex.clear();
         p.roleNames.clear();
-        p.roleIndex.clear();        
+        p.roleIndex.clear();
     }
 
     void initRoles()
@@ -93,15 +93,15 @@ public:
     {
         auto&p=*this;
         auto map=vSetting.toHash();
-        map.insert(QStringLiteral("horizontalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("horizontalAlignment"))));
-        map.insert(QStringLiteral("verticalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("verticalAlignment"))));
-        map.insert(QStringLiteral("type") , variantUtil.toVariantType(map.value(QStringLiteral("type"))));
+        map.insert(qsl("horizontalAlignment") , variantUtil.toAlignment(map.value(qsl("horizontalAlignment"))));
+        map.insert(qsl("verticalAlignment") , variantUtil.toAlignment(map.value(qsl("verticalAlignment"))));
+        map.insert(qsl("type") , variantUtil.toVariantType(map.value(qsl("type"))));
         p.headerSetting=map;
     }
 
     void setColumnSettings(const QVariant&vSetting)
     {
-        auto&p=*this;        
+        auto&p=*this;
         auto setting = this->variantUtil.toVar(vSetting);
         if(setting.isValid()){
             QVariantList list;
@@ -127,52 +127,52 @@ public:
             case QMetaType_QVariantList:
             case QMetaType_QStringList:
             {
-                    QVariantList list=setting.toList();
+                QVariantList list=setting.toList();
 
-                    for (int colIndex = 0; colIndex < list.count(); ++colIndex){
-                        auto v=list.at(colIndex);
-                        QByteArray roleName;
-                        QVariantHash map;
-                        switch (qTypeId(v)){
-                        case QMetaType_QVariantHash:
-                        case QMetaType_QVariantMap:
-                        {
-                            map = v.toHash();
+                for (int colIndex = 0; colIndex < list.count(); ++colIndex){
+                    auto v=list.at(colIndex);
+                    QByteArray roleName;
+                    QVariantHash map;
+                    switch (qTypeId(v)){
+                    case QMetaType_QVariantHash:
+                    case QMetaType_QVariantMap:
+                    {
+                        map = v.toHash();
 
-                            if(map.contains(QStringLiteral("role")))
-                                roleName=map.value(QStringLiteral("role")).toByteArray().trimmed();
-                            else if(map.contains(QStringLiteral("display")))
-                                roleName=map.value(QStringLiteral("display")).toByteArray().trimmed();
-    #if Q_MU_LOG
-                            else
-                                mWarning()<<"Invalid property [role] or [display] in : "<<map;
-    #endif
-                            break;
-                        }
-                        default:
-                            roleName=v.toByteArray().trimmed();
-                        }
-
-                        if(!roleName.isEmpty()){
-                            int roleIndex=-1;
-                            if(p.roleIndex.contains(roleName))
-                                roleIndex=p.roleIndex[roleName];
-                            roleIndex=(roleIndex>=0)?roleIndex:Qt::maxRole+colIndex;
-                            auto map=v.toHash();
-                            map.insert(QStringLiteral("horizontalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("horizontalAlignment"))));
-                            map.insert(QStringLiteral("verticalAlignment") , variantUtil.toAlignment(map.value(QStringLiteral("verticalAlignment"))));
-                            map.insert(QStringLiteral("type") , variantUtil.toVariantType(map.value(QStringLiteral("type"))));
-
-                            p.columnRole.insert(colIndex, roleIndex);
-                            p.roleNames.insert(roleIndex, roleName);
-                            p.columnNames.insert(colIndex, roleName);
-                            p.columnSetting.insert(colIndex, map);
-                            p.columnIndex.insert(roleName,colIndex);
-                            p.roleIndex.insert(roleName,roleIndex);
-
-                        }
+                        if(map.contains(qsl("role")))
+                            roleName=map.value(qsl("role")).toByteArray().trimmed();
+                        else if(map.contains(qsl("display")))
+                            roleName=map.value(qsl("display")).toByteArray().trimmed();
+#if Q_MU_LOG
+                        else
+                            mWarning()<<"Invalid property [role] or [display] in : "<<map;
+#endif
+                        break;
                     }
-                    break;
+                    default:
+                        roleName=v.toByteArray().trimmed();
+                    }
+
+                    if(!roleName.isEmpty()){
+                        int roleIndex=-1;
+                        if(p.roleIndex.contains(roleName))
+                            roleIndex=p.roleIndex[roleName];
+                        roleIndex=(roleIndex>=0)?roleIndex:Qt::maxRole+colIndex;
+                        auto map=v.toHash();
+                        map.insert(qsl("horizontalAlignment") , variantUtil.toAlignment(map.value(qsl("horizontalAlignment"))));
+                        map.insert(qsl("verticalAlignment") , variantUtil.toAlignment(map.value(qsl("verticalAlignment"))));
+                        map.insert(qsl("type") , variantUtil.toVariantType(map.value(qsl("type"))));
+
+                        p.columnRole.insert(colIndex, roleIndex);
+                        p.roleNames.insert(roleIndex, roleName);
+                        p.columnNames.insert(colIndex, roleName);
+                        p.columnSetting.insert(colIndex, map);
+                        p.columnIndex.insert(roleName,colIndex);
+                        p.roleIndex.insert(roleName,roleIndex);
+
+                    }
+                }
+                break;
             }
             default:
                 break;
@@ -238,6 +238,11 @@ public:
 MUModelTable::MUModelTable(QObject *parent) : QAbstractTableModel(parent)
 {
     this->p = new MUModelTablePvt();
+}
+
+MUModelTable::MUModelTable(const MUModelTable &parent) : QAbstractTableModel(nullptr)
+{
+    Q_UNUSED(parent)
 }
 
 MUModelTable::~MUModelTable()
@@ -357,16 +362,16 @@ QVariant MUModelTable::rowRevisionLast() const
 QVariant MUModelTable::columnHeight() const
 {
     dPvt();
-    return p.headerSetting.value(QStringLiteral("column.height"));
+    return p.headerSetting.value(qsl("column.height"));
 }
 
 QVariant MUModelTable::columnWidth(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto v=map.value(QStringLiteral("width"));
+    auto v=map.value(qsl("width"));
     if(!v.isValid())
-        v=p.headerSetting.value(QStringLiteral("column.width"));
+        v=p.headerSetting.value(qsl("column.width"));
     return v;
 }
 
@@ -375,10 +380,10 @@ int MUModelTable::columnType(int column) const
     dPvt();
     auto map=p.columnSetting.value(column);
     auto v=QMetaType::UnknownType;
-    if(map.contains(QStringLiteral("type"))){
-        v=QMetaType::Type(map.value(QStringLiteral("type")).toInt());
-        if(p.headerSetting.contains(QStringLiteral("type")))
-            v=QMetaType::Type(p.headerSetting.value(QStringLiteral("type")).toInt());
+    if(map.contains(qsl("type"))){
+        v=QMetaType::Type(map.value(qsl("type")).toInt());
+        if(p.headerSetting.contains(qsl("type")))
+            v=QMetaType::Type(p.headerSetting.value(qsl("type")).toInt());
     }
     return v;
 }
@@ -387,7 +392,7 @@ QColor MUModelTable::columnForeground(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto color=QColor(map.value(QStringLiteral("foreground")).toString());
+    auto color=QColor(map.value(qsl("foreground")).toString());
     return color.isValid()?color:Qt::black;
 }
 
@@ -395,7 +400,7 @@ QColor MUModelTable::columnBackground(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto color=QColor(map.value(QStringLiteral("background")).toString());
+    auto color=QColor(map.value(qsl("background")).toString());
     return color.isValid()?color:Qt::white;
 }
 
@@ -403,23 +408,23 @@ Qt::Alignment MUModelTable::columnAlignment(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto v=map.value(QStringLiteral("alignment"));
+    auto v=map.value(qsl("alignment"));
     return v.isValid()?Qt::Alignment(v.toInt()):(Qt::AlignHCenter | Qt::AlignLeft);
 }
 
 QVariant MUModelTable::rowHeight() const
 {
     dPvt();
-    return p.rowSetting.value(QStringLiteral("row.height"));
+    return p.rowSetting.value(qsl("row.height"));
 }
 
 QVariant MUModelTable::rowWidth(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto v=map.value(QStringLiteral("width"));
+    auto v=map.value(qsl("width"));
     if(!v.isValid())
-        v=p.headerSetting.value(QStringLiteral("row.width"));
+        v=p.headerSetting.value(qsl("row.width"));
     return v;
 }
 
@@ -427,7 +432,7 @@ QColor MUModelTable::rowForeground(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto color=QColor(map.value(QStringLiteral("foreground")).toString());
+    auto color=QColor(map.value(qsl("foreground")).toString());
     return color.isValid()?color:Qt::black;
 }
 
@@ -435,7 +440,7 @@ QColor MUModelTable::rowBackground(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto color=QColor(map.value(QStringLiteral("background")).toString());
+    auto color=QColor(map.value(qsl("background")).toString());
     return color.isValid()?color:Qt::white;
 }
 
@@ -443,7 +448,7 @@ Qt::Alignment MUModelTable::rowAlignment(int column) const
 {
     dPvt();
     auto map=p.columnSetting.value(column);
-    auto v=map.value(QStringLiteral("alignment"));
+    auto v=map.value(qsl("alignment"));
     return v.isValid()?Qt::Alignment(v.toInt()):(Qt::AlignHCenter | Qt::AlignLeft | Qt::AlignVCenter);
 }
 
@@ -522,7 +527,7 @@ void MUModelTable::append(const QVariant &vValue)
             }
             ++row;
         }
-        this->endInsertRows();//finish insert        
+        this->endInsertRows();//finish insert
     }
 }
 
@@ -620,7 +625,7 @@ QVariantHash MUModelTable::columnSetting() const
     while (i.hasNext()) {
         i.next();
         auto map=i.value();
-        map.insert(QStringLiteral("column"),i.key());
+        map.insert(qsl("column"),i.key());
         list.insert(QString::number(i.key()), map);
     }
     return list;
@@ -634,7 +639,7 @@ QVariantHash MUModelTable::rowSetting() const
     while (i.hasNext()) {
         i.next();
         auto map=i.value().toHash();
-        map.insert(QStringLiteral("column"),i.key());
+        map.insert(qsl("column"),i.key());
         list.insert(i.key(), map);
     }
     return list;
@@ -651,9 +656,9 @@ void MUModelTable::setSetting(const QVariant &vSetting)
     dPvt();
     p.clear();
     p.setting = p.variantUtil.toVar(vSetting).toHash();
-    p.setHeaderSettings(p.setting[QStringLiteral("header")]);
-    p.setColumnSettings(p.setting[QStringLiteral("columns")]);
-    p.setRowSettings(p.setting[QStringLiteral("rows")]);
+    p.setHeaderSettings(p.setting[qsl("header")]);
+    p.setColumnSettings(p.setting[qsl("columns")]);
+    p.setRowSettings(p.setting[qsl("rows")]);
 }
 
 void MUModelTable::setHeaderSetting(const QVariant &setting)

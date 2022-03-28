@@ -4,11 +4,11 @@
 #include "./mu_paint_setting_item.h"
 
 #define declareV(var)\
-public:\
+    public:\
     Q_INVOKABLE const MUPaintSettingItem &var(){\
-        return pvt##var;\
+    return pvt##var;\
     }\
-private:\
+    private:\
     MUPaintSettingItem pvt##var;\
 
 
@@ -57,8 +57,6 @@ public:
     Q_INVOKABLE static void setDesktopAvailableHeight(int value);
 
     static MUPaintSetting&i();
-
-//    Q_INVOKABLE void loadSettings(QString fileName="");
 
     Q_INVOKABLE void replaceInvalid(MUPaintSettingItem &settingBase);
 

@@ -25,9 +25,9 @@ public:
     }
 };
 
-MULoginProfile::MULoginProfile(QObject *parent):MUObject(parent){
+MULoginProfile::MULoginProfile(QObject *parent):MUObject(parent)
+{
     this->p = new MULoginProfilePvt(this);
-    emit loaded();
 }
 
 MULoginProfile::~MULoginProfile()
@@ -140,11 +140,11 @@ MULoginProfile &MULoginProfile::operator=(const MULoginProfile &v)
 
 void MULoginProfile::clear()
 {
-    this->set_uuid        (QUuid());
-    this->set_hsh_account ("");
-    this->set_name        ("");
-    this->set_dt_birth    (QDateTime());
-    this->set_email       ("");
+    this->set_uuid        ({});
+    this->set_hsh_account ({});
+    this->set_name        ({});
+    this->set_dt_birth    ({});
+    this->set_email       ({});
     this->set_document    (0);
     this->set_phone_number(0);
     this->set_validated   (false);
@@ -168,14 +168,14 @@ bool MULoginProfile::isValid()
 {
     if(this->uuid().isNull()){
 #ifdef Q_MU_LOG
-        mWarning()<<"session uuid is null";
+        mWarning()<<QStringLiteral("session uuid is null");
 #endif
         return false;
     }
 
     if(this->hsh_account().trimmed().isEmpty()){
 #ifdef Q_MU_LOG
-        mWarning()<<"hsh_account is invalid";
+        mWarning()<<QStringLiteral("hsh_account is invalid");
 #endif
         return false;
     }

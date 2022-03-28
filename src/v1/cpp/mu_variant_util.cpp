@@ -15,7 +15,7 @@
 Q_GLOBAL_STATIC(MUVariantUtil, __i)
 
 
-MUVariantUtil::MUVariantUtil(QObject *parent) : QObject(parent)
+MUVariantUtil::MUVariantUtil(QObject *parent) : QObject{parent}
 {
 
 }

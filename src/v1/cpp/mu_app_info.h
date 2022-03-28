@@ -3,22 +3,16 @@
 #include "./mu_global.h"
 #include "./mu_object.h"
 
-#include <QVariantMap>
-
 class Q_MU_EXPORT MUAppInfo : public MUObject
 {
     Q_OBJECT
 public:
 
-    Q_PROPERTY(bool    strong     READ strong  WRITE setStrong   NOTIFY dataChanged )
-    Q_PROPERTY(bool    show       READ show    WRITE setShow     NOTIFY dataChanged )
-    Q_PROPERTY(QString display    READ display WRITE setDisplay  NOTIFY dataChanged )
-    Q_PROPERTY(QString version    READ version WRITE setVersion  NOTIFY dataChanged )
+    Q_PROPERTY(bool    strong     READ strong  WRITE setStrong   NOTIFY strongChanged )
+    Q_PROPERTY(bool    show       READ show    WRITE setShow     NOTIFY showChanged )
+    Q_PROPERTY(QString display    READ display WRITE setDisplay  NOTIFY displayChanged )
+    Q_PROPERTY(QString version    READ version WRITE setVersion  NOTIFY versionChanged )
 
-    /**
-     * @brief MUAppInfo
-     * @param parent
-     */
     Q_INVOKABLE explicit MUAppInfo(QObject *parent = nullptr);
     ~MUAppInfo();
 
@@ -39,7 +33,9 @@ public:
 
 private:
     void*p=nullptr;
-
 signals:
-    void dataChanged();
+    void strongChanged();
+    void showChanged();
+    void displayChanged();
+    void versionChanged();
 };

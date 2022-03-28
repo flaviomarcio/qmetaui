@@ -8,10 +8,10 @@ class Q_MU_EXPORT MURequestModel : public MURequest
 {
     Q_OBJECT
 public:
-    Q_PROPERTY(QVariant data READ data WRITE setData NOTIFY modelChanged)
+    Q_PROPERTY(QVariant data READ data WRITE setData NOTIFY dataChanged)
     Q_PROPERTY(QAbstractTableModel*model READ model WRITE setModel NOTIFY modelChanged)
-    Q_PROPERTY(int count READ count NOTIFY modelChanged)
-    Q_PROPERTY(bool isEmpty READ isEmpty NOTIFY modelChanged)
+    Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(bool isEmpty READ isEmpty NOTIFY isEmptyChanged)
 
     Q_INVOKABLE explicit MURequestModel(QObject *parent = nullptr);
     ~MURequestModel();
@@ -48,7 +48,10 @@ public:
     void setModel(QAbstractTableModel*model);
 
 signals:
+    void dataChanged();
     void modelChanged();
+    void countChanged();
+    void isEmptyChanged();
 private:
     void*p=nullptr;
 };

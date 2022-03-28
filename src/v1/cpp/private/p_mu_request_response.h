@@ -20,6 +20,7 @@
 #include <QTimer>
 #include <QThread>
 #include <QUrl>
+#include <QStm>
 
 struct MURequestResponse{
 public:
@@ -46,9 +47,9 @@ public:
     QDateTime request_finish;
     qlonglong timeout=30000;
     QUrl request_url;
-    QVariantMap request_header;
+    QVariantHash request_header;
     QByteArray request_body;
-    QVariantMap response_header;
+    QVariantHash response_header;
     int response_status_code = 0;
     QString response_status_reason_phrase;
     QVariant response_body;
@@ -58,30 +59,30 @@ public:
     {
         QVariantMap response;
 
-        response.insert("timeout",this->timeout);
-        response.insert("request_url",this->request_url);
-        response.insert("request_header",this->request_header);
-        response.insert("request_body",this->request_body);
-        response.insert("response_header",this->response_header);
-        response.insert("response_status_code",this->response_status_code);
-        response.insert("response_status_reason_phrase",this->response_status_reason_phrase);
-        response.insert("response_qt_status_code",this->response_qt_status_code);
-        response.insert("response_body",this->response_body);
+        response.insert(qsl("timeout"),this->timeout);
+        response.insert(qsl("request_url"),this->request_url);
+        response.insert(qsl("request_header"),this->request_header);
+        response.insert(qsl("request_body"),this->request_body);
+        response.insert(qsl("response_header"),this->response_header);
+        response.insert(qsl("response_status_code"),this->response_status_code);
+        response.insert(qsl("response_status_reason_phrase"),this->response_status_reason_phrase);
+        response.insert(qsl("response_qt_status_code"),this->response_qt_status_code);
+        response.insert(qsl("response_body"),this->response_body);
 
         return response;
     }
     void fromMap(const QVariantMap&response)
     {
 
-        this->timeout=response.value("timeout").toLongLong();
-        this->request_url=response.value("request_url").toUrl();
-        this->request_header=response.value("request_header").toMap();
-        this->request_body=response.value("request_body").toByteArray();
-        this->response_header=response.value("response_header").toMap();
-        this->response_status_code=response.value("response_status_code").toInt();
-        this->response_status_reason_phrase=response.value("response_status_reason_phrase").toString();
-        this->response_qt_status_code=QNetworkReply::NetworkError(response.value("response_qt_status_code").toInt());
-        this->response_body=response.value("response_body").toByteArray();
+        this->timeout=response.value(qsl("timeout")).toLongLong();
+        this->request_url=response.value(qsl("request_url")).toUrl();
+        this->request_header=response.value(qsl("request_header")).toHash();
+        this->request_body=response.value(qsl("request_body")).toByteArray();
+        this->response_header=response.value(qsl("response_header")).toHash();
+        this->response_status_code=response.value(qsl("response_status_code")).toInt();
+        this->response_status_reason_phrase=response.value(qsl("response_status_reason_phrase")).toString();
+        this->response_qt_status_code=QNetworkReply::NetworkError(response.value(qsl("response_qt_status_code")).toInt());
+        this->response_body=response.value(qsl("response_body")).toByteArray();
     }
 
     bool isOk()
@@ -151,24 +152,24 @@ public:
         auto request_body=QString(response.request_body);
         auto request_header=response.request_header;
         auto response_body=response.response_body.toString();
-        map.insert(QStringLiteral("url"), request_url);
-        map.insert(QStringLiteral("method"), request_method);
-        map.insert(QStringLiteral("header"), request_header);
-        map.insert(QStringLiteral("body"), request_body);
-        map.insert(QStringLiteral("start"), this->request_start);
+        map.insert(qsl("url"), request_url);
+        map.insert(qsl("method"), request_method);
+        map.insert(qsl("header"), request_header);
+        map.insert(qsl("body"), request_body);
+        map.insert(qsl("start"), this->request_start);
 
         QStringList headers;
-        QMapIterator<QString, QVariant> i(request_header);
+        QHashIterator<QString, QVariant> i(request_header);
         while (i.hasNext()) {
             i.next();
             auto k=i.key();
             auto v=i.value().toString();
-            headers<<QStringLiteral("-H '%1: %2'").arg(k).arg(v);
+            headers<<qsl("-H '%1: %2'").arg(k).arg(v);
         }
-        request_body=response_body.trimmed().isEmpty()?"":QStringLiteral("-d '%1'").arg(QString(response_body));
-        auto curl=QStringLiteral("curl -i -X %1 %2 %3 %4").arg(request_method).arg(request_url.toString()).arg(headers.join(' ')).arg(request_body).trimmed();
+        request_body=response_body.trimmed().isEmpty()?"":qsl("-d '%1'").arg(response_body);
+        auto curl=qsl("curl -i -X %1 %2 %3 %4").arg(request_method, request_url.toString(), headers.join(' '), request_body);
 
-        map.insert(QStringLiteral("curl"), curl);
+        map.insert(qsl("curl"), curl);
 
         return map;
     }
@@ -177,35 +178,23 @@ public:
     {
         auto&response=*this;
         QVariantMap map;
-        map.insert(QStringLiteral("finish"), QDateTime::currentDateTime());
-        map.insert(QStringLiteral("header"), response.response_header);
-        map.insert(QStringLiteral("status_code"), response.response_status_code);
-        map.insert(QStringLiteral("qt_status_code"), response.response_qt_status_code);
-        map.insert(QStringLiteral("status_reason_phrase"), response.response_status_reason_phrase);
-        map.insert(QStringLiteral("body"), QJsonDocument::fromJson(response.response_body.toByteArray()).toVariant());
+        map.insert(qsl("finish"), QDateTime::currentDateTime());
+        map.insert(qsl("header"), response.response_header);
+        map.insert(qsl("status_code"), response.response_status_code);
+        map.insert(qsl("qt_status_code"), response.response_qt_status_code);
+        map.insert(qsl("status_reason_phrase"), response.response_status_reason_phrase);
+        map.insert(qsl("body"), QJsonDocument::fromJson(response.response_body.toByteArray()).toVariant());
         return map;
     }
 
     QVariantMap toMapLog()
     {
-        QVariantMap map;
-        map.insert(QStringLiteral("resquest"), this->toMapResquest());
-        map.insert(QStringLiteral("response"), this->toMapResponse());
-        return map;
+        return {{qsl("resquest"), this->toMapResquest()}, {qsl("response"), this->toMapResponse()}};
     }
 
     QVariantList toList()
     {
-        QVariantList list;
-        QVariantMap map;
-
-        map.clear();
-        map.insert(QStringLiteral("resquest"), this->toMapResquest());
-        list<<map;
-        map.clear();
-        map.insert(QStringLiteral("response"), this->toMapResponse());
-        list<<map;
-        return list;
+        return QVariantList{qvh{{qsl("resquest"), this->toMapResquest()}, {qsl("response"), this->toMapResponse()}}};
     }
 
 };
