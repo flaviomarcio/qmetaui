@@ -20,7 +20,7 @@ public:
     int server_port=80;
     QVariantMap server_route;
     MURoutes*parent=nullptr;
-    explicit MURoutesPvt(MURoutes*parent):QObject(parent){
+    explicit MURoutesPvt(MURoutes*parent):QObject{parent}{
         this->parent=parent;
     }
     virtual ~MURoutesPvt(){
@@ -114,7 +114,7 @@ public:
 };
 
 
-MURoutes::MURoutes(QObject *parent):QObject(parent)
+MURoutes::MURoutes(QObject *parent):QObject{parent}
 {
     this->p=new MURoutesPvt(this);
 }

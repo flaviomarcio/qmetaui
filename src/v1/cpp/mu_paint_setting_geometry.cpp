@@ -15,7 +15,7 @@ public:
 };
 
 
-MUPaintSettingGeometry::MUPaintSettingGeometry(QObject *parent) : QObject(parent)
+MUPaintSettingGeometry::MUPaintSettingGeometry(QObject *parent) : QObject{parent}
 {
     this->p=new MUPaintSettingGeometryPvt(this);
 }

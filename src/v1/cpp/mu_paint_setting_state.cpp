@@ -1,6 +1,6 @@
 #include "mu_paint_setting_state.h"
 
-MUPaintSettingState::MUPaintSettingState(QObject *parent) : QObject(parent), _geometry(this), _drawing(this)
+MUPaintSettingState::MUPaintSettingState(QObject *parent) : QObject{parent}, _geometry(this), _drawing(this)
 {
 
 }

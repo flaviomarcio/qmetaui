@@ -1,6 +1,6 @@
 #include "mu_paint_setting_item.h"
 
-MUPaintSettingItem::MUPaintSettingItem(QObject *parent) : QObject(parent)
+MUPaintSettingItem::MUPaintSettingItem(QObject *parent) : QObject{parent}
 {
 
 }

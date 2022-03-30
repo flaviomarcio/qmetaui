@@ -19,7 +19,7 @@ public:
     MUCacheUtil&cacheUtil=MUCacheUtil::i();
     MURequest request;
 
-    explicit MUAppSessionPvt(MUAppSession*parent):QObject(parent), app(parent),repository(parent)
+    explicit MUAppSessionPvt(MUAppSession*parent):QObject{parent}, app(parent),repository(parent)
     {
         this->session=parent;
         connect(this->session, &MUAppSession::appRestart       , this, &MUAppSessionPvt::getData);

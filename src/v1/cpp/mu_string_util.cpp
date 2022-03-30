@@ -15,7 +15,7 @@
 
 static const QString specialMaskChar("(){}[]/-*+.,;");
 
-MUStringUtil::MUStringUtil(QObject *parent):QObject(parent)
+MUStringUtil::MUStringUtil(QObject *parent):QObject{parent}
 {
 
 }

@@ -2,7 +2,7 @@
 #include "./mu_object_util.h"
 #include <QJsonDocument>
 
-MUObject::MUObject(QObject *parent) : QObject(parent)
+MUObject::MUObject(QObject *parent) : QObject{parent}
 {
 
 }

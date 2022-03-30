@@ -12,7 +12,7 @@
 #include <QQuickItem>
 
 
-MUVariantUtil::MUVariantUtil(QObject *parent) : QObject(parent)
+MUVariantUtil::MUVariantUtil(QObject *parent) : QObject{parent}
 {
 
 }

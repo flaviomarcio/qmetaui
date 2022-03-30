@@ -197,7 +197,7 @@ public:
     MUNotification*parent=nullptr;
     MUNotificationPool*pull=nullptr;
     QString url="localhost";
-    Q_INVOKABLE explicit MUNotificationPvt(MUNotification *parent = nullptr) : QObject(parent)
+    Q_INVOKABLE explicit MUNotificationPvt(MUNotification *parent = nullptr) : QObject{parent}
     {
         this->parent=parent;
         this->pull = new MUNotificationPool(this->url,parent);

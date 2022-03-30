@@ -16,7 +16,7 @@ public:
     QString phone_number;
     bool validated=false;
     MULoginProfile*parent=nullptr;
-    explicit MULoginProfilePvt(MULoginProfile*parent):QObject(parent){
+    explicit MULoginProfilePvt(MULoginProfile*parent):QObject{parent}{
         this->parent=parent;
     }
 

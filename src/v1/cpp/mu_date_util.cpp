@@ -55,7 +55,7 @@ public:
 };
 
 
-MUDateUtil::MUDateUtil(QObject *parent) : QObject(parent)
+MUDateUtil::MUDateUtil(QObject *parent) : QObject{parent}
 {
     this->p=new MUDateUtilPvt();
 }

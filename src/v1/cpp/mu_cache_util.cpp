@@ -19,7 +19,7 @@ const QByteArray hash_key_256bit=QCryptographicHash::hash(key_256bit, QCryptogra
 const QByteArray key_128bit("68566B59703373367639792442264529");
 const QByteArray hash_key_128bit=QCryptographicHash::hash(key_128bit, QCryptographicHash::Sha256);
 
-MUCacheUtil::MUCacheUtil(QObject *parent) : QObject(parent)
+MUCacheUtil::MUCacheUtil(QObject *parent) : QObject{parent}
 {
 
 }

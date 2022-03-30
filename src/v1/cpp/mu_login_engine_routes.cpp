@@ -20,7 +20,7 @@ public:
     QString session_salt    ;
 
     MULoginEngineRoutes*parent=nullptr;
-    explicit MULoginEngineRoutesPvt(MULoginEngineRoutes*parent):QObject(parent){
+    explicit MULoginEngineRoutesPvt(MULoginEngineRoutes*parent):QObject{parent}{
         this->parent=parent;
     }
     virtual ~MULoginEngineRoutesPvt(){

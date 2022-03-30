@@ -12,7 +12,7 @@ public:
     MUVariantUtil&variantUtil=MUVariantUtil::i();
     QString info;
     MUAppEngineRoutes*parent=nullptr;
-    explicit MUAppEngineRoutesPvt(MUAppEngineRoutes*parent):QObject(parent)
+    explicit MUAppEngineRoutesPvt(MUAppEngineRoutes*parent):QObject{parent}
     {
         this->parent=parent;      
     }

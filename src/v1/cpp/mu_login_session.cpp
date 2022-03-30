@@ -27,7 +27,7 @@ public:
     MUStringUtil&stringUtil=MUStringUtil::i();
     MUCacheUtil&cacheUtil=MUCacheUtil::i();
     bool initialized=false;
-    explicit MULoginSessionPvt(MULoginSession*parent):QObject(parent), profile(parent), token(parent)
+    explicit MULoginSessionPvt(MULoginSession*parent):QObject{parent}, profile(parent), token(parent)
     {
         this->session=parent;
         connect(&MUNotification::i(), &MUNotification::notify, this, &MULoginSessionPvt::notification);

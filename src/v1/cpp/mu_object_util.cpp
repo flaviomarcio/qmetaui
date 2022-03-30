@@ -1,7 +1,7 @@
 #include "./mu_object_util.h"
 #include <QRandomGenerator>
 
-MUObjectUtil::MUObjectUtil(QObject *parent) : QObject(parent)
+MUObjectUtil::MUObjectUtil(QObject *parent) : QObject{parent}
 {
 
 }

@@ -12,7 +12,7 @@
 static int _desktopAvailableWidth=1024;
 static int _desktopAvailableHeight=640;
 
-MUGeometryUtil::MUGeometryUtil(QObject *parent) : QObject(parent)
+MUGeometryUtil::MUGeometryUtil(QObject *parent) : QObject{parent}
 {
 
 }

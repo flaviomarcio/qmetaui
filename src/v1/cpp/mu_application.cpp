@@ -9,7 +9,7 @@ static auto&methodInit=*__methodInit;
 
 static QQmlApplicationEngine*static_engine=nullptr;
 
-MUApplication::MUApplication(QObject *parent) : QObject(parent)
+MUApplication::MUApplication(QObject *parent) : QObject{parent}
 {
     QObject::connect(this, &MUApplication::notify, &MUNotification::i(), &MUNotification::notify);
 }

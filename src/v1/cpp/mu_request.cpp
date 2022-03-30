@@ -58,7 +58,7 @@ void MURequest::setLink(const MUServerLink *link)
     this->setMethod(p.link.method());
 }
 
-MURequest::MURequest(QObject *parent) : QObject(parent)
+MURequest::MURequest(QObject *parent) : QObject{parent}
 {
     this->p=new MURequestPvt(this);
 }

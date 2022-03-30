@@ -17,7 +17,7 @@ static void init()
 Q_COREAPP_STARTUP_FUNCTION(init)
 
 
-MUImageCaptureAreaProvider::MUImageCaptureAreaProvider(QObject *parent):QObject(parent), QQuickImageProvider(Pixmap)
+MUImageCaptureAreaProvider::MUImageCaptureAreaProvider(QObject *parent):QObject{parent}, QQuickImageProvider(Pixmap)
 {
     this->pixmapNo=QPixmap::fromImage(QImage(10,10,QImage::Format_Mono));
 }

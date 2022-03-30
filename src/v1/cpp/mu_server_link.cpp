@@ -24,12 +24,12 @@ public:
 };
 
 
-MUServerLink::MUServerLink(QObject *parent) : QObject(parent)
+MUServerLink::MUServerLink(QObject *parent) : QObject{parent}
 {
     this->p = new MUServerLinkPvt();
 }
 
-//MUServerLink::MUServerLink(MUServerLink &link, QObject *parent) : QObject(parent)
+//MUServerLink::MUServerLink(MUServerLink &link, QObject *parent) : QObject{parent}
 //{
 //    this->p = new MUServerLinkPvt();
 //    this->read(link.toMap());

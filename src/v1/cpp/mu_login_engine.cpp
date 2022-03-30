@@ -100,7 +100,7 @@ public:
     MULoginEngine*engine=nullptr;
 
     bool synchronousRequest=false;
-    explicit MULoginEnginePvt(MULoginEngine*parent): QObject(parent), routes(parent), _request(parent)
+    explicit MULoginEnginePvt(MULoginEngine*parent): QObject{parent}, routes(parent), _request(parent)
     {
         this->engine=parent;
         this->routes.load();
@@ -154,7 +154,7 @@ public slots:
     }
 };
 
-MULoginEngine::MULoginEngine(QObject *parent) : QObject(parent)
+MULoginEngine::MULoginEngine(QObject *parent) : QObject{parent}
 {
     this->p = new MULoginEnginePvt(this);
     connect(this, &MULoginEngine::loginStarted      ,this, &MULoginEngine::loginMessage);

@@ -1,6 +1,6 @@
 #include "mu_paint_setting_drawing.h"
 
-MUPaintSettingDrawing::MUPaintSettingDrawing(QObject *parent) : QObject(parent)
+MUPaintSettingDrawing::MUPaintSettingDrawing(QObject *parent) : QObject{parent}
 {
 
 }

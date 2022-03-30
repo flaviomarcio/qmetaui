@@ -4,7 +4,7 @@
 #define dPvt()\
     auto&p = *reinterpret_cast<MUNotificationPvt*>(this->p)
 
-MUNotification::MUNotification(QObject *parent) : QObject(parent)
+MUNotification::MUNotification(QObject *parent) : QObject{parent}
 {
     this->p = new MUNotificationPvt(this);
 }

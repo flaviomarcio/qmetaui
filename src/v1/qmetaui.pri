@@ -17,6 +17,7 @@ RESOURCES += \
     $$PWD/qml/network/network.qrc
 
 HEADERS += \
+    $$PWD/cpp/mu_macros.h \
     $$PWD/cpp/mu_app_engine_routes.h \
     $$PWD/cpp/mu_app_info.h \
     $$PWD/cpp/mu_app_repository.h \
@@ -28,8 +29,8 @@ HEADERS += \
     $$PWD/cpp/mu_generic_control.h \
     $$PWD/cpp/mu_geometry_util.h \
     $$PWD/cpp/mu_global.h \
+    $$PWD/cpp/mu_hosting.h \
     $$PWD/cpp/mu_image_capture_area.h \
-    $$PWD/cpp/mu_macros.h \
     $$PWD/cpp/mu_object.h \
     $$PWD/cpp/mu_request_model.h \
     $$PWD/cpp/mu_routes.h \
@@ -76,6 +77,7 @@ SOURCES += \
     $$PWD/cpp/mu_date_util.cpp \
     $$PWD/cpp/mu_generic_control.cpp \
     $$PWD/cpp/mu_geometry_util.cpp \
+    $$PWD/cpp/mu_hosting.cpp \
     $$PWD/cpp/mu_image_capture_area.cpp \
     $$PWD/cpp/mu_object.cpp \
     $$PWD/cpp/mu_request_model.cpp \

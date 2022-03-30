@@ -75,7 +75,7 @@ uint qHash( const QVariant & var )
     return -1;
 }
 
-MUGenericControl::MUGenericControl(QObject *parent) : QObject(parent)
+MUGenericControl::MUGenericControl(QObject *parent) : QObject{parent}
 {
 }
 

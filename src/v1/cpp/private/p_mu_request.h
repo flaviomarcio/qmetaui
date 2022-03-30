@@ -26,7 +26,7 @@ public:
     QVariantMap header;
     QVariant body;
     MURequest*request=nullptr;
-    Q_INVOKABLE explicit MURequestPvt(MURequest*parent):QObject(parent), link(this)
+    Q_INVOKABLE explicit MURequestPvt(MURequest*parent):QObject{parent}, link(this)
     {
         this->request=parent;
         connect(this, &MURequestPvt::requestResponse, this, &MURequestPvt::onRequestResponse);

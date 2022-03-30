@@ -15,7 +15,7 @@ public:
     }
 };
 
-MUPaintSetting::MUPaintSetting(QObject *parent) : QObject(parent)
+MUPaintSetting::MUPaintSetting(QObject *parent) : QObject{parent}
   ,initV(settingBase)
   ,initV(button)
   ,initV(buttonTool)
