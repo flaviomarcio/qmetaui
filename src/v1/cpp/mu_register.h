@@ -13,6 +13,15 @@ public:
     }
 };
 
+class Q_MU_EXPORT MUEnumUtils{
+    Q_GADGET
+public:
+    static void init(QQmlApplicationEngine &engine);
+//private:
+    explicit MUEnumUtils(){}
+};
+
+
 class Q_MU_EXPORT MUEnumNotification{
     Q_GADGET
 public:

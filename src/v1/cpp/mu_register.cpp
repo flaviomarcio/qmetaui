@@ -27,6 +27,11 @@
 #include "./mu_variant_util.h"
 #include "./mu_image_capture_area.h"
 
+#define MU_DECLARE_ENUM_META_UTILS(className)\
+    qRegisterMetaType<className>(#className);\
+    qmlRegisterUncreatableType<className>("QtReforce.Meta.Utils", 0, 0, #className, "Not creatable as it is an enum type");\
+    qmlRegisterUncreatableType<className>("QtReforce.Meta.Utils", 1, 0, #className, "Not creatable as it is an enum type")
+
 #define MU_DECLARE_ENUM_META_CONTROL(enumClass, enumName)\
     qRegisterMetaType<enumName>(#enumName);\
     qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 0, 0, #enumName, "Not creatable as it is an enum type");\
@@ -59,6 +64,7 @@
 
 void MURegister::init(QQmlApplicationEngine &engine)
 {
+    MUEnumUtils::init(engine);
     MUEnumFormType::init(engine);
     MUEnumNotification::init(engine);
     MUEnumRequestType::init(engine);
@@ -69,6 +75,25 @@ void MURegister::init(QQmlApplicationEngine &engine)
     MUCacheUtil::init();
     MUImageCaptureArea::init();
 }
+
+void MUEnumUtils::init(QQmlApplicationEngine &engine)
+{
+    Q_UNUSED(engine)
+    MU_DECLARE_ENUM_META_UTILS(MUApplication);
+    MU_DECLARE_ENUM_META_UTILS(MUVariantUtil);
+    MU_DECLARE_ENUM_META_UTILS(MUGeometryUtil);
+    MU_DECLARE_ENUM_META_UTILS(MUDateUtil);
+    MU_DECLARE_ENUM_META_UTILS(MUCacheUtil);
+    MU_DECLARE_ENUM_META_UTILS(MUCacheUtil);
+    MU_DECLARE_ENUM_META_UTILS(MUStringUtil);
+    MU_DECLARE_ENUM_META_UTILS(MUValidationUtil);
+    MU_DECLARE_ENUM_META_UTILS(MULoginSession);
+    MU_DECLARE_ENUM_META_UTILS(MUAppSession);
+    MU_DECLARE_ENUM_META_UTILS(MULoginEngine);
+    MU_DECLARE_ENUM_META_UTILS(MUNotification);
+    MU_DECLARE_ENUM_META_UTILS(MUPaintSetting);
+}
+
 
 void MUEnumNotification::init(QQmlApplicationEngine &engine)
 {
