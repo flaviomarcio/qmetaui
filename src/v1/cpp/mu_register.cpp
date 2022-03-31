@@ -79,17 +79,12 @@ void MURegister::init(QQmlApplicationEngine &engine)
 void MUEnumUtils::init(QQmlApplicationEngine &engine)
 {
     Q_UNUSED(engine)
-    MU_DECLARE_ENUM_META_UTILS(MUApplication);
     MU_DECLARE_ENUM_META_UTILS(MUVariantUtil);
     MU_DECLARE_ENUM_META_UTILS(MUGeometryUtil);
     MU_DECLARE_ENUM_META_UTILS(MUDateUtil);
     MU_DECLARE_ENUM_META_UTILS(MUCacheUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUCacheUtil);
     MU_DECLARE_ENUM_META_UTILS(MUStringUtil);
     MU_DECLARE_ENUM_META_UTILS(MUValidationUtil);
-    MU_DECLARE_ENUM_META_UTILS(MULoginSession);
-    MU_DECLARE_ENUM_META_UTILS(MUAppSession);
-    MU_DECLARE_ENUM_META_UTILS(MULoginEngine);
     MU_DECLARE_ENUM_META_UTILS(MUNotification);
     MU_DECLARE_ENUM_META_UTILS(MUPaintSetting);
 }
@@ -109,7 +104,6 @@ void MUEnumFormType::init(QQmlApplicationEngine &engine)
     MU_DECLARE_ENUM_META_CONTROL(MUEnumFormType, MUFormType);
 
     MU_DECLARE_CLASS_META_CONTROL(MUApplication             );
-    MU_DECLARE_CLASS_META_CONTROL(MUCacheUtil               );
     MU_DECLARE_CLASS_META_CONTROL(MUModelTable              );
     MU_DECLARE_CLASS_META_CONTROL(MUGenericControl          );
     MU_DECLARE_CLASS_META_CONTROL(MUImageCaptureArea        );
@@ -122,7 +116,6 @@ void MUEnumFormType::init(QQmlApplicationEngine &engine)
     MU_DECLARE_CLASS_META_SECURITY(MUAppInfo                );
     MU_DECLARE_CLASS_META_SECURITY(MUAppRepository          );
 
-    MU_DECLARE_CLASS_META_SECURITY(MUValidationUtil         );
     MU_DECLARE_CLASS_META_SECURITY(MUValidationUtilPublic   );
     MU_DECLARE_CLASS_META_SECURITY(MUValidationUtilPTB      );
 }
