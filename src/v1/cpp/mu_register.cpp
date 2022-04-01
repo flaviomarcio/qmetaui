@@ -27,37 +27,35 @@
 #include "./mu_variant_util.h"
 #include "./mu_image_capture_area.h"
 
-#define MU_DECLARE_ENUM_META_UTILS(className)\
-    qRegisterMetaType<className>(#className);\
-    qmlRegisterUncreatableType<className>("QtReforce.Meta.Utils", 0, 0, #className, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<className>("QtReforce.Meta.Utils", 1, 0, #className, "Not creatable as it is an enum type")
+#define MU_DECLARE_CLASS(packegeName,className)\
+    qmlRegisterType<className>(packegeName, 1, 0, #className);\
+    qmlRegisterType<className>(packegeName, 0, 0, #className)
+
+#define MU_DECLARE_ENUM(packegeName, enumClass, enumName)\
+    qRegisterMetaType<enumName>(#enumName);\
+    qmlRegisterUncreatableType<enumClass>(packegeName, 0, 0, #enumName, "Not creatable as it is an enum type");\
+    qmlRegisterUncreatableType<enumClass>(packegeName, 1, 0, #enumName, "Not creatable as it is an enum type")
 
 #define MU_DECLARE_ENUM_META_CONTROL(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 1, 0, #enumName, "Not creatable as it is an enum type")
+    MU_DECLARE_ENUM("QtReforce.Meta.Controls", enumClass, enumName);
 
 #define MU_DECLARE_ENUM_META_SECURITY(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Security", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Security", 1, 0, #enumName, "Not creatable as it is an enum type")
+    MU_DECLARE_ENUM("QtReforce.Meta.Security", enumClass, enumName);
 
 #define MU_DECLARE_ENUM_META_NETWORK(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Network", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Network", 1, 0, #enumName, "Not creatable as it is an enum type")
+    MU_DECLARE_ENUM("QtReforce.Meta.Network", enumClass, enumName);
 
 #define MU_DECLARE_CLASS_META_CONTROL(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Controls", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Controls", 0, 0, #className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Controls", className);
 
 #define MU_DECLARE_CLASS_META_SECURITY(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Security", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Security", 0, 0, #className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Security", className);\
 
 #define MU_DECLARE_CLASS_META_NETWORK(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Network", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Network", 0, 0, #className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Network", className);
+
+#define MU_DECLARE_CLASS_META_UTILS(className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Utils", className);
 
 #define MU_DECLARE_INSTANCE(className)\
     engine.rootContext()->setContextProperty("qApp",QGuiApplication::instance());
@@ -79,14 +77,12 @@ void MURegister::init(QQmlApplicationEngine &engine)
 void MUEnumUtils::init(QQmlApplicationEngine &engine)
 {
     Q_UNUSED(engine)
-    MU_DECLARE_ENUM_META_UTILS(MUVariantUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUGeometryUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUDateUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUCacheUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUStringUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUValidationUtil);
-    MU_DECLARE_ENUM_META_UTILS(MUNotification);
-    MU_DECLARE_ENUM_META_UTILS(MUPaintSetting);
+    MU_DECLARE_CLASS_META_UTILS(MUVariantUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUGeometryUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUDateUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUCacheUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUStringUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUNotification);
 }
 
 
@@ -170,5 +166,4 @@ void MUEnumInstance::init(QQmlApplicationEngine &engine)
     engine.rootContext()->setContextProperty("paintSetting",&MUPaintSetting::i());
 
     engine.rootContext()->setContextProperty("notification",&MUNotification::i());
-    //engine.rootContext()->setContextProperty("mainPaintSetting",&MUPaintSetting::instance());
 }

@@ -2,7 +2,7 @@ pragma Singleton
 
 import QtQuick 2.14
 
-Item {
+QtObject {
     id:measures
 
     property real pixelDensity: 4.46
@@ -38,15 +38,15 @@ Item {
         return  densityPixel(value) * scaleFactorFont
     }
 
-    QtObject {
-        id:innerData
+//    Item {
+//        id:innerData
 
-        property int  gridUnit: {
-            return densityPixel(measures.guFactor)
-        }
+//        property int  gridUnit: {
+//            return densityPixel(measures.guFactor)
+//        }
 
-        property real dp : {
-            return pixelDensity
-        }
-    }
+//        property real dp : {
+//            return pixelDensity
+//        }
+//    }
 }
