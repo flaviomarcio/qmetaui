@@ -28,11 +28,13 @@ public:
         Q_UNUSED(format)
         QString s;
         if(d.isValid() && t.isValid())
-            s+=d.toString(QStringLiteral("d MMM yyyy"))+" "+t.toString(QStringLiteral("HH:mm:ss"));
-        else if(d.isValid())
-            s+=d.toString(QStringLiteral("d MMM yyyy"));
-        else if(t.isValid())
-            s=t.toString(QStringLiteral("HH:mm:ss"));
+            return d.toString(QStringLiteral("d MMM yyyy"))+" "+t.toString(QStringLiteral("HH:mm:ss"));
+
+        if(d.isValid())
+            return d.toString(QStringLiteral("d MMM yyyy"));
+
+        if(t.isValid())
+            return t.toString(QStringLiteral("HH:mm:ss"));
 
         return s;
     }
@@ -40,14 +42,16 @@ public:
 
     static QString toDateTimeInput(const QDate &d, const QTime &t,const QString&format)
     {
-        auto ff=format.trimmed();
+        Q_UNUSED(format)
         QString s;
         if(d.isValid() && t.isValid())
-            s+=d.toString(QStringLiteral("dd/MM/yyyy"))+QStringLiteral(" ")+t.toString(QStringLiteral("HH:mm:ss"));
-        else if(d.isValid())
-            s+=d.toString(QStringLiteral("dd/MM/yyyy"));
-        else if(t.isValid())
-            s=t.toString(QStringLiteral("HH:mm:ss"));
+            return d.toString(QStringLiteral("dd/MM/yyyy"))+QStringLiteral(" ")+t.toString(QStringLiteral("HH:mm:ss"));
+
+        if(d.isValid())
+            return d.toString(QStringLiteral("dd/MM/yyyy"));
+
+        if(t.isValid())
+            return t.toString(QStringLiteral("HH:mm:ss"));
 
         return s;
     }

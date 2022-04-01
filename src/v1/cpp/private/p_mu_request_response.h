@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../mu_request.h"
-
 #include <QObject>
 #include <QThread>
 #include <QCborMap>
@@ -23,11 +22,12 @@
 
 struct MURequestResponse{
 public:
-    explicit MURequestResponse(){
+    explicit MURequestResponse()
+    {
     }
+
     explicit MURequestResponse(MURequest&request)
     {
-
         this->request=&request;
         this->request_method = request.method();
         this->request_header = request.header();
@@ -46,7 +46,7 @@ public:
     QDateTime request_finish;
     qlonglong timeout=30000;
     QUrl request_url;
-    QVariantMap request_header;
+    QVariantHash request_header;
     QByteArray request_body;
     QVariantMap response_header;
     int response_status_code = 0;
@@ -58,29 +58,29 @@ public:
     {
         QVariantMap response;
 
-        response.insert("timeout",this->timeout);
-        response.insert("request_url",this->request_url);
-        response.insert("request_header",this->request_header);
-        response.insert("request_body",this->request_body);
-        response.insert("response_header",this->response_header);
-        response.insert("response_status_code",this->response_status_code);
-        response.insert("response_status_reason_phrase",this->response_status_reason_phrase);
-        response.insert("response_qt_status_code",this->response_qt_status_code);
-        response.insert("response_body",this->response_body);
+        response.insert(QStringLiteral("timeout"),this->timeout);
+        response.insert(QStringLiteral("request_url"),this->request_url);
+        response.insert(QStringLiteral("request_header"),this->request_header);
+        response.insert(QStringLiteral("request_body"),this->request_body);
+        response.insert(QStringLiteral("response_header"),this->response_header);
+        response.insert(QStringLiteral("response_status_code"),this->response_status_code);
+        response.insert(QStringLiteral("response_status_reason_phrase"),this->response_status_reason_phrase);
+        response.insert(QStringLiteral("response_qt_status_code"),this->response_qt_status_code);
+        response.insert(QStringLiteral("response_body"),this->response_body);
 
         return response;
     }
     void fromMap(const QVariantMap&response)
     {
 
-        this->timeout=response.value("timeout").toLongLong();
-        this->request_url=response.value("request_url").toUrl();
-        this->request_header=response.value("request_header").toMap();
-        this->request_body=response.value("request_body").toByteArray();
-        this->response_header=response.value("response_header").toMap();
-        this->response_status_code=response.value("response_status_code").toInt();
-        this->response_status_reason_phrase=response.value("response_status_reason_phrase").toString();
-        this->response_qt_status_code=QNetworkReply::NetworkError(response.value("response_qt_status_code").toInt());
+        this->timeout=response.value(QStringLiteral("timeout")).toLongLong();
+        this->request_url=response.value(QStringLiteral("request_url")).toUrl();
+        this->request_header=response.value(QStringLiteral("request_header")).toHash();
+        this->request_body=response.value(QStringLiteral("request_body")).toByteArray();
+        this->response_header=response.value(QStringLiteral("response_header")).toMap();
+        this->response_status_code=response.value(QStringLiteral("response_status_code")).toInt();
+        this->response_status_reason_phrase=response.value(QStringLiteral("response_status_reason_phrase")).toString();
+        this->response_qt_status_code=QNetworkReply::NetworkError(response.value(QStringLiteral("response_qt_status_code")).toInt());
         this->response_body=response.value("response_body").toByteArray();
     }
 
@@ -158,15 +158,15 @@ public:
         map.insert(QStringLiteral("start"), this->request_start);
 
         QStringList headers;
-        QMapIterator<QString, QVariant> i(request_header);
+        QHashIterator<QString, QVariant> i(request_header);
         while (i.hasNext()) {
             i.next();
             auto k=i.key();
             auto v=i.value().toString();
-            headers<<QStringLiteral("-H '%1: %2'").arg(k).arg(v);
+            headers<<QStringLiteral("-H '%1: %2'").arg(k, v);
         }
         request_body=response_body.trimmed().isEmpty()?"":QStringLiteral("-d '%1'").arg(QString(response_body));
-        auto curl=QStringLiteral("curl -i -X %1 %2 %3 %4").arg(request_method).arg(request_url.toString()).arg(headers.join(' ')).arg(request_body).trimmed();
+        auto curl=QStringLiteral("curl -i -X %1 %2 %3 %4").arg(request_method, request_url.toString(), headers.join(' '), request_body).trimmed();
 
         map.insert(QStringLiteral("curl"), curl);
 

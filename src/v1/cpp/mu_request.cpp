@@ -1,11 +1,12 @@
-#include "mu_request.h"
+#include "./mu_request.h"
 #include "./mu_register.h"
 #include "./private/p_mu_request.h"
+#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MURequestPvt*>(this->p)
 
-QVariantMap MURequest::header()const
+QVariantHash MURequest::header()const
 {
     dPvt();
     return p.header;
@@ -24,14 +25,14 @@ bool MURequest::setHeader(const QString &key, const QVariant &value) const
 void MURequest::setHeader(const QVariant &header)
 {
     dPvt();
-    p.header=header.toMap();
+    p.header=header.toHash();
 }
 
 bool MURequest::setAuthoBearer(const QString &credentials) const
 {
     dPvt();
     if(!credentials.trimmed().isEmpty()){
-        p.header.insert("Authorization",QString("Bearer %1").arg(credentials));
+        p.header.insert(QByteArrayLiteral("Authorization"), QStringLiteral("Bearer %1").arg(credentials));
         return true;
     }
     return false;
@@ -117,55 +118,125 @@ QByteArray MURequest::body() const
 {
     dPvt();
 
-    auto body=p.body;
+    if(p.body.isNull() || !p.body.isValid())
+        return {};
 
-    if(body.type()!=QVariant::List && body.type()!=QVariant::Map && body.type()!=QVariant::Hash){
-        if(body.type()==QVariant::ByteArray || body.type()==QVariant::String || body.type()==QVariant::Char){
-            auto s=body.toByteArray().trimmed();
-            auto chrFirst=s.at(0);
-            auto chrLast=s.at(s.length()-1);
-            s.clear();
-            QList<QChar> key={'[',']','{','}'};
-            if(key.contains(chrFirst) || key.contains(chrLast)){
-                if(p.requestAppType==MUEnumRequest::AppType::atCBor)
-                    body=(QCborValue::fromVariant(body).toByteArray());
-                else if(p.requestAppType==MUEnumRequest::AppType::atJson)
-                    body=(QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact));
-                else if(p.requestAppType==MUEnumRequest::AppType::atXml)
-                    body=(QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact));
-                else if(p.requestAppType==MUEnumRequest::AppType::atBinary)
-                    body=(QCborValue::fromVariant(body).toByteArray());
-            }
-        }
+    auto&body=p.body;
+
+
+    switch (qTypeId(body)){
+    case QMetaType_QByteArray:
+    case QMetaType_QString:
+    {
+        auto s=body.toByteArray().trimmed();
+        if(s.isEmpty())
+            break;
+
+        auto chrFirst=s.at(0);
+        auto chrLast=s.at(s.length()-1);
+        s.clear();
+        static const QList<QChar> key={'[',']','{','}'};
+        if(!key.contains(chrFirst) || key.contains(chrLast))
+            break;
+
+        if(p.requestAppType==MUEnumRequest::AppType::atCBor)
+            body=QCborValue::fromVariant(body).toByteArray();
+
+        if(p.requestAppType==MUEnumRequest::AppType::atJson)
+            body=QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
+
+        if(p.requestAppType==MUEnumRequest::AppType::atXml)
+            body=QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
+
+        if(p.requestAppType==MUEnumRequest::AppType::atBinary)
+            body=QCborValue::fromVariant(body).toByteArray();
+
+        break;
     }
-
-    if(body.type()==QVariant::List || body.type()==QVariant::Map || body.type()==QVariant::Hash){
+    case QMetaType_QVariantList:
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantHash:
+    case QMetaType_QStringList:
+    {
         if(p.requestAppType==MUEnumRequest::AppType::atCBor)
             body=(QCborValue::fromVariant(body).toByteArray());
-        else if(p.requestAppType==MUEnumRequest::AppType::atJson)
-            body=(QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact));
-        else
-            body=(QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact));
-    }
 
+        if(p.requestAppType==MUEnumRequest::AppType::atJson)
+            body=QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
+
+        body=QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
+        break;
+    }
+    default:
+        break;
+    }
     return body.toByteArray();
 }
 
 QVariantMap MURequest::bodyMap() const
 {
     dPvt();
-    QVariantMap bodyMap;
-    auto&v=p.body;
-    auto type=p.body.type();
-    if(type==QVariant::Hash || type==QVariant::Map)
-        bodyMap=v.toMap();
-    else if(this->requestAppType()==MUEnumRequest::AppType::atJson)
-        bodyMap=QJsonDocument::fromJson(v.toByteArray()).toVariant().toMap();
-    else if(this->requestAppType()==MUEnumRequest::AppType::atCBor || this->requestAppType()==MUEnumRequest::AppType::atBinary)
-        bodyMap=QCborValue::fromCbor(v.toByteArray()).toVariant().toMap();
-    else
-        bodyMap.clear();
-    return bodyMap;
+    switch (qTypeId(p.body)){
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantHash:
+        return p.body.toMap();
+    default:
+        switch (this->requestAppType()){
+        case MUEnumRequest::AppType::atJson:
+            return QJsonDocument::fromJson(p.body.toByteArray()).toVariant().toMap();
+        case MUEnumRequest::AppType::atCBor:
+        case MUEnumRequest::AppType::atBinary:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toMap();
+        default:
+            return {};
+        }
+        break;
+    }
+    return {};
+}
+
+QVariantHash MURequest::bodyHash() const
+{
+    dPvt();
+    switch (qTypeId(p.body)){
+    case QMetaType_QVariantMap:
+    case QMetaType_QVariantHash:
+        return p.body.toHash();
+    default:
+        switch (this->requestAppType()){
+        case MUEnumRequest::AppType::atJson:
+            return QJsonDocument::fromJson(p.body.toByteArray()).toVariant().toHash();
+        case MUEnumRequest::AppType::atCBor:
+        case MUEnumRequest::AppType::atBinary:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toHash();
+        default:
+            return {};
+        }
+        break;
+    }
+    return {};
+}
+
+QVariantList MURequest::bodyList() const
+{
+    dPvt();
+    switch (qTypeId(p.body)){
+    case QMetaType_QVariantList:
+    case QMetaType_QStringList:
+        return p.body.toList();
+    default:
+        switch (this->requestAppType()){
+        case MUEnumRequest::AppType::atJson:
+            return QJsonDocument::fromJson(p.body.toByteArray()).toVariant().toList();
+        case MUEnumRequest::AppType::atCBor:
+        case MUEnumRequest::AppType::atBinary:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toList();
+        default:
+            return {};
+        }
+        break;
+    }
+    return {};
 }
 
 void MURequest::setBody(const QVariant &body)

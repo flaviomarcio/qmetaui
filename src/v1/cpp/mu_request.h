@@ -31,7 +31,7 @@ public:
     Q_INVOKABLE virtual void cancel();
     Q_INVOKABLE virtual bool isRunning();
 
-    Q_INVOKABLE virtual QVariantMap header() const;
+    Q_INVOKABLE virtual QVariantHash header() const;
     Q_INVOKABLE virtual bool setHeader(const QString &key, const QVariant&value) const;
     Q_INVOKABLE virtual void setHeader(const QVariant &header);
     Q_INVOKABLE virtual bool setAuthoBearer(const QString &credentials) const;
@@ -39,6 +39,8 @@ public:
     Q_INVOKABLE virtual QVariant uuid() const;
     Q_INVOKABLE virtual QByteArray body() const;
     Q_INVOKABLE virtual QVariantMap bodyMap() const;
+    Q_INVOKABLE virtual QVariantHash bodyHash() const;
+    Q_INVOKABLE virtual QVariantList bodyList() const;
 
     Q_INVOKABLE virtual void setBody(const QVariant &body);
     Q_INVOKABLE virtual QVariant stateCode() const;
