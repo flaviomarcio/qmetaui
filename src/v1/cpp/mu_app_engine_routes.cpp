@@ -22,9 +22,9 @@ public:
     }
 
     void load(){
-        auto appRoute=this->parent->route().value(QStringLiteral("magma/app")).toMap();
+        auto appRoute=this->parent->route().value(QStringLiteral("qtreforce/app")).toMap();
         auto route_info = appRoute.value(QStringLiteral("info"));
-        route_info = stringUtil.isEmptySet(route_info, QStringLiteral("/v1/magma/app/info")).toString();
+        route_info = stringUtil.isEmptySet(route_info, QStringLiteral("/v1/qtreforce/app/info")).toString();
         auto server=this->parent->server();
         this->info = QStringLiteral("%1%2").arg(server, route_info.toString());
     }
