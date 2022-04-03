@@ -4,6 +4,39 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 
+#define MU_DECLARE_CLASS(packegeName,className)\
+    qmlRegisterType<className>(packegeName, 1, 0, #className);\
+    qmlRegisterType<className>(packegeName, 0, 0, #className)
+
+#define MU_DECLARE_ENUM(packegeName, enumClass, enumName)\
+    qRegisterMetaType<enumName>(#enumName);\
+    qmlRegisterUncreatableType<enumClass>(packegeName, 0, 0, #enumName, "Not creatable as it is an enum type");\
+    qmlRegisterUncreatableType<enumClass>(packegeName, 1, 0, #enumName, "Not creatable as it is an enum type")
+
+#define MU_DECLARE_ENUM_META_CONTROL(enumClass, enumName)\
+    MU_DECLARE_ENUM("QtReforce.Meta.Controls", enumClass, enumName);
+
+#define MU_DECLARE_ENUM_META_SECURITY(enumClass, enumName)\
+    MU_DECLARE_ENUM("QtReforce.Meta.Security", enumClass, enumName);
+
+#define MU_DECLARE_ENUM_META_NETWORK(enumClass, enumName)\
+    MU_DECLARE_ENUM("QtReforce.Meta.Network", enumClass, enumName);
+
+#define MU_DECLARE_CLASS_META_CONTROL(className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Controls", className);
+
+#define MU_DECLARE_CLASS_META_SECURITY(className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Security", className);\
+
+#define MU_DECLARE_CLASS_META_NETWORK(className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Network", className);
+
+#define MU_DECLARE_CLASS_META_UTILS(className)\
+    MU_DECLARE_CLASS("QtReforce.Meta.Utils", className);
+
+#define MU_DECLARE_INSTANCE(NAME, INSTANCE)\
+    engine.rootContext()->setContextProperty(NAME, INSTANCE);
+
 class Q_MU_EXPORT MURegister{
     Q_GADGET
 public:
@@ -12,6 +45,23 @@ public:
     explicit MURegister(){
     }
 };
+
+class Q_MU_EXPORT MUEnumUtils{
+    Q_GADGET
+public:
+    static void init(QQmlApplicationEngine &engine);
+//private:
+    explicit MUEnumUtils(){}
+};
+
+class Q_MU_EXPORT MUEnumExtras{
+    Q_GADGET
+public:
+    static void init(QQmlApplicationEngine &engine);
+//private:
+    explicit MUEnumExtras(){}
+};
+
 
 class Q_MU_EXPORT MUEnumNotification{
     Q_GADGET
@@ -102,11 +152,14 @@ public:
     Q_ENUM(AppType)
 
     enum Method{
-          rmGet=0
-        , rmPost=1
-        , rmPut=2
-        , rmDelete=3
-        , rmHead=4
+          rmHead
+        , rmOptions
+        , rmGet
+        , rmPost
+        , rmPut
+        , rmDelete
+        , rmPatch
+        , rmTrace
     };
 
     Q_ENUM(Method)
@@ -127,6 +180,12 @@ public:
 
         r.insert(rmDelete,"Delete");
         r.insert(rmDelete,"delete");
+
+        r.insert(rmPatch,"Patch");
+        r.insert(rmPatch,"patch");
+
+        r.insert(rmTrace,"Trace");
+        r.insert(rmTrace,"trace");
 
         return r;
     }

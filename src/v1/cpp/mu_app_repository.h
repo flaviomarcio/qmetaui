@@ -10,13 +10,13 @@ class Q_MU_EXPORT MUAppRepository : public MUObject
     Q_OBJECT
 public:
 
-    Q_PROPERTY(QVariantHash headers  READ headers   WRITE setHeaders  NOTIFY headersChanged)
-    Q_PROPERTY(QString      hostName READ hostName  WRITE setHostName NOTIFY hostNameChanged)
-    Q_PROPERTY(QString      method   READ method    WRITE setMethod   NOTIFY methodChanged)
-    Q_PROPERTY(QVariant     protocol READ protocol  WRITE setProtocol NOTIFY protocolChanged)
-    Q_PROPERTY(int          port     READ port      WRITE setPort     NOTIFY portChanged)
-    Q_PROPERTY(QString      route    READ route     WRITE setRoute    NOTIFY routeChanged)
-    Q_PROPERTY(QString      url      READ url                         NOTIFY urlChanged)
+     Q_PROPERTY(QVariantHash headers READ headers WRITE setHeaders NOTIFY headersChanged)
+     Q_PROPERTY(QString hostName READ hostName WRITE setHostName NOTIFY hostNameChanged)
+     Q_PROPERTY(QString method READ method WRITE setMethod NOTIFY methodChanged)
+     Q_PROPERTY(QVariant protocol READ protocol WRITE setProtocol NOTIFY protocolChanged)
+     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
+     Q_PROPERTY(QString route READ route WRITE setRoute NOTIFY routeChanged)
+     Q_PROPERTY(QString url READ url NOTIFY urlChanged)
 
     /**
      * @brief MUAppRepository

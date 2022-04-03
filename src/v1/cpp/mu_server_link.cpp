@@ -41,7 +41,7 @@ MUServerLink::~MUServerLink(){
     delete&p;
 }
 
-QVariant MUServerLink::toMap()const
+QVariantHash MUServerLink::toHash()const
 {
     QVariantHash map;
     for(int i = 0; i < this->metaObject()->propertyCount(); ++i) {
@@ -69,16 +69,15 @@ QString MUServerLink::url() const
 
 }
 
-bool MUServerLink::read(const QVariant &link)
+bool MUServerLink::read(const QVariantHash &link)
 {
     switch (qTypeId(link)){
     case QMetaType_QVariantMap:
     case QMetaType_QVariantHash:
     {
-        auto map=link.toHash();
         for(int i = 0; i < this->metaObject()->propertyCount(); ++i) {
             auto property=this->metaObject()->property(i);
-            property.write(this, map.value(property.name()));
+            property.write(this, link.value(property.name()));
         }
         return true;
     }

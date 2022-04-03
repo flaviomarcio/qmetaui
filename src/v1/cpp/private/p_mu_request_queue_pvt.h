@@ -138,7 +138,7 @@ private slots:
         this->jobRemove(request);
     }
 
-    void onRequestFinish(MURequest*request, const QVariantMap&vResponse)
+    void onRequestFinish(MURequest*request, const QVariantHash&vResponse)
     {
         {
             bool contains=false;

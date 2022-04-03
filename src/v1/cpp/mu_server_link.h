@@ -24,11 +24,11 @@ public:
     ///Q_INVOKABLE explicit MUServerLink(MUServerLink&link, QObject *parent = nullptr);
     ~MUServerLink();
 
-    Q_INVOKABLE virtual QVariant toMap()const;
+    Q_INVOKABLE virtual QVariantHash toHash()const;
 
     virtual QString url() const;
 
-    Q_INVOKABLE virtual bool read(const QVariant&link);
+    Q_INVOKABLE virtual bool read(const QVariantHash &link);
 
     virtual QVariantHash &headers();
     virtual void setHeaders(const QVariantHash &value);

@@ -2,7 +2,6 @@
 #include "./mu_object_util.h"
 #include "./mu_string_util.h"
 #include "./mu_request.h"
-#include <QStm>
 
 #define dPvt()\
     auto&p = *reinterpret_cast<MUAppEngineRoutesPvt*>(this->p)
@@ -13,7 +12,7 @@ public:
     MUVariantUtil&variantUtil=MUVariantUtil::i();
     QString info;
     MUAppEngineRoutes*parent=nullptr;
-    explicit MUAppEngineRoutesPvt(MUAppEngineRoutes*parent):QObject(parent)
+    explicit MUAppEngineRoutesPvt(MUAppEngineRoutes*parent):QObject{parent}
     {
         this->parent=parent;      
     }
@@ -23,11 +22,11 @@ public:
     }
 
     void load(){
-        auto appRoute=this->parent->route().value(qsl("magma/app")).toMap();
-        auto route_info = appRoute.value(qsl("info"));
-        route_info = stringUtil.isEmptySet(route_info, qsl("/v1/magma/app/info")).toString();
+        auto appRoute=this->parent->route().value(QStringLiteral("qtreforce/app")).toMap();
+        auto route_info = appRoute.value(QStringLiteral("info"));
+        route_info = stringUtil.isEmptySet(route_info, QStringLiteral("/v1/qtreforce/app/info")).toString();
         auto server=this->parent->server();
-        this->info = qsl("%1%2").arg(server, route_info.toString());
+        this->info = QStringLiteral("%1%2").arg(server, route_info.toString());
     }
 };
 

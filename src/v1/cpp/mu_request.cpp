@@ -1,4 +1,4 @@
-#include "mu_request.h"
+#include "./mu_request.h"
 #include "./mu_register.h"
 #include "./private/p_mu_request.h"
 #include <QStm>
@@ -118,44 +118,26 @@ QByteArray MURequest::body() const
 {
     dPvt();
 
-    auto body=p.body;
+    if(p.body.isNull() || !p.body.isValid())
+        return {};
 
     switch(qTypeId(p.body)){
-    case QMetaType_QString:
-    case QMetaType_QByteArray:
-    {
-        auto s=body.toByteArray().trimmed();
-        auto chrFirst=s.at(0);
-        auto chrLast=s.at(s.length()-1);
-        s.clear();
-        static QList<QChar> key={'[',']','{','}'};
-        if(key.contains(chrFirst) || key.contains(chrLast)){
-            if(p.requestAppType==MUEnumRequest::AppType::atCBor)
-                return QCborValue::fromVariant(body).toByteArray();
-
-            if(p.requestAppType==MUEnumRequest::AppType::atJson)
-                return QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
-
-            if(p.requestAppType==MUEnumRequest::AppType::atXml)
-                return QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
-
-            if(p.requestAppType==MUEnumRequest::AppType::atBinary)
-                return QCborValue::fromVariant(body).toByteArray();
-        }
-        return {};
-    }
     case QMetaType_QVariantList:
     case QMetaType_QStringList:
     case QMetaType_QVariantHash:
     case QMetaType_QVariantMap:
+        switch (this->requestAppType()){
+        case MUEnumRequest::AppType::atJson:
+            return QJsonDocument::fromVariant(p.body).toJson(QJsonDocument::Compact);
+        case MUEnumRequest::AppType::atCBor:
+            return QCborValue::fromVariant(p.body).toByteArray();
+        case MUEnumRequest::AppType::atBinary:
+            return QCborValue::fromVariant(p.body).toByteArray();
+        default:
+            return {};
+        }
     default:
-        if(p.requestAppType==MUEnumRequest::AppType::atCBor)
-            return QCborValue::fromVariant(body).toByteArray();
-
-        //        if(p.requestAppType==MUEnumRequest::AppType::atJson)
-        //            return QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
-
-        return QJsonDocument::fromVariant(body).toJson(QJsonDocument::Compact);
+        return p.body.toByteArray();
     }
 }
 
@@ -174,6 +156,7 @@ QVariantHash MURequest::bodyMap() const
         case MUEnumRequest::AppType::atJson:
             return QJsonDocument::fromJson(p.body.toByteArray()).toVariant().toHash();
         case MUEnumRequest::AppType::atCBor:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toHash();
         case MUEnumRequest::AppType::atBinary:
             return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toHash();
         default:
@@ -185,6 +168,7 @@ QVariantHash MURequest::bodyMap() const
 QVariantHash MURequest::bodyHash() const
 {
     dPvt();
+
     switch(qTypeId(p.body)){
     case QMetaType_QVariantHash:
     case QMetaType_QVariantMap:
@@ -197,8 +181,34 @@ QVariantHash MURequest::bodyHash() const
         case MUEnumRequest::AppType::atJson:
             return QJsonDocument::fromJson(p.body.toByteArray()).toVariant().toHash();
         case MUEnumRequest::AppType::atCBor:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toHash();
         case MUEnumRequest::AppType::atBinary:
             return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toHash();
+        default:
+            return {};
+        }
+    }
+}
+
+QVariantList MURequest::bodyList() const
+{
+    dPvt();
+
+    switch(qTypeId(p.body)){
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
+        return {};
+    case QMetaType_QStringList:
+    case QMetaType_QVariantList:
+        return p.body.toList();
+    default:
+        switch (this->requestAppType()){
+        case MUEnumRequest::AppType::atJson:
+            return QJsonDocument::fromJson(p.body.toByteArray()).toVariant().toList();
+        case MUEnumRequest::AppType::atCBor:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toList();
+        case MUEnumRequest::AppType::atBinary:
+            return QCborValue::fromCbor(p.body.toByteArray()).toVariant().toList();
         default:
             return {};
         }
@@ -208,7 +218,8 @@ QVariantHash MURequest::bodyHash() const
 void MURequest::setBody(const QVariant &body)
 {
     dPvt();
-    p.body=this->u().toVar(body);
+    MUStringUtil su;
+    p.body=su.toVar(body);
 }
 
 QVariant MURequest::stateCode()const
@@ -233,7 +244,7 @@ QVariant MURequest::responseBody() const
 {
     dPvt();
     auto&v=p.response.response_body;
-    switch(qTypeId(p.body)){
+    switch(qTypeId(v)){
     case QMetaType_QVariantHash:
     case QMetaType_QVariantMap:
     case QMetaType_QStringList:
@@ -241,70 +252,46 @@ QVariant MURequest::responseBody() const
         return v;
     default:
         switch (this->requestAppType()){
-        case MUEnumRequest::AppType::atCBor:
-        case MUEnumRequest::AppType::atBinary:
-            return (v=QCborValue::fromCbor(v.toByteArray()).toVariant());
         case MUEnumRequest::AppType::atJson:
             return (v=QJsonDocument::fromJson(v.toByteArray()).toVariant());
+        case MUEnumRequest::AppType::atCBor:
+            return (v=QCborValue::fromCbor(v.toByteArray()).toVariant());
+        case MUEnumRequest::AppType::atBinary:
+            return (v=QCborValue::fromCbor(v.toByteArray()).toVariant());
         default:
-            return {};
+            return v.toByteArray();
         }
     }
 }
 
-QVariantHash MURequest::responseBodyMap() const
+QVariantHash MURequest::responseBodyHash() const
 {
-    dPvt();
+    return this->responseBody().toHash();
+}
 
-    auto&v=p.response.response_body;
-    switch(qTypeId(p.body)){
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
-        return v.toHash();
-    case QMetaType_QStringList:
-    case QMetaType_QVariantList:
-        return {};
-    default:
-        switch (this->requestAppType()){
-        case MUEnumRequest::AppType::atCBor:
-        case MUEnumRequest::AppType::atBinary:
-            return QCborValue::fromCbor(v.toByteArray()).toVariant().toHash();
-        case MUEnumRequest::AppType::atJson:
-            return QJsonDocument::fromJson(v.toByteArray()).toVariant().toHash();
-        default:
-            return {};
-        }
-    }
+QVariantMap MURequest::responseBodyMap() const
+{
+    return this->responseBody().toMap();
 }
 
 QVariantList MURequest::responseBodyList() const
 {
-    dPvt();
-    auto&v=p.response.response_body;
-    switch(qTypeId(p.body)){
-    case QMetaType_QVariantHash:
-    case QMetaType_QVariantMap:
-        return {};
-    case QMetaType_QStringList:
-    case QMetaType_QVariantList:
-        return v.toList();
-    default:
-        switch (this->requestAppType()){
-        case MUEnumRequest::AppType::atCBor:
-        case MUEnumRequest::AppType::atBinary:
-            return QCborValue::fromVariant(p.response.response_body.toByteArray()).toVariant().toList();
-        case MUEnumRequest::AppType::atJson:
-            return QJsonDocument::fromVariant(p.response.response_body.toByteArray()).toVariant().toList();
-        default:
-            return {};
-        }
-    }
+    return this->responseBody().toList();
 }
 
-QString MURequest::responseBodyString() const
+QString MURequest::responseBodyBytes() const
 {
     dPvt();
-    return (p.response.response_body.toByteArray());
+    auto&v=p.response.response_body;
+    switch(qTypeId(p.response.response_body)){
+    case QMetaType_QVariantHash:
+    case QMetaType_QVariantMap:
+    case QMetaType_QStringList:
+    case QMetaType_QVariantList:
+        return QJsonDocument::fromVariant(v).toJson(QJsonDocument::Compact);
+    default:
+        return v.toByteArray();
+    }
 }
 
 bool MURequest::isOk()const
@@ -393,7 +380,7 @@ MURequest &MURequest::setMethod(const QVariant &value)
 
 }
 
-MURequest &MURequest::setMethodHead()
+MURequest &MURequest::setMethodHEAD()
 {
     dPvt();
     p.method=MUEnumRequest::Method::rmHead;
@@ -439,14 +426,4 @@ MURequest &MURequest::setRequestAppType(const MUEnumRequest::AppType&value)
     dPvt();
     p.requestAppType = value;
     return *this;
-}
-
-MUStringUtil &MURequest::u()
-{
-    return MUStringUtil::i();
-}
-
-MUVariantUtil &MURequest::v()
-{
-    return MUVariantUtil::i();
 }

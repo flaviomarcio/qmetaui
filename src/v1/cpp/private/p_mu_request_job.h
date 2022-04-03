@@ -6,10 +6,11 @@
 #include "./p_mu_request_response.h"
 
 static bool _MuLogRegister=false;
-Q_GLOBAL_STATIC_WITH_ARGS(QString, _MuLogDirBase, (qsl("%1/QMetaUiLog").arg(QDir::homePath())))
-Q_GLOBAL_STATIC_WITH_ARGS(QString, _MuLogDir, (qsl("%1/%2").arg(*_MuLogDirBase).arg(qApp->applicationName())))
+Q_GLOBAL_STATIC_WITH_ARGS(QString, _MuLogDirBase, (QString("%1/QMetaUiLog").arg(QDir::homePath())))
+Q_GLOBAL_STATIC_WITH_ARGS(QString, _MuLogDir, (QString("%1/%2").arg(*_MuLogDirBase, qApp->applicationName())))
 
-static void _MuLogClearDir(const QString&ormLogDir){
+static void _MuLogClearDir(const QString&ormLogDir)
+{
     QStringList dir_found;
     QStringList dir_rm_file;
     dir_found.append(ormLogDir);
@@ -76,12 +77,10 @@ public:
     QNetworkReply *reply = nullptr;
     QNetworkAccessManager*networkAccessManager=nullptr;
     MURequestResponse response;
-    QUrl url()const{
-        return response.request_url.toString();
-    }
+
     explicit MURequestJob() : QThread{nullptr}
     {
-        this->fileLog=qsl("%1/%2.log").arg(*_MuLogDir, QString::number(qlonglong(QThread::currentThreadId()),16));
+        this->fileLog=QStringLiteral("%1/%2.log").arg(*_MuLogDir, QString::number(qlonglong(QThread::currentThreadId()),16));
         static qlonglong taskCount=0;
         ++taskCount;
         this->setObjectName(qsl("MUReqJob%1").arg(taskCount));
@@ -89,6 +88,11 @@ public:
     }
     ~MURequestJob()
     {
+    }
+
+    QUrl url()const
+    {
+        return response.request_url.toString();
     }
 
     void writeLog(MURequestResponse&response, const QVariantList&request)
@@ -117,13 +121,13 @@ public:
     {
         if(this->reply!=nullptr){
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            QObject::disconnect(this->reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &MURequestJob::on_reply_error);
+            QObject::disconnect(this->reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &MURequestJob::onReplyError);
 #else
             QObject::disconnect(this->reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &MURequestJob::on_reply_error);
 #endif
         }
         if(this->networkAccessManager!=nullptr)
-            QObject::disconnect(this->networkAccessManager, &QNetworkAccessManager::finished, this, &MURequestJob::on_reply_finish);
+            QObject::disconnect(this->networkAccessManager, &QNetworkAccessManager::finished, this, &MURequestJob::onReplyFinish);
     }
 
     void networkInit()
@@ -131,7 +135,7 @@ public:
         this->networkDInit();
         if(this->networkAccessManager==nullptr){
             this->networkAccessManager=new QNetworkAccessManager(nullptr);
-            QObject::connect(this->networkAccessManager, &QNetworkAccessManager::finished, this, &MURequestJob::on_reply_finish);
+            QObject::connect(this->networkAccessManager, &QNetworkAccessManager::finished, this, &MURequestJob::onReplyFinish);
         }
     }
 
@@ -173,23 +177,23 @@ public:
 
 public slots:
 
-    void on_reply_finish(QNetworkReply*r)
+    void onReplyFinish(QNetworkReply*r)
     {
         response.response_qt_status_code=r->error();
         this->onRequestFinish();
     };
 
-    void on_reply_error(QNetworkReply::NetworkError e)
+    void onReplyError(QNetworkReply::NetworkError e)
     {
         this->response.response_qt_status_code=e;
         this->onRequestFinish();
     };
-    void on_reply_timeout()
+    void onReplyTimeout()
     {
         this->response.response_qt_status_code=QNetworkReply::TimeoutError;
         this->onRequestFinish();
     };
-    void on_reply_cancel()
+    void onReplyCancel()
     {
         this->response.response_qt_status_code=QNetworkReply::OperationCanceledError;
         this->onRequestFinish();
@@ -210,11 +214,8 @@ public slots:
                 response.response_body = QString(reply->readAll());
                 response.response_status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
                 response.response_status_reason_phrase = reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
-                if(qt_stt==QNetworkReply::NoError){
-                    if(response.response_status_code!=200){
-                        response.response_qt_status_code=QNetworkReply::NetworkError(response.response_status_code);
-                    }
-                }
+                if(qt_stt==QNetworkReply::NoError && response.response_status_code!=200)
+                    response.response_qt_status_code=QNetworkReply::NetworkError(response.response_status_code);
 
 
 #if Q_MU_LOG_SUPER_VERBOSE
@@ -233,7 +234,7 @@ public slots:
             }
         }
 
-        auto vResponse=this->response.toMap();
+        auto vResponse=this->response.toHash();
         emit finishRequest(response.request, vResponse);
         this->writeLog(this->response, this->response.toList());
     }
@@ -247,17 +248,25 @@ public slots:
         auto method      = response.request_method;
         auto request_url = this->response.request_url.toString();
 
-        if(method==MUEnumRequest::Method::rmGet || method==MUEnumRequest::Method::rmDelete){
-            auto requestMap = muRequest->bodyHash();
+        switch (method) {
+        case MUEnumRequest::Method::rmGet:
+        case MUEnumRequest::Method::rmDelete:
+        {
+            auto requestHash = muRequest->bodyHash();
             QStringList parameters;
-            QHashIterator<QString, QVariant> i(requestMap);
+            QHashIterator<QString, QVariant> i(requestHash);
             while (i.hasNext()){
                 i.next();
-                parameters<<qsl("%1=%2").arg(i.key()).arg(i.value().toString());
+                parameters<<qsl("%1=%2").arg(i.key(), i.value().toString());
             }
             if(!parameters.isEmpty())
                 request_url+=qsl("?%1").arg(parameters.join(','));
+            break;
         }
+        default:
+            break;
+        }
+
 
         QUrl url(request_url);
         QNetworkRequest request(url);
@@ -303,10 +312,10 @@ public slots:
 
         switch (method) {
         case MUEnumRequest::Method::rmHead:
-            reply=networkAccessManager->get(request);
+            reply=networkAccessManager->head(request);
             break;
         case MUEnumRequest::Method::rmGet:
-            reply=networkAccessManager->head(request);
+            reply=networkAccessManager->get(request);
             break;
         case MUEnumRequest::Method::rmPost:
             reply=networkAccessManager->post(request, response.request_body);
@@ -329,7 +338,7 @@ public slots:
         }
         reply->ignoreSslErrors();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-        QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &MURequestJob::on_reply_error);
+        QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::errorOccurred), this, &MURequestJob::onReplyError);
 #else
         QObject::connect(reply, QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error), this, &MURequestJob::on_reply_error);
 #endif
@@ -341,7 +350,7 @@ public slots:
 
 signals:
     void requestSend(MURequest*muRequest);
-    void finishRequest(MURequest*request, const QVariantMap&vResponse);
+    void finishRequest(MURequest*request, const QVariantHash&vResponse);
     void finishThread(MURequestJob*job);
 
 };

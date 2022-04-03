@@ -25,7 +25,7 @@ MCRectangleState {
     enabled: visible
     radius : 0
 
-    anchors.horizontalCenter: parent===null? undefined : parent.horizontalCenter
+    anchors.horizontalCenter: (parent==null)? undefined : parent.horizontalCenter
 
     Material.elevation : 4
 
@@ -37,8 +37,8 @@ MCRectangleState {
 
     function getRoot(){
         var p=parent
-        while(p!==null)
-            if(p.parent===null){
+        while(p!=null)
+            if(p.parent==null){
                 break
             } else {
                 p=p.parent

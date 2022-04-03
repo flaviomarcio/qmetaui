@@ -97,15 +97,19 @@ MCFormBase {
             control.state=control.stateActived
         }
         onRequestSuccess: {
-            if(!loginSession.setData(request.responseBodyMap())){
-                snackBar.showMessage(qsTr("Os dados da sessão não são validos"))
-            } else {
-                loginProfile.loadCurrentSession()
-                if(pvt.firstStart){
-                    control.dataLoaded()
-                }
-                pvt.firstStart=true
+/*
+//TODO MOVER PARA LoginSession
+//            var v=request.responseBodyMap();
+//            if(!loginSession.setData(v)){
+//                snackBar.showMessage(qsTr("Os dados da sessão não são validos"))
+//            } else {
+//            }
+*/
+            loginProfile.loadCurrentSession()
+            if(pvt.firstStart){
+                control.dataLoaded()
             }
+            pvt.firstStart=true
             control.state=control.stateActived
             control.requestFinished()
         }

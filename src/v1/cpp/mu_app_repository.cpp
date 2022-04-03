@@ -17,8 +17,7 @@ public:
     QString     route;
 
     MUAppRepository*parent=nullptr;
-    explicit MUAppRepositoryPvt(MUAppRepository*parent):QObject(parent)
-    {
+    explicit MUAppRepositoryPvt(MUAppRepository*parent):QObject{parent}{
         this->parent=parent;
     }
 

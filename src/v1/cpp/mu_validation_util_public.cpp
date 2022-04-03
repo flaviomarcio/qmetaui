@@ -2,7 +2,7 @@
 #include "./mu_string_util.h"
 
 
-MUValidationUtilPublic::MUValidationUtilPublic(QObject *parent):QObject(parent)
+MUValidationUtilPublic::MUValidationUtilPublic(QObject *parent):QObject{parent}
 {
 
 }

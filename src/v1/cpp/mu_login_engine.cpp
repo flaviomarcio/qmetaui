@@ -101,7 +101,7 @@ public:
     MULoginEngine*engine=nullptr;
 
     bool synchronousRequest=false;
-    explicit MULoginEnginePvt(MULoginEngine*parent): QObject(parent), routes(parent), _request(parent)
+    explicit MULoginEnginePvt(MULoginEngine*parent): QObject{parent}, routes(parent), _request(parent)
     {
         this->engine=parent;
         this->routes.load();
@@ -113,6 +113,7 @@ public:
 
     auto&request()
     {
+        this->_request.setHeader(this->routes.headers());
         if(this->synchronousRequest)
             this->_request.setModeSynchronous(MUEnumRequest::mdSync);
         else
@@ -134,23 +135,23 @@ public slots:
         auto type=vHash[qsl("type")];
         auto especification=vHash[qsl("especification")];
         auto message=vHash[qsl("message")];
-        if(type==MUEnumNotification::nt_Security){
-            switch (especification.toInt()){
-            case MUEnumNotification::nse_LoginSuccessful:
-                emit this->engine->loginSuccessful(message);
-                break;
-            case MUEnumNotification::nse_Unknow:
-                emit this->engine->loginSuccessful(message);
-                break;
-            case MUEnumNotification::nse_Error:
-                emit this->engine->loginError(payload);
-                break;
-            case MUEnumNotification::nse_Fail:
-                emit this->engine->loginFail(payload);
-                break;
-            default:
-                break;
-            }
+        if(type!=MUEnumNotification::nt_Security)
+            return;
+        switch (especification.toInt()){
+        case MUEnumNotification::nse_LoginSuccessful:
+            emit this->engine->loginSuccessful(message);
+            break;
+        case MUEnumNotification::nse_Unknow:
+            emit this->engine->loginSuccessful(message);
+            break;
+        case MUEnumNotification::nse_Error:
+            emit this->engine->loginError(payload);
+            break;
+        case MUEnumNotification::nse_Fail:
+            emit this->engine->loginFail(payload);
+            break;
+        default:
+            break;
         }
     }
 };
@@ -209,7 +210,7 @@ bool MULoginEngine::account_autenticate(const QVariant &account, const QVariant 
     p.var.clear();
     p.var.dig_account=account.toByteArray();
     p.var.dig_phone_number=p.stringUtil.toStrPhone(phone_number).toUtf8();
-    QVariantMap map;
+    QVariantHash map;
     map.insert(qsl("hsh_account"), p.var.hsh_account());
     map.insert(qsl("phone_number"), p.var.dig_phone_number);
     p.request().setBody(map);
@@ -219,7 +220,7 @@ bool MULoginEngine::account_autenticate(const QVariant &account, const QVariant 
     auto onErr=[this](const MURequest*){
         emit this->loginUnsuccessful(tr("Erro ao enviar código para ativação"));
     };
-    p.request().start(this->routes().account_verify(), onOk, onErr);
+    p.request().setMethodPOST().start(this->routes().account_verify(), onOk, onErr);
     return true;
 }
 
@@ -253,7 +254,7 @@ bool MULoginEngine::account_autenticate_password(const QVariant &account, const 
     p.request().setBody(hash);
     auto onOk=[this, &doAutho](const MURequest*r){
         dPvt();
-        auto vBody=r->responseBodyMap();
+        auto vBody=r->responseBodyHash();
         p.var.hsh_salt=vBody[qsl("hsh_salt")].toByteArray();
         doAutho();
     };
@@ -274,30 +275,30 @@ bool MULoginEngine::account_autenticate_code(const QVariant &account, const QVar
     p.var.dig_code=code.toByteArray().trimmed();
     p.var.hsh_code=p.stringUtil.toMd5(p.var.dig_code);
 
-    if(p.var.dig_code.isEmpty() || p.var.hsh_code.isEmpty())
+    if(p.var.dig_code.isEmpty() || p.var.hsh_code.isEmpty()){
         emit loginError(tr("Código informado não é valido"));
-    else{
-        auto hash=p.var.makeBodyAccountCode();
-        hash.insert(qsl("hsh_account"), p.var.hsh_account());
-        hash.insert(qsl("hsh_salt_pwd"), p.var.hsh_salt_code());
-        p.request().setBody(hash);
-        auto onOk=[this](const MURequest*r){
-            QVariantHash hash;
-            hash.insert(qsl("request"), r->body());
-            hash.insert(qsl("response"), r->responseBodyMap());
-            this->session().setData(hash);
-            if(this->session().isLogged())
-                emit this->loginSuccessful(tr("Autenticação concluída"));
-            else
-                emit this->loginUnsuccessful(tr("Dados invalidos"));
-        };
-        auto onErr=[this](const MURequest*){
-            emit this->loginUnsuccessful(tr("Falha na autenticação"));
-        };
-        p.request().start(this->routes().account_login(), onOk, onErr);
-        return true;
+        return false;
     }
-    return false;
+
+    auto hash=p.var.makeBodyAccountCode();
+    hash.insert(qsl("hsh_account"), p.var.hsh_account());
+    hash.insert(qsl("hsh_salt_pwd"), p.var.hsh_salt_code());
+    p.request().setBody(hash);
+    auto onOk=[this](const MURequest*r){
+        QVariantHash hash;
+        hash.insert(qsl("request"), r->body());
+        hash.insert(qsl("response"), r->responseBodyHash());
+        this->session().setData(hash);
+        if(this->session().isLogged())
+            emit this->loginSuccessful(tr("Autenticação concluída"));
+        else
+            emit this->loginUnsuccessful(tr("Dados invalidos"));
+    };
+    auto onErr=[this](const MURequest*){
+        emit this->loginUnsuccessful(tr("Falha na autenticação"));
+    };
+    p.request().start(this->routes().account_login(), onOk, onErr);
+    return true;
 }
 
 bool MULoginEngine::account_register(const QVariant &account)
@@ -332,7 +333,7 @@ bool MULoginEngine::account_register(const QVariant &account)
     p.request().setBody(hash);
     auto onOk=[this, &doAutho](const MURequest*r){
         dPvt();
-        auto vBody=r->responseBodyMap();
+        auto vBody=r->responseBodyHash();
         p.var.hsh_salt=vBody[qsl("hsh_salt")].toByteArray();
         doAutho();
     };
@@ -347,6 +348,7 @@ bool MULoginEngine::account_session_verify()
     auto&session=MULoginSession::i();
     if(!p.request().canStart())
         return false;
+
     if(!session.isLogged())
         return false;
 
@@ -369,7 +371,6 @@ bool MULoginEngine::account_session_verify()
         emit this->loginSessionIsValid();
     };
     return p.request().start(this->routes().session_check(), onOk, onErr);
-    return true;
 }
 
 MULoginEngineRoutes&MULoginEngine::routes()

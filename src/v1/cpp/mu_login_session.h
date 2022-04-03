@@ -16,10 +16,10 @@ class Q_MU_EXPORT MULoginSession : public MUObject
     Q_OBJECT
 public:
 
-    Q_PROPERTY(QUuid           uuid        READ uuid       WRITE set_uuid    NOTIFY loginChanged);
-    Q_PROPERTY(QByteArray      hsh_md5     READ hsh_md5    WRITE set_hsh_md5 NOTIFY loginChanged);
-    Q_PROPERTY(MULoginProfile* profile     READ profile    WRITE set_profile NOTIFY loginChanged);
-    Q_PROPERTY(MULoginToken*   token       READ token      WRITE set_token   NOTIFY loginChanged);
+    Q_PROPERTY(QUuid uuid READ uuid WRITE set_uuid NOTIFY loginChanged);
+    Q_PROPERTY(QByteArray hsh_md5 READ hsh_md5 WRITE set_hsh_md5 NOTIFY loginChanged);
+    Q_PROPERTY(MULoginProfile* profile READ profile WRITE set_profile NOTIFY loginChanged);
+    Q_PROPERTY(MULoginToken* token READ token WRITE set_token NOTIFY loginChanged);
 
     Q_INVOKABLE explicit MULoginSession(QObject *parent = nullptr);
     ~MULoginSession();
@@ -39,7 +39,7 @@ public:
     virtual bool set_token(const MULoginToken *v) const;
 
     Q_INVOKABLE virtual QVariantHash data();
-    Q_INVOKABLE virtual bool setData(const QVariant&v);
+    Q_INVOKABLE virtual bool setData(const QVariant &v);
 
     Q_INVOKABLE virtual QVariant value(const QString&key) const;
 

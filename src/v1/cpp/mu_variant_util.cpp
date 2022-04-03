@@ -14,7 +14,6 @@
 
 Q_GLOBAL_STATIC(MUVariantUtil, __i)
 
-
 MUVariantUtil::MUVariantUtil(QObject *parent) : QObject{parent}
 {
 
@@ -245,10 +244,19 @@ qlonglong MUVariantUtil::toInt(const QVariant &v, QVariant defaultValue)
     case QMetaType_UInt:
     case QMetaType_LongLong:
     case QMetaType_ULongLong:
-        return v.toLongLong();
-    default:
-        return defaultValue.toLongLong();
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
+    case QMetaType_QChar:
+    case QMetaType_QBitArray:{
+        auto value=v.toLongLong();
+        if(value>0)
+            return value;
+        break;
     }
+    default:
+        break;
+    }
+    return defaultValue.toLongLong();
 }
 
 double MUVariantUtil::toDouble(const QVariant &v, QVariant defaultValue)
@@ -259,10 +267,19 @@ double MUVariantUtil::toDouble(const QVariant &v, QVariant defaultValue)
     case QMetaType_UInt:
     case QMetaType_LongLong:
     case QMetaType_ULongLong:
-        return v.toDouble();
-    default:
-        return defaultValue.toDouble();
+    case QMetaType_QString:
+    case QMetaType_QByteArray:
+    case QMetaType_QChar:
+    case QMetaType_QBitArray:{
+        auto value=v.toLongLong();
+        if(value>0)
+            return value;
+        break;
     }
+    default:
+        break;
+    }
+    return defaultValue.toDouble();
 }
 
 const QVariant MUVariantUtil::convertVar(const QVariant &v, const int type)
@@ -395,8 +412,8 @@ int MUVariantUtil::toVariantType(const QVariant &v)
 
 bool MUVariantUtil::isEqual(const QVariant &v1, const QVariant &v2)
 {
-    auto s1=toStr(v1,"");
-    auto s2=toStr(v2,"");
+    auto s1=toStr(v1, qsl_null);
+    auto s2=toStr(v2, qsl_null);
     if(s1==s2)
         return true;
     return false;

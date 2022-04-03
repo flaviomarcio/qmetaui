@@ -1,6 +1,7 @@
 #include "./mu_register.h"
 #include <QtQml>
 #include <QAbstractListModel>
+#include <QtReforce/QStatusBar>
 
 #include "./mu_global.h"
 #include "./mu_application.h"
@@ -27,38 +28,10 @@
 #include "./mu_variant_util.h"
 #include "./mu_image_capture_area.h"
 
-#define MU_DECLARE_ENUM_META_CONTROL(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Controls", 1, 0, #enumName, "Not creatable as it is an enum type")
-
-#define MU_DECLARE_ENUM_META_SECURITY(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Security", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Security", 1, 0, #enumName, "Not creatable as it is an enum type")
-
-#define MU_DECLARE_ENUM_META_NETWORK(enumClass, enumName)\
-    qRegisterMetaType<enumName>(#enumName);\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Network", 0, 0, #enumName, "Not creatable as it is an enum type");\
-    qmlRegisterUncreatableType<enumClass>("QtReforce.Meta.Network", 1, 0, #enumName, "Not creatable as it is an enum type")
-
-#define MU_DECLARE_CLASS_META_CONTROL(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Controls", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Controls", 0, 0, #className)\
-
-#define MU_DECLARE_CLASS_META_SECURITY(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Security", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Security", 0, 0, #className)\
-
-#define MU_DECLARE_CLASS_META_NETWORK(className)\
-    qmlRegisterType<className>("QtReforce.Meta.Network", 1, 0, #className);\
-    qmlRegisterType<className>("QtReforce.Meta.Network", 0, 0, #className)\
-
-#define MU_DECLARE_INSTANCE(className)\
-    engine.rootContext()->setContextProperty("qApp",QGuiApplication::instance());
 
 void MURegister::init(QQmlApplicationEngine &engine)
 {
+    MUEnumUtils::init(engine);
     MUEnumFormType::init(engine);
     MUEnumNotification::init(engine);
     MUEnumRequestType::init(engine);
@@ -68,6 +41,24 @@ void MURegister::init(QQmlApplicationEngine &engine)
     MUEnumInstance::init(engine);
     MUCacheUtil::init();
     MUImageCaptureArea::init();
+    MUEnumExtras::init(engine);
+}
+
+void MUEnumUtils::init(QQmlApplicationEngine &engine)
+{
+    Q_UNUSED(engine)
+    MU_DECLARE_CLASS_META_UTILS(MUVariantUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUGeometryUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUDateUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUCacheUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUStringUtil);
+    MU_DECLARE_CLASS_META_UTILS(MUNotification);
+}
+
+void MUEnumExtras::init(QQmlApplicationEngine &engine)
+{
+    Q_UNUSED(engine)
+    MU_DECLARE_CLASS("StatusBar", StatusBar);
 }
 
 void MUEnumNotification::init(QQmlApplicationEngine &engine)
@@ -84,12 +75,12 @@ void MUEnumFormType::init(QQmlApplicationEngine &engine)
     MU_DECLARE_ENUM_META_CONTROL(MUEnumFormType, MUFormType);
 
     MU_DECLARE_CLASS_META_CONTROL(MUApplication             );
-    MU_DECLARE_CLASS_META_CONTROL(MUCacheUtil               );
     MU_DECLARE_CLASS_META_CONTROL(MUModelTable              );
     MU_DECLARE_CLASS_META_CONTROL(MUGenericControl          );
     MU_DECLARE_CLASS_META_CONTROL(MUImageCaptureArea        );
 
     MU_DECLARE_CLASS_META_SECURITY(MULoginEngine            );
+    MU_DECLARE_CLASS_META_SECURITY(MULoginEngineRoutes      );
     MU_DECLARE_CLASS_META_SECURITY(MULoginSession           );
     MU_DECLARE_CLASS_META_SECURITY(MULoginProfile           );
 
@@ -97,7 +88,6 @@ void MUEnumFormType::init(QQmlApplicationEngine &engine)
     MU_DECLARE_CLASS_META_SECURITY(MUAppInfo                );
     MU_DECLARE_CLASS_META_SECURITY(MUAppRepository          );
 
-    MU_DECLARE_CLASS_META_SECURITY(MUValidationUtil         );
     MU_DECLARE_CLASS_META_SECURITY(MUValidationUtilPublic   );
     MU_DECLARE_CLASS_META_SECURITY(MUValidationUtilPTB      );
 }
@@ -134,23 +124,18 @@ void MUEnumInstance::init(QQmlApplicationEngine &engine)
 
     MULoginSession::i().load();
 
-    engine.rootContext()->setContextProperty("qApp",QGuiApplication::instance());
-    engine.rootContext()->setContextProperty("muApp",&MUApplication::i());
-
-    engine.rootContext()->setContextProperty("objectUtil",&MUObjectUtil::i());
-    engine.rootContext()->setContextProperty("variantUtil",&MUVariantUtil::i());
-    engine.rootContext()->setContextProperty("geometryUtil",&MUGeometryUtil::i());
-    engine.rootContext()->setContextProperty("dateUtil",&MUDateUtil::i());
-    engine.rootContext()->setContextProperty("cacheUtil",&MUCacheUtil::i());
-    engine.rootContext()->setContextProperty("stringUtil",&MUStringUtil::i());
-    engine.rootContext()->setContextProperty("validationUtil",&MUValidationUtil::i());
-
-    engine.rootContext()->setContextProperty("loginSession",&MULoginSession::i());
-    engine.rootContext()->setContextProperty("appSession",&MUAppSession::i());
-
-    engine.rootContext()->setContextProperty("loginEngine",&MULoginEngine::i());
-    engine.rootContext()->setContextProperty("paintSetting",&MUPaintSetting::i());
-
-    engine.rootContext()->setContextProperty("notification",&MUNotification::i());
-    //engine.rootContext()->setContextProperty("mainPaintSetting",&MUPaintSetting::instance());
+    MU_DECLARE_INSTANCE("qApp",QGuiApplication::instance());
+    MU_DECLARE_INSTANCE("muApp",&MUApplication::i());
+    MU_DECLARE_INSTANCE("objectUtil",&MUObjectUtil::i());
+    MU_DECLARE_INSTANCE("variantUtil",&MUVariantUtil::i());
+    MU_DECLARE_INSTANCE("geometryUtil",&MUGeometryUtil::i());
+    MU_DECLARE_INSTANCE("dateUtil",&MUDateUtil::i());
+    MU_DECLARE_INSTANCE("cacheUtil",&MUCacheUtil::i());
+    MU_DECLARE_INSTANCE("stringUtil",&MUStringUtil::i());
+    MU_DECLARE_INSTANCE("validationUtil",&MUValidationUtil::i());
+    MU_DECLARE_INSTANCE("loginSession",&MULoginSession::i());
+    MU_DECLARE_INSTANCE("appSession",&MUAppSession::i());
+    MU_DECLARE_INSTANCE("loginEngine",&MULoginEngine::i());
+    MU_DECLARE_INSTANCE("paintSetting",&MUPaintSetting::i());
+    MU_DECLARE_INSTANCE("notification",&MUNotification::i());
 }

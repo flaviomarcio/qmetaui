@@ -14,7 +14,7 @@ public:
     QByteArray token ;
     MULoginToken*parent=nullptr;
 
-    explicit MULoginTokenPvt(MULoginToken*parent):QObject(parent)
+    explicit MULoginTokenPvt(MULoginToken*parent):QObject{parent}
     {
         this->parent=parent;
     }

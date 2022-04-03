@@ -30,7 +30,7 @@ public:
     {
         Q_UNUSED(format)
         if(d.isValid() && t.isValid())
-            return d.toString(qsl("d MMM yyyy"))+" "+t.toString(qsl("HH:mm:ss"));
+           return d.toString(QStringLiteral("d MMM yyyy"))+" "+t.toString(QStringLiteral("HH:mm:ss"));
 
         if(d.isValid())
             return d.toString(qsl("d MMM yyyy"));
@@ -46,7 +46,7 @@ public:
     {
         Q_UNUSED(format)
         if(d.isValid() && t.isValid())
-            return d.toString(qsl("dd/MM/yyyy"))+qsl(" ")+t.toString(qsl("HH:mm:ss"));
+            return d.toString(QStringLiteral("dd/MM/yyyy"))+QStringLiteral(" ")+t.toString(QStringLiteral("HH:mm:ss"));
 
         if(d.isValid())
             return d.toString(qsl("dd/MM/yyyy"));

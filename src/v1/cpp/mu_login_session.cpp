@@ -28,7 +28,7 @@ public:
     MUStringUtil&stringUtil=MUStringUtil::i();
     MUCacheUtil&cacheUtil=MUCacheUtil::i();
     bool initialized=false;
-    explicit MULoginSessionPvt(MULoginSession*parent):QObject(parent), profile(parent), token(parent)
+    explicit MULoginSessionPvt(MULoginSession*parent):QObject{parent}, profile(parent), token(parent)
     {
         this->session=parent;
         connect(&MUNotification::i(), &MUNotification::notify, this, &MULoginSessionPvt::notification);
@@ -90,24 +90,20 @@ public:
 
     bool save(const QVariant&data)
     {
-        switch (qTypeId(data)){
-        case QMetaType_QVariantMap:
-        case QMetaType_QVariantHash:
-            break;
-        default:
-            return false;
-        }
+        auto vHash=data.toHash();
 
-        auto vMap=data.toHash();
-        if(!vMap.contains(qsl("response"))){
-            if(vMap.contains(qsl("profile")) && vMap.contains(qsl("token")) && vMap.contains(qsl("session")))
-                vMap=QVariantHash{{qsl("response"), vMap}};
-        }
-
-        if(!cacheUtil.sessionSaveFile(vMap))
+        if(vHash.isEmpty())
             return false;
 
-        this->setData(vMap);
+        if(!vHash.contains(qsl("response"))){
+            if(vHash.contains(qsl("profile")) && vHash.contains(qsl("token")) && vHash.contains(qsl("session")))
+                vHash=QVariantHash{{qsl("response"), vHash}};
+        }
+
+        if(!cacheUtil.sessionSaveFile(vHash))
+            return false;
+
+        this->setData(vHash);
         return true;
     }
 
@@ -336,7 +332,7 @@ void MULoginSession::clear()
     this->token()->clear();
     this->profile()->clear();
     this->set_uuid(QUuid());
-    this->set_hsh_md5("");
+    this->set_hsh_md5({});
 }
 
 bool MULoginSession::logoff()

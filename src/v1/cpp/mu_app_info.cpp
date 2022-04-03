@@ -13,7 +13,7 @@ public:
     QString display = qsl("Magma Tecnologia");
     QString version = qsl("ws1.0");
     MUAppInfo*parent=nullptr;
-    explicit MUAppInfoPvt(MUAppInfo*parent):QObject(parent){
+    explicit MUAppInfoPvt(MUAppInfo*parent):QObject{parent}{
         this->parent=parent;
     }
     virtual ~MUAppInfoPvt(){

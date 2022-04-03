@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../mu_request.h"
-
 #include <QObject>
 #include <QThread>
 #include <QCborMap>
@@ -24,11 +23,12 @@
 
 struct MURequestResponse{
 public:
-    explicit MURequestResponse(){
+    explicit MURequestResponse()
+    {
     }
+
     explicit MURequestResponse(MURequest&request)
     {
-
         this->request=&request;
         this->request_method = request.method();
         this->request_header = request.header();
@@ -36,7 +36,7 @@ public:
         this->request_url = request.url();
     }
 
-    explicit MURequestResponse(const QVariantMap&response)
+    explicit MURequestResponse(const QVariantHash&response)
     {
         this->fromMap(response);
     }
@@ -55,9 +55,9 @@ public:
     QVariant response_body;
     QNetworkReply::NetworkError response_qt_status_code = QNetworkReply::UnknownNetworkError;
 public:
-    QVariantMap toMap()
+    QVariantHash toHash()
     {
-        QVariantMap response;
+        QVariantHash response;
 
         response.insert(qsl("timeout"),this->timeout);
         response.insert(qsl("request_url"),this->request_url);
@@ -71,7 +71,7 @@ public:
 
         return response;
     }
-    void fromMap(const QVariantMap&response)
+    void fromMap(const QVariantHash&response)
     {
 
         this->timeout=response.value(qsl("timeout")).toLongLong();

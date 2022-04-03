@@ -18,7 +18,7 @@
 Q_GLOBAL_STATIC_WITH_ARGS(QString, specialMaskChar,("(){}[]/-*+.,;"))
 Q_GLOBAL_STATIC(MUStringUtil, __i)
 
-MUStringUtil::MUStringUtil(QObject *parent):QObject(parent)
+MUStringUtil::MUStringUtil(QObject *parent):QObject{parent}
 {
 
 }

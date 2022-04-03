@@ -9,7 +9,7 @@
 
 
 
-MUImageCaptureArea::MUImageCaptureArea(QObject *parent):QObject(parent)
+MUImageCaptureArea::MUImageCaptureArea(QObject *parent):QObject{parent}
 {
     this->p=new MUImageCaptureAreaPvt(this);
     dPvt();

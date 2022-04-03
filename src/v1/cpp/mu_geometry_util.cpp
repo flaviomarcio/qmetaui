@@ -12,15 +12,8 @@
 static int _desktopAvailableWidth=1024;
 static int _desktopAvailableHeight=640;
 
-static void init()
-{
-    qmlRegisterType<StatusBar>(qbl("StatusBar"), 0, 1, qbl("StatusBar"));
-}
-
-Q_COREAPP_STARTUP_FUNCTION(init);
 
 Q_GLOBAL_STATIC(MUGeometryUtil, __i);
-
 
 MUGeometryUtil::MUGeometryUtil(QObject *parent) : QObject{parent}
 {
@@ -36,7 +29,6 @@ MUGeometryUtil &MUGeometryUtil::i()
 {
     return *__i;
 }
-
 
 const QVariant MUGeometryUtil::ifThen(const QVariant &vThen, const QVariant &vElse)
 {

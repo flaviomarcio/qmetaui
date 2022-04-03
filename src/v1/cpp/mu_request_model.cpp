@@ -9,7 +9,7 @@ public:
     QVariant jsonObject;
     MURequestModel*parent=nullptr;
     MUModelTable model;
-    explicit MURequestModelPvt(MURequestModel*parent):QObject(parent), model(parent){
+    explicit MURequestModelPvt(MURequestModel*parent):QObject{parent}, model(parent){
         this->parent=parent;
     }
     virtual ~MURequestModelPvt(){

@@ -8,7 +8,7 @@ class Q_MU_EXPORT MUAppSession: public MUObject
     Q_OBJECT
 public:
     Q_PROPERTY(MUAppRepository* repository READ repository WRITE set_repository NOTIFY repositoryChanged);
-    Q_PROPERTY(MUAppInfo*       app        READ app        WRITE set_app        NOTIFY appChanged);
+    Q_PROPERTY(MUAppInfo* app READ app WRITE set_app NOTIFY appChanged);
 
     Q_INVOKABLE explicit MUAppSession(QObject *parent = nullptr);
     ~MUAppSession();
