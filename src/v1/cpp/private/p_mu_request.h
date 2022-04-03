@@ -26,6 +26,7 @@ public:
     QVariantHash header;
     QVariant body;
     MURequest*request=nullptr;
+
     Q_INVOKABLE explicit MURequestPvt(MURequest*parent);
 
     ~MURequestPvt();

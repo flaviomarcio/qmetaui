@@ -108,9 +108,12 @@ SOURCES += \
     $$PWD/cpp/mu_variant_util.cpp \
     $$PWD/cpp/private/p_mu_image_capture_area.cpp \
     $$PWD/cpp/private/p_mu_image_capture_area_provider.cpp \
+    $$PWD/cpp/private/p_mu_model_navigator.cpp \
+    $$PWD/cpp/private/p_mu_network_activity.cpp \
     $$PWD/cpp/private/p_mu_notification.cpp \
     $$PWD/cpp/private/p_mu_request.cpp \
     $$PWD/cpp/private/p_mu_request_job.cpp \
-    $$PWD/cpp/private/p_mu_request_queue.cpp
+    $$PWD/cpp/private/p_mu_request_queue.cpp \
+    $$PWD/cpp/private/p_mu_request_queue_pvt.cpp
 
 QT += widgets
